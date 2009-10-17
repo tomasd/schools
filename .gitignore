@@ -1,0 +1,9 @@
+*.pyc
+*.pyo
+.project
+.pydevproject
+.settings
+dist
+*.egg-info
+pip-log.txt
+local_settings.py
