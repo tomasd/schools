@@ -22,7 +22,14 @@ class Course(models.Model):
     def get_absolute_url(self):
         return ('courses_course_update', None, {'object_id':str(self.pk)})
  
- 
+    @permalink
+    def get_coursemembers_url(self):
+        return ('courses_coursemember_list', None, {'course_id':str(self.pk)})
+    
+    @permalink
+    def get_expensegroups_url(self):
+        return ('courses_expensegroup_list', None, {'course_id':str(self.pk)})
+    
 class CourseMember(models.Model):
     from schools.students.models import Student
     course = models.ForeignKey('Course')
@@ -44,6 +51,10 @@ class CourseMember(models.Model):
         expense_group.expensegroupprice_set.create(price=price, start=self.start)
         self.expense_group = expense_group
         return expense_group
+    
+    @permalink
+    def get_absolute_url(self):
+        return ('courses_coursemember_update', None, {'course_id':str(self.course.pk), 'object_id':str(self.pk)})
             
 class Lesson(models.Model):
     from schools.buildings.models import Classroom
@@ -116,6 +127,11 @@ class ExpenseGroup(models.Model):
     
     def __unicode__(self):
         return self.name
+    
+    @permalink
+    def get_absolute_url(self):
+        return ('courses_expensegroup_update', None, {'course_id':str(self.course.pk), 
+                                                      'object_id':str(self.pk)})
     
 class ExpenseGroupPrice(models.Model):
     expense_group = models.ForeignKey('ExpenseGroup')

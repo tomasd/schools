@@ -2,8 +2,12 @@
 {% block content %}
 	<form method="post">
 		<table>
-		{{ form }}
+		{{ expensegroup_form }}
 		</table>
+		<table>
+		{{ expensegroupprice_formset }}
+		</table>
+		
 		<input type="submit"/>
 	</form>
 {% endblock %}

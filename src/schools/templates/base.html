@@ -11,17 +11,18 @@
 	<div id="header">
 		<a href="index.html" class="logo"><img src="img/logo.gif" width="101" height="29" alt="" /></a>
 		<ul id="top-navigation">
-			<li class="active"><span><span>Homepage</span></span></li>
-			<li><span><span><a href="#">Users</a></span></span></li>
-			<li><span><span><a href="#">Orders</a></span></span></li>
-			<li><span><span><a href="#">Settings</a></span></span></li>
-			<li><span><span><a href="#">Statistics</a></span></span></li>
+			<li><span><span><a href="">Homepage</a></span></span></li>
+			<li><span><span><a href="{% url courses_course_list %}">Kurzy</a></span></span></li>
+			<li><span><span><a href="{% url companies_company_list %}">Firmy</a></span></span></li>
+			<li><span><span><a href="{% url lectors_lector_list %}">Lektori</a></span></span></li>
+			<li><span><span><a href="{% url students_student_list %}">Studenti</a></span></span></li>
 			<li><span><span><a href="#">Design</a></span></span></li>
 			<li><span><span><a href="#">Contents</a></span></span></li>
 		</ul>
 	</div>
 	<div id="middle">
 		<div id="left-column">
+			{% block left_content %}
 			<h3>Header</h3>
 			<ul class="nav">
 				<li><a href="#">Lorem Ipsum dollar</a></li>
@@ -33,6 +34,7 @@
 			</ul>
 			<a href="#" class="link">Link here</a>
 			<a href="#" class="link">Link here</a>
+			{% endblock %}
 		</div>
 		<div id="center-column">
 			{% block content %}
