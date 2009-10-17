@@ -3,7 +3,7 @@
 
 {% block content %}
 	<div class="top-bar">
-		<h1>{% trans "Upraviť nákladovú skupinu" %}  {{ object }}</h1>
+		<h1>{% trans "Upraviť prezenčku lekcie" %}  {{ object }}</h1>
 		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
 	</div><br />
 	<div class="table">
@@ -13,10 +13,10 @@
 			</table>
 			
 			
-			{{ expensegroupprice_formset.management_form }}
+			{{ lessonattendee_formset.management_form }}
 			<table class="listing form" cellpadding="0" cellspacing="0">
-				<caption>{% trans "Nákladové skupiny" %}</caption>
-			{% with expensegroupprice_formset as formset %}
+				<caption>{% trans "Účastníci" %}</caption>
+			{% with lessonattendee_formset as formset %}
 				{% include "formset_inlinetable.html" %}
 			{% endwith %}
 			</table>

@@ -1,10 +1,13 @@
-{% extends "base.html" %}
 {% block content %}
-	<form method="post">
-		<table>
-		{{ form }}
-		</table>
-		
-		<input type="submit"/>
-	</form>
+{% load i18n %}
+	<div class="table">
+		<form method="post">
+			<table class="listing form" cellpadding="0" cellspacing="0">
+			{% include "form_table.html" %}
+			</table>
+	
+					
+			<input type="submit" value="{% trans "Uložiť" %}"/>
+		</form>
+	</div>
 {% endblock %}

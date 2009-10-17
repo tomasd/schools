@@ -30,6 +30,10 @@ class Course(models.Model):
     def get_expensegroups_url(self):
         return ('courses_expensegroup_list', None, {'course_id':str(self.pk)})
     
+    @permalink
+    def get_lessons_url(self):
+        return ('courses_lesson_list', None, {'course_id':str(self.pk)})
+    
 class CourseMember(models.Model):
     from schools.students.models import Student
     course = models.ForeignKey('Course')
@@ -58,11 +62,20 @@ class CourseMember(models.Model):
             
 class Lesson(models.Model):
     from schools.buildings.models import Classroom
+    from schools.lectors.models import Lector
     course = models.ForeignKey('Course')
-    classroom = models.ForeignKey(Classroom)
+    classroom = models.ForeignKey(Classroom, related_name='plannedlessons_set')
     
     start = models.DateTimeField()
     end = models.DateTimeField()
+    
+    realized = models.BooleanField()
+    real_classroom = models.ForeignKey(Classroom, null=True, related_name='reallessons_set')
+    real_lector = models.ForeignKey(Lector, null=True)
+    real_lector_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    real_start = models.DateTimeField(null=True)
+    real_end = models.DateTimeField(null=True)
+    real_content = models.TextField(null=True, blank=True)
     
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -74,42 +87,41 @@ class Lesson(models.Model):
         return '%s: %s - %s' % (self.classroom,
                                 format(self.start, start_format),
                                 format(self.end, end_format))
+    
+    @permalink
+    def get_absolute_url(self):
+        return ('courses_lesson_update', None, {'course_id':str(self.course.pk), 'object_id':str(self.pk)})
+    
+    @permalink
+    def get_attendance_url(self):
+        return ('courses_lesson_attendance', None, {'course_id':str(self.course.pk), 'object_id':str(self.pk)})
         
-    def create_attendance_list(self):
-        try:
-            return self.attendancelist
-        except AttendanceList.DoesNotExist:
-            return AttendanceList(lesson=self,
-                              classroom=self.classroom,
-                              lector=self.course.lector,
-                              start=self.start, end=self.end)
-    
-    
-class AttendanceList(models.Model):
-    from schools.lectors.models import Lector
-    from schools.buildings.models import Classroom
-    classroom = models.ForeignKey(Classroom)
-    lesson = models.OneToOneField('Lesson')
-    lector = models.ForeignKey(Lector)
-    
-    lector_price = models.DecimalField(max_digits=10, decimal_places=2)
-    start = models.DateTimeField()
-    end = models.DateTimeField()
-    
-    content = models.TextField(null=True, blank=True)
-    
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
-    
         
-    def new_course_members(self):
-        course_members = CourseMember.objects.exclude(lessonattendee=self)
-        return [LessonAttendee(attendance_list=self, course_member=a, present=False) for a in course_members]
-           
+#class AttendanceList(models.Model):
+#    from schools.lectors.models import Lector
+#    from schools.buildings.models import Classroom
+#    classroom = models.ForeignKey(Classroom)
+#    lesson = models.OneToOneField('Lesson')
+#    lector = models.ForeignKey(Lector)
+#    
+#    lector_price = models.DecimalField(max_digits=10, decimal_places=2)
+#    start = models.DateTimeField()
+#    end = models.DateTimeField()
+#    
+#    content = models.TextField(null=True, blank=True)
+#    
+#    created = models.DateTimeField(auto_now_add=True)
+#    updated = models.DateTimeField(auto_now=True)
+#    
+#        
+#    def new_course_members(self):
+#        course_members = CourseMember.objects.exclude(lessonattendee=self)
+#        return [LessonAttendee(attendance_list=self, course_member=a, present=False) for a in course_members]
+#           
     
     
 class LessonAttendee(models.Model):
-    attendance_list = models.ForeignKey('AttendanceList')
+    lesson = models.ForeignKey('Lesson')
     course_member = models.ForeignKey('CourseMember')
     
     present = models.BooleanField(default=True)

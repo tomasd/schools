@@ -1,0 +1,6 @@
+{% for field in form %}
+	<tr class="{% cycle '' 'bg' %}">
+		<td class="first"><b>{{ field.label_tag }}</b>:</td> 
+		<td class="last">{{ field }}{% if field.errors %}<div class="error">{{ field.errors|join:", " }}</div>{% endif %}</td>
+	</tr>
+{% endfor %}

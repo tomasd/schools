@@ -1,13 +1,14 @@
 {% extends "base.html" %}
+{% block body_class %}{{ block.super }} courses{% endblock %}
+
 {% block left_content %}
-	<h3>Header</h3>
+	{% if course.pk %}
+	<h3>Kurz {{ course }}</h3>
 	<ul class="nav">
 		<li><a href="{{ course.get_absolute_url }}">Úprava kurzu</a></li>
 		<li><a href="{{ course.get_coursemembers_url }}">Účastníci kurzu</a></li>
-		<li><a href="#">Lekcie</a></li>
-		<li><a href="{{ course.get_expensegroups_url }}">Nákladové skupiny</a></li>
-		<li class="last"><a href="#">Dollar Lorem Ipsum</a></li>
+		<li><a href="{{ course.get_lessons_url }}">Lekcie</a></li>
+		<li class="last"><a href="{{ course.get_expensegroups_url }}">Nákladové skupiny</a></li>
 	</ul>
-	<a href="#" class="link">Link here</a>
-	<a href="#" class="link">Link here</a>
+	{% endif %}
 {% endblock %}

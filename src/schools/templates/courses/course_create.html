@@ -1,1 +1,10 @@
-{% extends "form.html" %}
+{% extends "courses/base.html" %}
+{% load i18n %}
+
+{% block content %}
+	<div class="top-bar">
+		<h1>{% if object.pk %}{% trans "Upraviť kurz" %}  {{ object }}{% else %}{% trans "Vytvoriť kurz" %}{% endif %}</h1>
+		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
+	</div><br />
+	{% include "form.html" %}
+{% endblock %}

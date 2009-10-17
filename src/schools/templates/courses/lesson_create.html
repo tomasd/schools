@@ -3,8 +3,9 @@
 
 {% block content %}
 	<div class="top-bar">
-		<h1>{% if object.pk %}{% trans "Upraviť účastníka" %}  {{ object }}{% else %}{% trans "Vytvoriť účastníka kurzu" %}{% endif %}</h1>
+		<h1>{% trans "Vytvoriť lekciu" %}</h1>
 		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
 	</div><br />
+	
 	{% include "form.html" %}
 {% endblock %}

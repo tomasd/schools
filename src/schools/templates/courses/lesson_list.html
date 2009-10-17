@@ -1,0 +1,42 @@
+{% extends "courses/base.html" %}
+{% load i18n listtable %}
+
+{% block content %}
+	<div class="top-bar">
+		<a href="{% url courses_lesson_create course.pk %}" class="button">{% trans "Pridať" %}</a>
+		<h1>{% trans "Zoznam lekcií" %}</h1>
+		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
+	</div><br />
+	<div class="select-bar">
+	TODO: Doplnit filter
+	   <label> <input type="text" name="textfield" /> </label>
+	   <label> <input type="submit" name="Submit" value="Search" />
+	</label>
+	</div>
+	
+	<div class="table">
+		<img src="img/bg-th-left.gif" width="8" height="7" alt="" class="left" />
+		<img src="img/bg-th-right.gif" width="7" height="7" alt="" class="right" />
+		<table class="listing" cellpadding="0" cellspacing="0">
+			<tr>
+				<th class="first">{% trans "Lekcia" %}</th>
+				<th class="last">{% trans "Akcie" %}</th>
+			</tr>
+			{% for object in object_list %}
+			<tr class="{% cycle 'bg' '' %}">
+				<td class="first style1"><a href="{{ object.get_absolute_url }}">{{ object }}</a></td>
+				<td  class="last">
+					<a href="{{ object.get_absolute_url }}" title="{% trans "Upraviť" %}"><img src="{{ MEDIA_URL }}img/edit-icon.gif" width="16" height="16" alt="" /></a>
+					<a href="{{ object.get_attendance_url }}" title="{% trans "Prezenčka" %}"><img src="{{ MEDIA_URL }}img/login-icon.gif" width="16" height="16" alt="login" /></a>
+				</td>
+			</tr>
+			{% endfor %}
+		</table>
+		<div class="select">
+			<strong>Other Pages: </strong>
+			<select>
+				<option>1</option>
+			</select>
+	  	</div>
+	</div>
+{% endblock %}

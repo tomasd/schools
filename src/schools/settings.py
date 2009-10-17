@@ -85,6 +85,8 @@ INSTALLED_APPS = (
     'schools.courses',
     'schools.lectors',
     'schools.students',
+    'generic_views',
+    'schools.listtable',
 )
 
 from local_settings import *

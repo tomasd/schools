@@ -1,1 +1,15 @@
-{% extends "list.html" %}
+{% extends "companies/base.html" %}
+{% load i18n listtable%}
+{% block content %}
+	<div class="top-bar">
+		<a href="{% url companies_company_create %}" class="button">{% trans "Pridať" %}</a>
+		<h1>{% trans "Zoznam firiem" %}</h1>
+		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
+	</div><br />
+	<div class="select-bar">
+		<label> <input type="text" name="textfield" /> </label>
+		<label> <input type="submit" name="Submit" value="Search" /> </label>
+	</div>
+	
+	{% listtable object_list _("Firma") %}
+{% endblock %}

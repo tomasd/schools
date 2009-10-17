@@ -1,12 +1,11 @@
 # Create your views here.
-from django.shortcuts import render_to_response, get_object_or_404, redirect
-from django.template.context import RequestContext
-from django.views.generic.create_update import update_object, create_object
+from django.shortcuts import get_object_or_404
 from django.views.generic.list_detail import object_list
-from schools.courses.forms import CourseForm, CourseMemberForm, ExpenseGroupForm
-from schools.courses.models import Course, CourseMember, ExpenseGroup,\
-    ExpenseGroupPrice
-from django.forms.models import inlineformset_factory
+from generic_views.views.create_update import update_object, create_object
+from schools.courses.forms import CourseMemberForm, ExpenseGroupForm, \
+     LessonPlanForm, LessonRealizedForm
+from schools.courses.models import Course, CourseMember, ExpenseGroup, \
+    ExpenseGroupPrice, Lesson, LessonAttendee
 
 def course_update(request, object_id):
     course = get_object_or_404(Course, pk=object_id)
@@ -18,16 +17,7 @@ def coursemember_list(request, course_id):
 
 def coursemember_create(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
-    if request.method == 'POST':
-        form = CourseMemberForm(data=request.POST)
-        if form.is_valid():
-            return redirect(form.save())
-    else:
-        form = CourseMemberForm(initial={'course':course.pk})
-            
-    context = {'form':form,
-               'course':course}
-    return render_to_response('courses/coursemember_create.html', RequestContext(request, context))
+    return create_object(request, model=CourseMember, form_class=CourseMemberForm, template_name='courses/coursemember_create.html', extra_context={'course':course}, initial={'course':course.pk})
 
 def coursemember_update(request, course_id, object_id):
     course = get_object_or_404(Course, pk=course_id)
@@ -36,37 +26,31 @@ def coursemember_update(request, course_id, object_id):
 
 def expensegroup_create(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
-    
-    if request.method == 'POST':
-        form = ExpenseGroupForm(data=request.POST)
-        if form.is_valid():
-            return redirect(form.save())
-    else:
-        form= ExpenseGroupForm(initial={'course':course.pk})
-    
-    context = {'form':form,
-               'course':course}
-    return render_to_response('courses/expensegroup_create.html', RequestContext(request, context))
+    return create_object(request, model=ExpenseGroup, form_class=ExpenseGroupForm, template_name='courses/expensegroup_create.html', extra_context={'course':course}, initial={'course':course.pk})
+
+def expensegroup_update(request, course_id, object_id):
+    course = get_object_or_404(Course, pk=course_id)
+    inlines = [{'model':ExpenseGroupPrice, 'extra':1}]
+    return update_object(request, model=ExpenseGroup, object_id=object_id, extra_context={'course':course,}, inlines=inlines)
 
 def expensegroup_list(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
     return object_list(request, queryset=ExpenseGroup.objects.filter(course=course), extra_context={'course':course})
 
-def expensegroup_update(request, course_id, object_id):
+
+def lesson_create(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
-    expense_group = get_object_or_404(course.expensegroup_set, pk=object_id)
-    ExpenseGroupPriceFormset = inlineformset_factory(ExpenseGroup, ExpenseGroupPrice, extra=1)
+    return create_object(request, model=Lesson, form_class=LessonPlanForm, template_name='courses/lesson_create.html', extra_context={'course':course}, initial={'course':course.pk})
     
-    if request.method == 'POST':
-        form = ExpenseGroupForm(data=request.POST, instance=expense_group)
-        expensegroupprice_formset = ExpenseGroupPriceFormset(data=request.POST, prefix='price', instance=expense_group)
-        if form.is_valid() and expensegroupprice_formset.is_valid():
-            expensegroupprice_formset.save()
-            return redirect(form.save())
-    else:
-        form = ExpenseGroupForm(initial={'course':course.pk}, instance=expense_group)
-        expensegroupprice_formset = ExpenseGroupPriceFormset(prefix='price', instance=expense_group)
-    context = {'expensegroup_form':form,
-               'course':course,
-               'expensegroupprice_formset':expensegroupprice_formset}
-    return render_to_response('courses/expensegroup_form.html', RequestContext(request, context))
+def lesson_update(request, course_id, object_id):
+    course = get_object_or_404(Course, pk=course_id)
+    return update_object(request, model=Lesson, form_class=LessonPlanForm, object_id=object_id, extra_context={'course':course,})
+
+def lesson_attendance(request, course_id, object_id):
+    course = get_object_or_404(Course, pk=course_id)
+    inlines = [{'model':LessonAttendee, 'extra':1}]
+    return update_object(request, model=Lesson, form_class=LessonRealizedForm, template_name='courses/lesson_attendance.html', object_id=object_id, extra_context={'course':course,}, inlines=inlines)
+
+def lesson_list(request, course_id):
+    course = get_object_or_404(Course, pk=course_id)    
+    return object_list(request, queryset=Lesson.objects.filter(course=course), extra_context={'course':course,})

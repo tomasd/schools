@@ -84,17 +84,37 @@ a.logo {
 	background:url(../img/tab-right.gif) no-repeat right top;
 	padding:7px 10px 0 10px;
 	}
-#top-navigation li.active {
+#top-navigation li.active,
+.homepage #top-navigation li.homepage,
+.courses #top-navigation li.courses,
+.companies #top-navigation li.companies,
+.lectors #top-navigation li.lectors,
+.students #top-navigation li.students,
+.buildings #top-navigation li.buildings
+ {
 	padding:0;
 	height:34px;
 	background:url(../img/tab-active.gif) repeat-x top;
 	margin-right:2px;
 	}
-#top-navigation li.active span {
+#top-navigation li.active span,
+.homepage #top-navigation li.homepage span,
+.courses #top-navigation li.courses span,
+.companies #top-navigation li.companies span,
+.lectors #top-navigation li.lectors span,
+.students #top-navigation li.students span,
+.buildings #top-navigation li.buildings span
+ {
 	background:url(../img/tab-active-left.gif) no-repeat left top;
 	height:34px;
 	}
-#top-navigation li.active span span {
+#top-navigation li.active span span,
+.homepage #top-navigation li.homepage span span,
+.courses #top-navigation li.courses span span,
+.companies #top-navigation li.companies span span,
+.lectors #top-navigation li.lectors span span,
+.students #top-navigation li.students span span,
+.buildings #top-navigation li.buildings span span {
 	background:url(../img/tab-active-right.gif) no-repeat right top;
 	height:23px;
 	padding:11px 10px 0 10px;
@@ -187,6 +207,7 @@ ul.nav li.last {background:none;}
 	float:left;
 	width:603px;
 	border-left:2px solid #f70;
+	border-bottom:2px solid #FF7700;
 	padding:0 0 0 9px;
 	margin:0 0 4px 0;
 	}
@@ -213,7 +234,7 @@ ul.nav li.last {background:none;}
 /* bar with select */
 .select-bar {
 	clear:both;
-	border-top:2px solid #f70;
+/*	border-top:2px solid #f70;*/
 	border-bottom:2px solid #f70;
 	padding:5px 0 3px 0;
 	margin:0 0 17px 0;
@@ -332,3 +353,7 @@ div.table .select select {
 	padding:30px 0 15px 0;
 	}
 .buttons input {margin:0 0 6px 0;}
+
+.error {
+	color: red;
+}

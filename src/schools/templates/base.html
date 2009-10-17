@@ -6,34 +6,23 @@
 	<title>Insert title here</title>
 	<link rel="StyleSheet" href="{{ MEDIA_URL }}css/all.css" type="text/css" media="screen"/>
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
 <div id="main">
 	<div id="header">
 		<a href="index.html" class="logo"><img src="img/logo.gif" width="101" height="29" alt="" /></a>
 		<ul id="top-navigation">
-			<li><span><span><a href="">Homepage</a></span></span></li>
-			<li><span><span><a href="{% url courses_course_list %}">Kurzy</a></span></span></li>
-			<li><span><span><a href="{% url companies_company_list %}">Firmy</a></span></span></li>
-			<li><span><span><a href="{% url lectors_lector_list %}">Lektori</a></span></span></li>
-			<li><span><span><a href="{% url students_student_list %}">Studenti</a></span></span></li>
-			<li><span><span><a href="#">Design</a></span></span></li>
-			<li><span><span><a href="#">Contents</a></span></span></li>
+			<li class="homepage"><span><span><a href="">Homepage</a></span></span></li>
+			<li class="courses"><span><span><a href="{% url courses_course_list %}">Kurzy</a></span></span></li>
+			<li class="companies"><span><span><a href="{% url companies_company_list %}">Firmy</a></span></span></li>
+			<li class="lectors"><span><span><a href="{% url lectors_lector_list %}">Lektori</a></span></span></li>
+			<li class="students"><span><span><a href="{% url students_student_list %}">Študenti</a></span></span></li>
+			<li class="buildings"><span><span><a href="{% url buildings_building_list %}">Budovy</a></span></span></li>
+			<li class="prehlady"><span><span><a href="#">Prehľady</a></span></span></li>
 		</ul>
 	</div>
 	<div id="middle">
 		<div id="left-column">
 			{% block left_content %}
-			<h3>Header</h3>
-			<ul class="nav">
-				<li><a href="#">Lorem Ipsum dollar</a></li>
-				<li><a href="#">Dollar</a></li>
-				<li><a href="#">Lorem dollar</a></li>
-				<li><a href="#">Ipsum dollar</a></li>
-				<li><a href="#">Lorem Ipsum dollar</a></li>
-				<li class="last"><a href="#">Dollar Lorem Ipsum</a></li>
-			</ul>
-			<a href="#" class="link">Link here</a>
-			<a href="#" class="link">Link here</a>
 			{% endblock %}
 		</div>
 		<div id="center-column">
@@ -41,9 +30,14 @@
 			{% endblock %}
 		</div>
 		<div id="right-column">
-			<strong class="h">INFO</strong>
-			<div class="box">Detect and eliminate viruses and Trojan horses, even new and unknown ones. Detect and eliminate viruses and Trojan horses, even new and </div>
+		    {% for message in messages %}
+			    <strong class="h">INFO</strong>
+				<div class="box">{{ message }}</div>
+		    {% endfor %}
 	  </div>
+	  {% if messages %}
+{% endif %}
+	  
 	</div>
 	<div id="footer"></div>
 </div>

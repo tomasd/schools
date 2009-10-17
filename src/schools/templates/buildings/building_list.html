@@ -1,1 +1,16 @@
-{% extends "list.html" %}
+{% extends "buildings/base.html" %}
+{% load i18n listtable %}
+{% block content %}
+	<div class="top-bar">
+		<a href="{% url buildings_building_create %}" class="button">{% trans "Pridať" %}</a>
+		<h1>{% trans "Zoznam budov" %}</h1>
+		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
+	</div><br />
+	<div class="select-bar">
+	TODO: Doplnit filter
+	   <label> <input type="text" name="textfield" /> </label>
+	   <label> <input type="submit" name="Submit" value="Search" />
+	</label>
+	</div>
+	{% listtable object_list _("Budova") %}
+{% endblock %}
