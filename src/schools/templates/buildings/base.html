@@ -1,5 +1,16 @@
 {% extends "base.html" %}
+{% load i18n %}
+
 {% block body_class %}{{ block.super }} buildings{% endblock %}
+
+{% block left_content %}
+	{% if building.pk %}
+	<h3>{% trans "Budova" %} {{ building }}</h3>
+	<ul class="nav">
+		<li class="last"><a href="{{ building.get_absolute_url }}">Úprava budovy</a></li>
+	</ul>
+	{% endif %}
+{% endblock %}
 
 {% block content %}
 	{% include "form.html" %}
