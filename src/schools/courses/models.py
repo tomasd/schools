@@ -136,7 +136,7 @@ class LessonAttendee(models.Model):
     lesson = models.ForeignKey('Lesson')
     course_member = models.ForeignKey('CourseMember')
     
-    present = models.BooleanField(default=True)
+    present = models.BooleanField(default=False)
     course_member_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     
     created = models.DateTimeField(auto_now_add=True)
