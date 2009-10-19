@@ -1,0 +1,3 @@
+{% for field in form %}
+	<b>{{ field.label_tag }}</b>: {{ field }}{% if field.errors %}<span class="error">* {{ field.errors|join:", " }}</span>{% endif %}
+{% endfor %}

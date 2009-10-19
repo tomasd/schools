@@ -7,9 +7,10 @@
 		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
 	</div><br />
 	<div class="select-bar">
-	TODO: Doplnit filter
-	   <label> <input type="text" name="textfield" /> </label>
-	   <label> <input type="submit" name="Submit" value="Search" />
+		<form>
+			{% include "form_inline.html" %}
+		   <label> <input type="submit" name="Submit" value="Search" />
+		</form>
 	</label>
 	</div>
 	{% listtable object_list _("Budova") %}
