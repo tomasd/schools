@@ -4,11 +4,10 @@ from django.views.generic.list_detail import object_list as generic_object_list
 from schools.search.forms import SearchForm
 import operator
 
-def object_list(request, search_fields, *args, **kwargs):
-    assert search_fields
+def object_list(request, search_fields=[], *args, **kwargs):
     queryset = kwargs['queryset']
     
-    if request.GET:
+    if request.GET and search_fields:
         form = SearchForm(request.GET)
         if form.is_valid():
             q = form.cleaned_data['q']

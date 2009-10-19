@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.db.models import permalink
+from django.db.models.query_utils import Q
+import django.dispatch
 
 # Create your models here.
 class Course(models.Model):
@@ -47,7 +49,7 @@ class CourseMember(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     def __unicode__(self):
-        return unicode(self.student)
+        return unicode(self.student) + str(self.course.pk)
     
     def create_individual_expense_group(self, price):
         expense_group = ExpenseGroup(course=self.course, name=unicode(self.student))
@@ -59,7 +61,17 @@ class CourseMember(models.Model):
     @permalink
     def get_absolute_url(self):
         return ('courses_coursemember_update', None, {'course_id':str(self.course.pk), 'object_id':str(self.pk)})
-            
+
+
+lesson_assign_attendees = django.dispatch.Signal(providing_args=["lesson"])
+def create_lesson_attendees(sender, *args, **kwargs):
+    lesson = kwargs['lesson']
+    course_members = lesson.course.coursemember_set.filter(Q(end__isnull=True) | Q(end__gte=lesson.start), start__lte=lesson.end)
+    lesson_members = [a.course_member for a in lesson.lessonattendee_set.all()]
+    course_members = filter(lambda member:member not in lesson_members, course_members)
+    lesson.lessonattendee_set = [LessonAttendee(course_member=a) for a in course_members] 
+    
+lesson_assign_attendees.connect(create_lesson_attendees)      
 class Lesson(models.Model):
     from schools.buildings.models import Classroom
     from schools.lectors.models import Lector
@@ -125,7 +137,7 @@ class LessonAttendee(models.Model):
     course_member = models.ForeignKey('CourseMember')
     
     present = models.BooleanField(default=True)
-    course_member_price = models.DecimalField(max_digits=10, decimal_places=2)
+    course_member_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
