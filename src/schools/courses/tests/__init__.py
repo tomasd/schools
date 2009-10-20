@@ -4,7 +4,7 @@ from schools.courses.models import Lesson
 
 
 class LectorPriceTest(TestCase):
-    fixtures = ['lectorpricetest']
+    fixtures = ['pricetest']
     
     def test_price_from_contract(self):
         lesson = Lesson.objects.get(pk=1)
