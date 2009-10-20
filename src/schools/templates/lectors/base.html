@@ -6,7 +6,8 @@
 	{% if lector.pk %}
 	<h3>{% trans "Lektor" %} {{ lector }}</h3>
 	<ul class="nav">
-		<li class="last"><a href="{{ lector.get_absolute_url }}">{% trans "Úprava lektora" %}</a></li>
+		<li><a href="{{ lector.get_absolute_url }}">{% trans "Úprava lektora" %}</a></li>
+		<li class="last"><a href="{{ lector.get_contracts_url }}">{% trans "Zmluvy" %}</a></li>
 	</ul>
 	{% endif %}
 {% endblock %}

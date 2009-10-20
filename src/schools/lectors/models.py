@@ -30,6 +30,10 @@ class Lector(models.Model):
     def get_absolute_url(self):
         return ('lectors_lector_update', None, {'object_id':str(self.pk)})
     
+    @permalink
+    def get_contracts_url(self):
+        return ('lectors_contract_list', None, {'lector_id':str(self.pk)})
+    
 class Contract(models.Model):
     contract_number = models.CharField(max_length=30, unique=True)
     lector = models.ForeignKey('Lector')

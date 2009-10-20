@@ -58,11 +58,11 @@ class LessonRealizedForm(forms.ModelForm):
     realized = forms.BooleanField(required=True)
     class Meta:
         model = Lesson
-        fields = ('realized', 'real_classroom', 'real_lector', 'real_lector_price', 'real_start', 'real_end', 'real_content', 'course')
+        fields = ('realized', 'real_classroom', 'real_lector', 'real_start', 'real_end', 'real_content', 'course')
 
 class LessonAttendeeForm(forms.ModelForm):
     class Meta:
         model = LessonAttendee
-        
+        exclude = ('course_member_price', )
     def limit_to_course(self, course):
         self.fields['course_member'].queryset = self.fields['course_member'].queryset.filter(course=course)

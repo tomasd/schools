@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models import permalink, signals
 from django.db.models.query_utils import Q
 import django.dispatch
+from collections import defaultdict
 
 # Create your models here.
 class Course(models.Model):
@@ -115,6 +116,9 @@ class Lesson(models.Model):
         self.real_classroom = self.classroom
         self.real_lector = self.course.lector
         return self
+
+def calculate_price(hour_rate, delta):    
+    return hour_rate * delta_to_minutes(delta) / 60
     
 def delta_to_minutes(delta):
     return delta.days * 24*60 + delta.seconds // 60
@@ -125,8 +129,25 @@ def lector_price(sender, *args, **kwargs):
         contract = lesson.real_lector.contract_set.get(start__lte=lesson.real_end, end__gte=lesson.real_start)
         hour_rates = [a for a in contract.hourrate_set.all() if a.course == lesson.course]
         hour_rate = hour_rates[-1].hour_rate if hour_rates else contract.hour_rate
-        lesson.real_lector_price = hour_rate * delta_to_minutes(lesson.real_end - lesson.real_start) / 60
+        lesson.real_lector_price = calculate_price(hour_rate, lesson.real_end - lesson.real_start)
 signals.pre_save.connect(lector_price, sender=Lesson)        
+
+def course_member_price(sender, *args, **kwargs):
+    lesson = kwargs['instance']
+    if lesson.realized:
+        expense_groups = defaultdict(list)
+        for attendee in lesson.lessonattendee_set.all():
+            expense_groups[attendee.course_member.expense_group].append(attendee)
+        
+        for expense_group, attendees in expense_groups.items():
+            expense_group_prices = expense_group.expensegroupprice_set.filter(Q(end__isnull=True)|Q(end__gte=lesson.start), start__lte=lesson.end)
+            hour_rate = list(expense_group_prices)[-1]
+            price = calculate_price(hour_rate.price, lesson.real_end - lesson.real_start)
+            for attendee in attendees:
+                attendee.course_member_price = price / len(attendees)
+                attendee.save()
+                
+signals.post_save.connect(course_member_price, sender=Lesson)
 
 #class AttendanceList(models.Model):
 #    from schools.lectors.models import Lector
