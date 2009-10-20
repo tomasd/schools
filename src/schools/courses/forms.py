@@ -1,12 +1,39 @@
 from django import forms
-from schools.courses.models import Course, CourseMember, ExpenseGroup, Lesson,\
-    LessonAttendee
+from django.forms.models import save_instance
+from django.forms.util import ValidationError
 from django.forms.widgets import HiddenInput
+from django.utils.translation import ugettext
+from schools.courses.models import Course, CourseMember, ExpenseGroup, Lesson, \
+    LessonAttendee
+
 
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
+    
+class CourseMemberCreateForm(forms.ModelForm):
+    course = forms.ModelChoiceField(queryset=Course.objects.all(), widget=HiddenInput)
+    expense_group = forms.ModelChoiceField(queryset=ExpenseGroup.objects.all(), required=False)
+    expense_group_name = forms.CharField(max_length=100, required=False)
+    expense_group_price = forms.DecimalField(min_value=0, required=False)
+    class Meta:
+        model = CourseMember
         
+    def limit_to_course(self, course):
+        self.fields['expense_group'].queryset = self.fields['expense_group'].queryset.filter(course=course)
+        
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        if not (cleaned_data['expense_group'] or (cleaned_data['expense_group_name'] and cleaned_data['expense_group_price'])):
+            raise ValidationError(ugettext(u'Choose expense group or fill in expense group name and price.'))
+        
+        if not cleaned_data['expense_group']:
+            expense_group = ExpenseGroup(course=self.cleaned_data['course'], name=self.cleaned_data['expense_group_name'])
+            expense_group.save()
+            expense_group.expensegroupprice_set.create(start=self.cleaned_data['start'], price=self.cleaned_data['expense_group_price'])
+            cleaned_data['expense_group'] = expense_group
+        return cleaned_data
+    
 class CourseMemberForm(forms.ModelForm):
     course = forms.ModelChoiceField(queryset=Course.objects.all(), widget=HiddenInput)
     class Meta:

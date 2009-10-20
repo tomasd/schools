@@ -355,5 +355,5 @@ div.table .select select {
 .buttons input {margin:0 0 6px 0;}
 
 .error {
-	color: red;
+	color: red !important;
 }

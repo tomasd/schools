@@ -1,4 +1,12 @@
-{% for field in form %}
+{% if form.non_field_errors %}
+<tr>
+	<td class="first last error" colspan="2">* {{ form.non_field_errors|join:", " }}</td>
+</tr>
+{% endif %}
+{% for field in form.hidden_fields %}
+	{{ field }}
+{% endfor %}
+{% for field in form.visible_fields %}
 	<tr class="{% cycle '' 'bg' %}">
 		<td class="first"><b>{{ field.label_tag }}</b>:</td> 
 		<td class="last">{{ field }}{% if field.errors %}<div class="error">{{ field.errors|join:", " }}</div>{% endif %}</td>

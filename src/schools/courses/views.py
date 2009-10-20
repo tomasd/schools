@@ -2,7 +2,8 @@
 from django.shortcuts import get_object_or_404
 from generic_views.views.create_update import update_object, create_object
 from schools.courses.forms import CourseMemberForm, ExpenseGroupForm, \
-    LessonPlanForm, LessonRealizedForm, LessonAttendeeForm
+    LessonPlanForm, LessonRealizedForm, LessonAttendeeForm,\
+    CourseMemberCreateForm
 from schools.courses.models import Course, CourseMember, ExpenseGroup, \
     ExpenseGroupPrice, Lesson, LessonAttendee, lesson_assign_attendees
 from schools.genericform.form import PreProcessForm
@@ -18,13 +19,13 @@ def coursemember_list(request, course_id):
 
 def coursemember_create(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
-    form_class = PreProcessForm(CourseMemberForm, lambda form:form.limit_to_course(course))
+    form_class = PreProcessForm(CourseMemberCreateForm, lambda form:form.limit_to_course(course))
     return create_object(request, model=CourseMember, form_class=form_class, template_name='courses/coursemember_create.html', extra_context={'course':course}, initial={'course':course.pk})
 
 def coursemember_update(request, course_id, object_id):
     course = get_object_or_404(Course, pk=course_id)
     get_object_or_404(course.coursemember_set, pk=object_id)
-    return update_object(request, model=CourseMember, object_id=object_id, extra_context={'course':course})
+    return update_object(request, model=CourseMember, form_class=CourseMemberForm, object_id=object_id, extra_context={'course':course})
 
 def expensegroup_create(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
