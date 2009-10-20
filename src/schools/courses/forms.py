@@ -55,6 +55,7 @@ class LessonPlanForm(forms.ModelForm):
         
 class LessonRealizedForm(forms.ModelForm):
     course = forms.ModelChoiceField(queryset=Course.objects.all(), widget=HiddenInput)
+    realized = forms.BooleanField(required=True)
     class Meta:
         model = Lesson
         fields = ('realized', 'real_classroom', 'real_lector', 'real_lector_price', 'real_start', 'real_end', 'real_content', 'course')
