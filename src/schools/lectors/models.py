@@ -46,6 +46,9 @@ class Contract(models.Model):
     def __unicode__(self):
         return self.contract_number
         
+    @permalink
+    def get_absolute_url(self):
+        return ('lectors_contract_update', None, {'lector_id':str(self.lector.pk), 'object_id':str(self.pk)})
         
 class HourRate(models.Model):
     from schools.courses.models import Course

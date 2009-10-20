@@ -1,0 +1,32 @@
+- fields: {created: !!timestamp '2009-10-17 09:12:43.110542', email: '', fax: '',
+    first_name: lector, last_name: lector, mobile: '', phone: '', postal: '', street: '',
+    title: '', town: '', updated: !!timestamp '2009-10-17 09:12:43.110600', www: ''}
+  model: lectors.lector
+  pk: 1
+- fields: {contract_number: 2008/01, end: 2009-12-01, hour_rate: '5', lector: 1, start: 2009-01-01}
+  model: lectors.contract
+  pk: 1
+- fields: {contract: 1, course: 2, hour_rate: '1'}
+  model: lectors.hourrate
+  pk: 1
+- fields: {lector: 1, name: dasf, note: '', responsible: 1}
+  model: courses.course
+  pk: 1
+- fields: {lector: 1, name: dasf, note: '', responsible: 1}
+  model: courses.course
+  pk: 2
+- fields: {classroom: 1, course: 1, end: !!timestamp '2009-01-01 11:00:00', start: !!timestamp '2009-01-01 10:00:00'}
+  model: courses.lesson
+  pk: 1
+- fields: {classroom: 1, course: 2, end: !!timestamp '2009-01-01 12:00:00', start: !!timestamp '2009-01-01 11:00:00'}
+  model: courses.lesson
+  pk: 2
+- fields: {building: 1, created: !!timestamp '2009-10-17 13:15:06.818668', infinite_room: false,
+    name: asdf, updated: !!timestamp '2009-10-17 13:15:06.818717'}
+  model: buildings.classroom
+  pk: 1
+- fields: {created: !!timestamp '2009-10-17 08:45:00.389857', name: budova 2, postal: fad,
+    street: dasf, town: dasfd, updated: !!timestamp '2009-10-19 19:26:11.192951'}
+  model: buildings.building
+  pk: 1
+  

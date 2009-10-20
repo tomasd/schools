@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from django.db.models import permalink
+from django.db.models import permalink, signals
 from django.db.models.query_utils import Q
 import django.dispatch
 
@@ -108,7 +108,26 @@ class Lesson(models.Model):
     def get_attendance_url(self):
         return ('courses_lesson_attendance', None, {'course_id':str(self.course.pk), 'object_id':str(self.pk)})
         
-        
+    def fill_attendance(self):
+        self.realized = True
+        self.real_start = self.start
+        self.real_end = self.end
+        self.real_classroom = self.classroom
+        self.real_lector = self.course.lector
+        return self
+    
+def delta_to_minutes(delta):
+    return delta.days * 24*60 + delta.seconds // 60
+    
+def lector_price(sender, *args, **kwargs):
+    lesson = kwargs['instance']
+    if lesson.realized:
+        contract = lesson.real_lector.contract_set.get(start__lte=lesson.real_end, end__gte=lesson.real_start)
+        hour_rates = [a for a in contract.hourrate_set.all() if a.course == lesson.course]
+        hour_rate = hour_rates[-1].hour_rate if hour_rates else contract.hour_rate
+        lesson.real_lector_price = hour_rate * delta_to_minutes(lesson.real_end - lesson.real_start) / 60
+signals.pre_save.connect(lector_price, sender=Lesson)        
+
 #class AttendanceList(models.Model):
 #    from schools.lectors.models import Lector
 #    from schools.buildings.models import Classroom
