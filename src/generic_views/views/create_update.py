@@ -85,7 +85,7 @@ def update_object(request, model=None, object_id=None, slug=None,
         slug_field='slug', template_name=None, template_loader=loader,
         extra_context=None, post_save_redirect=None, login_required=False,
         context_processors=None, template_object_name='object',
-        form_class=None, inlines=None):
+        form_class=None, inlines=None, obj=None):
     """
     Generic object-update function with inlines.
 
@@ -108,7 +108,8 @@ def update_object(request, model=None, object_id=None, slug=None,
     formsets = []
 
     model, form_class = get_model_and_form_class(model, form_class)
-    obj = lookup_object(model, object_id, slug, slug_field)
+    if obj is None:
+        obj = lookup_object(model, object_id, slug, slug_field)
 
     for inline in inlines:
         formset_classes.append(inlineformset_factory(model, **inline))

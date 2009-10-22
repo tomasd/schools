@@ -21,6 +21,7 @@ urlpatterns = patterns('',
     url(r'^lectors/', include('schools.lectors.urls')),
     url(r'^students/', include('schools.students.urls')),
     url(r'^courses/', include('schools.courses.urls')),
+    url(r'^reports/', include('schools.reports.urls')),
     url(r'^$', direct_to_template, {'template':'base.html'}),
 )
 

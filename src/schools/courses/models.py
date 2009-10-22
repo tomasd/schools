@@ -36,7 +36,7 @@ class Course(models.Model):
     @permalink
     def get_lessons_url(self):
         return ('courses_lesson_list', None, {'course_id':str(self.pk)})
-    
+
 class CourseMember(models.Model):
     from schools.students.models import Student
     course = models.ForeignKey('Course')
@@ -87,6 +87,7 @@ class Lesson(models.Model):
     real_lector = models.ForeignKey(Lector, null=True)
     real_lector_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     real_start = models.DateTimeField(null=True)
+    real_minutes_length = models.IntegerField(null=True, editable=False)
     real_end = models.DateTimeField(null=True)
     real_content = models.TextField(null=True, blank=True)
     
@@ -97,9 +98,12 @@ class Lesson(models.Model):
         start_format = '%d.%m.%Y %H:%M'
         end_format = '%H:%M' if self.end.date() == self.start.date() else start_format
         
+        start, end = self.start, self.end
+        if self.realized:
+            start, end = self.real_start, self.real_end
         return '%s: %s - %s' % (self.classroom,
-                                format(self.start, start_format),
-                                format(self.end, end_format))
+                                format(start, start_format),
+                                format(end, end_format))
     
     @permalink
     def get_absolute_url(self):
@@ -132,6 +136,15 @@ def lector_price(sender, *args, **kwargs):
         lesson.real_lector_price = calculate_price(hour_rate, lesson.real_end - lesson.real_start)
 signals.pre_save.connect(lector_price, sender=Lesson)        
 
+def lesson_length(sender, *args, **kwargs):
+    '''
+        Set real lesson minutes length.
+    '''
+    lesson = kwargs['instance']
+    if lesson.realized:
+        lesson.real_minutes_length = delta_to_minutes(lesson.real_end - lesson.real_start)
+signals.pre_save.connect(lesson_length, sender=Lesson)
+
 def course_member_price(sender, *args, **kwargs):
     lesson = kwargs['instance']
     if lesson.realized:
@@ -140,7 +153,7 @@ def course_member_price(sender, *args, **kwargs):
             expense_groups[attendee.course_member.expense_group].append(attendee)
         
         for expense_group, attendees in expense_groups.items():
-            expense_group_prices = expense_group.expensegroupprice_set.filter(Q(end__isnull=True)|Q(end__gte=lesson.start), start__lte=lesson.end)
+            expense_group_prices = expense_group.expensegroupprice_set.filter(Q(end__isnull=True)|Q(end__gte=lesson.real_start), start__lte=lesson.real_end)
             hour_rate = list(expense_group_prices)[-1]
             price = calculate_price(hour_rate.price, lesson.real_end - lesson.real_start)
             for attendee in attendees:

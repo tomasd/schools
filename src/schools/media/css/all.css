@@ -90,7 +90,8 @@ a.logo {
 .companies #top-navigation li.companies,
 .lectors #top-navigation li.lectors,
 .students #top-navigation li.students,
-.buildings #top-navigation li.buildings
+.buildings #top-navigation li.buildings,
+.reports #top-navigation li.reports
  {
 	padding:0;
 	height:34px;
@@ -103,7 +104,8 @@ a.logo {
 .companies #top-navigation li.companies span,
 .lectors #top-navigation li.lectors span,
 .students #top-navigation li.students span,
-.buildings #top-navigation li.buildings span
+.buildings #top-navigation li.buildings span,
+.reports #top-navigation li.reports span
  {
 	background:url(../img/tab-active-left.gif) no-repeat left top;
 	height:34px;
@@ -114,7 +116,8 @@ a.logo {
 .companies #top-navigation li.companies span span,
 .lectors #top-navigation li.lectors span span,
 .students #top-navigation li.students span span,
-.buildings #top-navigation li.buildings span span {
+.buildings #top-navigation li.buildings span span,
+.reports #top-navigation li.reports span span {
 	background:url(../img/tab-active-right.gif) no-repeat right top;
 	height:23px;
 	padding:11px 10px 0 10px;

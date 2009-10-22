@@ -1,0 +1,62 @@
+{% extends "reports/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="top-bar">
+	<h1>{% trans "Fakturácia" %}</h1>
+	<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
+</div><br />
+<div class="select-bar">
+	<form>
+		<table>
+		{% include "form_table.html" %}
+		</table>
+	   <input type="submit" name="Submit" value="Search" />
+	</form>
+</div>
+{% if not nolist %}
+<div class="table">
+	<img src="img/bg-th-left.gif" width="8" height="7" alt="" class="left" />
+	<img src="img/bg-th-right.gif" width="7" height="7" alt="" class="right" />
+	<table class="listing" cellpadding="0" cellspacing="0">
+		<tr>
+			<th class="first">{% trans "Meno/kurz" %}</th>
+			<th>{% trans "Počet lekcií" %}</th>
+			<th>{% trans "Človekominúty" %}</th>
+			<th class="last">{% trans "Cena" %}</th>
+		</tr>
+		{% for student in object_list %}
+			<tr class="{% cycle 'bg' '' %}">
+				<td class="first last style2" colspan="4">{{ student }}</td>
+			</tr>
+			{% for course_member in student.invoice_course_members %}
+			<tr class="{% cycle 'bg' '' %}">
+				<td class="first style3">{{ course_member.course }}</td>
+				<td>{{ course_member.invoice_count }}</td>
+				<td>{{ course_member.invoice_length }}</td>
+				<td  class="last">{{ course_member.invoice_price }}&nbsp;€</td>
+			</tr>
+			{% endfor %}
+			<tr class="{% cycle 'bg' '' %} style2">
+				<td class="first style2">{% trans "Medzisúčet" %} </td>
+				<td>{{ student.invoice_count }}</td>
+				<td>{{ student.invoice_length }}</td>
+				<td  class="last">{{ student.invoice_price }}&nbsp;€</td>
+			</tr>
+		{% endfor %}
+		<tr class="style1">
+			<td class="first style1">{% trans "Spolu" %}</td>
+			<td>{{ total_count }}</td>
+			<td>{{ total_length }}</td>
+			<td class="last">{{ total_price }}&nbsp;€</td>
+		</tr>
+	</table>
+	<div class="select">
+		<strong>Other Pages: </strong>
+		<select>
+			<option>1</option>
+		</select>
+  	</div>
+</div>
+{% endif %}
+{% endblock %}

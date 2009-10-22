@@ -1,0 +1,1 @@
+alter table courses_lesson add "real_minutes_length" integer;

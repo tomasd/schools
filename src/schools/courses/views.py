@@ -51,12 +51,13 @@ def lesson_update(request, course_id, object_id):
 def lesson_attendance(request, course_id, object_id):
     course = get_object_or_404(Course, pk=course_id)
     lesson = get_object_or_404(course.lesson_set, pk=object_id)
+    lesson.fill_attendance()
     lesson_assign_attendees.send(sender=lesson_attendance, lesson=lesson)
     attendee_form_class = PreProcessForm(LessonAttendeeForm, lambda form:form.limit_to_course(course))
     inlines = [{'model':LessonAttendee, 'form':attendee_form_class, 'extra':1}]
-    return update_object(request, model=Lesson, form_class=LessonRealizedForm, 
+    return update_object(request, obj=lesson, form_class=LessonRealizedForm, 
                          template_name='courses/lesson_attendance.html', 
-                         object_id=object_id, extra_context={'course':course,}, 
+                         extra_context={'course':course,}, 
                          inlines=inlines,post_save_redirect=lesson.get_attendance_url())
 
 def lesson_list(request, course_id):
