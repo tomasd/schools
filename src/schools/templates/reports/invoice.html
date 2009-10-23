@@ -25,24 +25,31 @@
 			<th>{% trans "Človekominúty" %}</th>
 			<th class="last">{% trans "Cena" %}</th>
 		</tr>
-		{% for student in object_list %}
+		{% for company in object_list %}
 			<tr class="{% cycle 'bg' '' %}">
-				<td class="first last style2" colspan="4">{{ student }}</td>
+				<td class="first last style1">{{ company }}</td>
+				<td class="style1">{{ company.invoice_count }}</td>
+				<td class="style1">{{ company.invoice_length }}</td>
+				<td  class="last style1">{{ company.invoice_price }}&nbsp;€</td>
 			</tr>
-			{% for course_member in student.invoice_course_members %}
-			<tr class="{% cycle 'bg' '' %}">
-				<td class="first style3">{{ course_member.course }}</td>
-				<td>{{ course_member.invoice_count }}</td>
-				<td>{{ course_member.invoice_length }}</td>
-				<td  class="last">{{ course_member.invoice_price }}&nbsp;€</td>
-			</tr>
+			{% if show_students %}
+			{% for student in company.invoice_students %}
+				<tr class="{% cycle 'bg' '' as background %} style2">
+					<td class="first last style2">{{ student }}</td>
+					<td class="style2">{{ student.invoice_count }}</td>
+					<td class="style2">{{ student.invoice_length }}</td>
+					<td  class="last style2">{{ student.invoice_price }}&nbsp;€</td>
+				</tr>
+				{% for course_member in student.invoice_course_members %}
+				<tr class="{% cycle background %} style3">
+					<td class="first style3">{{ course_member.course }}</td>
+					<td class="style3">{{ course_member.invoice_count }}</td>
+					<td class="style3">{{ course_member.invoice_length }}</td>
+					<td  class="last style3">{{ course_member.invoice_price }}&nbsp;€</td>
+				</tr>
+				{% endfor %}
 			{% endfor %}
-			<tr class="{% cycle 'bg' '' %} style2">
-				<td class="first style2">{% trans "Medzisúčet" %} </td>
-				<td>{{ student.invoice_count }}</td>
-				<td>{{ student.invoice_length }}</td>
-				<td  class="last">{{ student.invoice_price }}&nbsp;€</td>
-			</tr>
+			{% endif %}
 		{% endfor %}
 		<tr class="style1">
 			<td class="first style1">{% trans "Spolu" %}</td>

@@ -7,7 +7,8 @@ from schools.companies.models import Company
 class InvoiceForm(forms.Form):
     start = forms.DateField()
     end = forms.DateField()
-    company = forms.ModelChoiceField(queryset=Company.objects.all())
+    companies = forms.ModelMultipleChoiceField(queryset=Company.objects.all(), required=False)
+    show_students = forms.BooleanField(required=False)
     
     def clean(self):
         if 'start' in self.cleaned_data and 'end' in self.cleaned_data:

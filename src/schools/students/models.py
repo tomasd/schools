@@ -3,33 +3,8 @@ from collections import defaultdict
 from django.db import models
 from django.db.models import permalink
 
-class StudentManager(models.Manager):
-    def invoice(self, company, start, end):
-        from schools.courses.models import LessonAttendee, CourseMember
-        lesson_attendees = defaultdict(list)
-        for attendee in LessonAttendee.objects.filter(course_member__student__company=company, lesson__real_end__range=(start, end)).select_related('lesson'):
-            lesson_attendees[attendee.course_member].append(attendee)
-            
-        course_members = defaultdict(list)
-        for course_member in CourseMember.objects.filter(student__company=company, lessonattendee__lesson__real_end__range=(start, end)).distinct():
-            course_member.invoice_attendees = lesson_attendees[course_member]
-            course_member.invoice_price = sum([a.course_member_price for a in lesson_attendees[course_member]])
-            course_member.invoice_length = sum([a.lesson.real_minutes_length for a in lesson_attendees[course_member]])
-            course_member.invoice_count = len(lesson_attendees[course_member])
-            course_members[course_member.student].append(course_member)
-        
-        students = Student.objects.filter(company=company, coursemember__lessonattendee__lesson__real_end__range=(start, end)).distinct()
-        for student in students:
-            student.invoice_course_members = course_members[student]
-            student.invoice_price = sum([a.invoice_price for a in course_members[student]])
-            student.invoice_length = sum([a.invoice_length for a in course_members[student]])
-            student.invoice_count = sum([a.invoice_count for a in course_members[student]])
-        return students
-
-
 # Create your models here.
 class Student(models.Model):
-    objects = StudentManager()
     from schools.companies.models import Company
     last_name = models.CharField(max_length=30)
     first_name = models.CharField(max_length=30)
