@@ -5,6 +5,7 @@
 {% block left_content %}
 	<h3>{% trans "Prehľady" %}</h3>
 	<ul class="nav">
-		<li class="last"><a href="{% url invoice %}">>{% trans "Fakturácia" %}</a></li>
+		<li><a href="{% url invoice %}">>{% trans "Fakturácia" %}</a></li>
+		<li class="last"><a href="{% url lesson-analysis %}">>{% trans "Analýza lekciohodín" %}</a></li>
 	</ul>
 {% endblock %}

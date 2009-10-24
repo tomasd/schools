@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
+from decimal import Decimal
 from django.db import models
 from django.db.models import permalink
 
@@ -43,6 +44,38 @@ class CompanyManager(models.Manager):
             company.invoice_count = sum([a.invoice_count for a in students[company]])
             
         return companies
+
+class Subcount(object):
+    def __init__(self, course):
+        super(Subcount, self).__init__()
+        self.course = course
+        self.length = 0
+        self.price = Decimal(0)
+        
+class LectorManager(models.Manager):
+    def lesson_analysis(self, start, end):
+        from schools.courses.models import Lesson
+        from schools.lectors.models import Lector
+        
+        lessons = Lesson.objects.filter(real_end__range=(start, end))
+        
+        lector_lessons = defaultdict(dict)
+        
+        for lesson in lessons:
+            if lesson.course not in lector_lessons[lesson.real_lector]:
+                lector_lessons[lesson.real_lector][lesson.course] = Subcount(lesson.course)
+            subcount = lector_lessons[lesson.real_lector][lesson.course]
+            subcount.length += lesson.real_minutes_length
+            subcount.price += lesson.real_lector_price
+            
+        lectors = Lector.objects.all() #@UndefinedVariable
+        for lector in lectors:
+            lector.analysis_courses = lector_lessons[lector].values()
+            lector.analysis_length = sum([subcount.length 
+                                          for subcount in lector_lessons[lector].values() ])
+            lector.analysis_price = sum([subcount.price 
+                                          for subcount in lector_lessons[lector].values() ])
+        return lectors
 
 # Create your models here.
 class Company(models.Model):

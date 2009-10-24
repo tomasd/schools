@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.db.models import permalink
+from schools.companies.models import LectorManager
+
+            
 
 # Create your models here.
 class Lector(models.Model):
+    objects = LectorManager()
     last_name = models.CharField(max_length=30)
     first_name = models.CharField(max_length=30)
     
@@ -33,6 +37,7 @@ class Lector(models.Model):
     @permalink
     def get_contracts_url(self):
         return ('lectors_contract_list', None, {'lector_id':str(self.pk)})
+
     
 class Contract(models.Model):
     contract_number = models.CharField(max_length=30, unique=True)
