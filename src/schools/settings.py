@@ -87,6 +87,7 @@ INSTALLED_APPS = (
     'schools.students',
     'generic_views',
     'schools.listtable',
+    'datepicker',
 )
 
 try:
