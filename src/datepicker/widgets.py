@@ -3,21 +3,19 @@ from django.forms.widgets import MultiWidget
 
 class DatepickerDateInput(widgets.DateInput):
     format = '%d.%m.%Y'
-    def __init__(self, *args, **kwargs):
-        kwargs['attrs'] = kwargs.get('attrs', {})
-        kwargs['attrs']['class'] = kwargs['attrs'].get('class', '')
-        kwargs['attrs']['class'] += ' ' + 'datepicker'
-        kwargs['attrs']['class'] = kwargs['attrs']['class'].strip()
-        super(DatepickerDateInput, self).__init__(*args, **kwargs)
+    
+    def render(self, name, value, attrs=None):
+        attrs = attrs.copy() if attrs else {}
+        attrs['class'] = ' '.join(filter(None, ['datepicker', attrs.get('class', None)]))  
+        return  super(DatepickerDateInput, self).render(name, value, attrs)
 
 class TimepickerTimeInput(widgets.TimeInput):
     format = '%H:%M'
-    def __init__(self, *args, **kwargs):
-        kwargs['attrs'] = kwargs.get('attrs', {})
-        kwargs['attrs']['class'] = kwargs['attrs'].get('class', '')
-        kwargs['attrs']['class'] += ' ' + 'timepicker'
-        kwargs['attrs']['class'] = kwargs['attrs']['class'].strip()
-        super(TimepickerTimeInput, self).__init__(*args, **kwargs)
+        
+    def render(self, name, value, attrs=None):
+        attrs = attrs.copy() if attrs else {}
+        attrs['class'] = ' '.join(filter(None, ['timepicker', attrs.get('class', None)]))  
+        return  super(TimepickerTimeInput, self).render(name, value, attrs)
                 
 class SplitDatePickerTimePickerWidget(MultiWidget):
     """
@@ -42,8 +40,11 @@ class SplitDatePickerTimePickerWidget(MultiWidget):
             return [value.date(), value.time().replace(microsecond=0)]
         return [None, None]
     
+    
 #widgets.DateInput= DatepickerDateInput
 fields.DateField.widget = DatepickerDateInput
 fields.TimeField.widget = TimepickerTimeInput
 fields.DateTimeField.widget = SplitDatePickerTimePickerWidget
+fields.SplitDateTimeField.widget = SplitDatePickerTimePickerWidget
 fields.DEFAULT_DATE_INPUT_FORMATS = tuple(['%d.%m.%Y'] + list(fields.DEFAULT_DATE_INPUT_FORMATS))
+fields.DEFAULT_DATETIME_INPUT_FORMATS = tuple(['%d.%m.%Y %H:%M', '%d.%m.%Y %H:%M:%S'] + list(fields.DEFAULT_DATE_INPUT_FORMATS))

@@ -1,11 +1,123 @@
 {% extends "courses/base.html" %}
 {% load i18n %}
 
+{% block head %}
+	{{ block.super }}
+	<link rel="StyleSheet" href="{{ MEDIA_URL }}weekcalendar/jquery.weekcalendar.css" type="text/css" media="screen"/>
+	<script src="{{ MEDIA_URL }}weekcalendar/jquery.weekcalendar.js.min.js"></script>
+	<script src="{{ MEDIA_URL }}jquery/jquery.formset.min.js"></script>
+	<script type="text/javascript">
+	    $(function() {
+	        $('#listing_table tbody tr').formset();
+	    });
+	</script>
+	<script type="text/javascript">
+		var editable = function(calEvent, eventElement){ if (calEvent.id) return false; else return true;};
+		var change_event = function(new_row, calEvent) {
+			console.log($(new_row).html());
+			$(new_row).find('.course').val('{{ course.pk }}');
+			$(new_row).find('.classroom').val(calEvent.classroom);
+			$(new_row).find('.start.datepicker').val($("#calendar").weekCalendar("formatDate", calEvent.start));
+			$(new_row).find('.start.timepicker').val($("#calendar").weekCalendar("formatTime", calEvent.start));
+			$(new_row).find('.end.datepicker').val($("#calendar").weekCalendar("formatDate", calEvent.end)); 
+			$(new_row).find('.end.timepicker').val($("#calendar").weekCalendar("formatTime", calEvent.end));
+		};
+		var event_changed = function(calEvent, oldCalEvent, element) {
+			change_event(events[oldCalEvent], calEvent);
+		};
+		var events = {};
+		var events_list = Array();
+		var new_event = function(calEvent, element) {
+			calEvent.classroom = $("#id_classroom").val();
+
+			if ($("#listing_table .form_row:last .classroom").val()) {
+				$("#listing_table .add-row").click();
+			}
+			var edit_row = $("#listing_table tr.form_row:last")
+
+			change_event(edit_row, calEvent);
+			events[calEvent] = edit_row;
+			events_list.push(calEvent);
+			console.log(events_list);
+		};
+		$(function() {
+			$("#calendar").weekCalendar({
+				businessHours:{start: 6, end: 20, limitDisplay: true}, 
+				firstDayOfWeek:1, 
+				use24Hour: true,
+				eventNew: new_event,
+				dateFormat: 'd.m.Y',
+				timeFormat: 'H:i',
+				data: function(start, end, callback) {
+					if ($("#id_classroom").val()) {					
+					  $.getJSON("http://localhost:8000/buildings/classroom/" + $("#id_classroom").val() + "/lessons/", {
+					     start: $("#calendar").weekCalendar("formatDate", start, format='d.m.Y H:i:s'),
+					     end: $("#calendar").weekCalendar("formatDate", end, format='d.m.Y H:i:s')
+					   },  function(result) {
+					     callback(result);
+					   });
+					}
+					},
+				draggable: editable,
+				resizable: editable,
+				eventDrop: event_changed,
+				eventResize: event_changed,
+				newEventText: '{{ course }}',
+				});
+			$("#id_classroom").change(function() {
+				if ($(this).val()) {
+					$("#calendar").show();
+					$("#calendar").weekCalendar('refresh');
+					for (var i in events_list) {
+						if (events_list[i].classroom == $(this).val()) {
+							$("#calendar").weekCalendar('updateEvent', events_list[i]);
+						}
+					}
+				} else {
+					$("#calendar").hide();
+				}
+			}).change();
+		});
+		// http://localhost:8000/buildings/classroom/1/lessons/
+	</script>
+{% endblock %}
+
 {% block content %}
 	<div class="top-bar">
 		<h1>{% trans "Vytvoriť lekciu" %}</h1>
 		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
 	</div><br />
-	
-	{% include "form.html" %}
+	<div class="table">
+		<form method="post">
+			{{ formset.management_form }}
+			<table class="listing form" cellpadding="0" cellspacing="0" id="listing_table">
+				<thead>
+				<tr>
+					<th>{% trans "Trieda" %}</th>
+					<th>{% trans "Začiatok" %}</th>
+					<th>{% trans "Koniec" %}</th>
+				</tr>
+				</thead>
+				<tbody>
+			{% for form in formset.forms %}
+				<tr class="{% cycle 'bg' '' %} form_row">
+					{% for field in form.visible_fields %}
+						<td>
+							{{ field }}{{ field.errors|join:", " }}
+							{% if forloop.last %}
+							{{ form.hidden_fields|join:" " }}
+							{% endif %}
+						</td>
+					{% endfor %}
+				</tr>
+			{% endfor %}
+				</tbody>
+			</table>
+			<input type="submit" value="{% trans "Uložiť naplánované lekcie" %}"/>
+		</form>
+	</div>
+	<form>
+	{{ choose_classroom_form }}
+	</form>
+	<div id="calendar"></div>
 {% endblock %}

@@ -1,10 +1,12 @@
 from django import forms
 from django.forms.models import save_instance
 from django.forms.util import ValidationError
-from django.forms.widgets import HiddenInput
+from django.forms.widgets import HiddenInput, Select
 from django.utils.translation import ugettext
 from schools.courses.models import Course, CourseMember, ExpenseGroup, Lesson, \
     LessonAttendee
+from schools.buildings.models import Classroom
+from datepicker.widgets import SplitDatePickerTimePickerWidget
 
 
 class CourseForm(forms.ModelForm):
@@ -48,7 +50,10 @@ class ExpenseGroupForm(forms.ModelForm):
         model = ExpenseGroup        
 
 class LessonPlanForm(forms.ModelForm):
-    course = forms.ModelChoiceField(queryset=Course.objects.all(), widget=HiddenInput)
+    course = forms.ModelChoiceField(queryset=Course.objects.all(), widget=HiddenInput(attrs={'class':'course'}))
+    classroom = forms.ModelChoiceField(queryset=Classroom.objects.all(), widget=Select(attrs={'class':'classroom'}))
+    start = forms.DateTimeField(widget=SplitDatePickerTimePickerWidget(attrs={'class':'start'}))
+    end = forms.DateTimeField(widget=SplitDatePickerTimePickerWidget(attrs={'class':'end'}))
     class Meta:
         model = Lesson
         fields = ('course', 'classroom', 'start', 'end',)
@@ -66,3 +71,6 @@ class LessonAttendeeForm(forms.ModelForm):
         exclude = ('course_member_price', )
     def limit_to_course(self, course):
         self.fields['course_member'].queryset = self.fields['course_member'].queryset.filter(course=course)
+        
+class ChooseClassroomForm(forms.Form):
+    classroom = forms.ModelChoiceField(queryset=Classroom.objects.all())

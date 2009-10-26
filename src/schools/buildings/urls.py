@@ -9,4 +9,5 @@ urlpatterns = patterns('schools.buildings.views',
    url(r'building/(?P<object_id>\d+)/$', 'building_update', name='buildings_building_update'),
    
    url(r'building/$', object_list, {'queryset':Building.objects.all(), 'search_fields':['name__contains']}, name='buildings_building_list'),
+   url(r'classroom/(?P<object_id>\d+)/lessons/$', 'classroom_lessons', name='classroom-lessons',)
 )

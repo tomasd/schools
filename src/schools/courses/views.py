@@ -1,9 +1,13 @@
 # Create your views here.
-from django.shortcuts import get_object_or_404
+from django.core.urlresolvers import reverse
+from django.forms.models import modelformset_factory
+from django.shortcuts import get_object_or_404, render_to_response, redirect
+from django.template.context import RequestContext
+from django.utils.translation import ugettext
 from generic_views.views.create_update import update_object, create_object
 from schools.courses.forms import CourseMemberForm, ExpenseGroupForm, \
-    LessonPlanForm, LessonRealizedForm, LessonAttendeeForm,\
-    CourseMemberCreateForm
+    LessonPlanForm, LessonRealizedForm, LessonAttendeeForm, CourseMemberCreateForm,\
+    ChooseClassroomForm
 from schools.courses.models import Course, CourseMember, ExpenseGroup, \
     ExpenseGroupPrice, Lesson, LessonAttendee, lesson_assign_attendees
 from schools.genericform.form import PreProcessForm
@@ -42,7 +46,24 @@ def expensegroup_list(request, course_id):
 
 def lesson_create(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
-    return create_object(request, model=Lesson, form_class=LessonPlanForm, template_name='courses/lesson_create.html', extra_context={'course':course}, initial={'course':course.pk})
+    LessonFormset = modelformset_factory(Lesson, LessonPlanForm)
+    if request.method == 'POST':
+        formset = LessonFormset(request.POST, queryset=Lesson.objects.none())
+        if formset.is_valid():
+            lessons = formset.save()
+            if request.user.is_authenticated():
+                for lesson in lessons:
+                    request.user.message_set.create(message=ugettext("The %(verbose_name)s was created successfully.") % {"verbose_name": lesson._meta.verbose_name})
+            if len(lessons) == 1: 
+                return redirect(lessons[0])
+            else:
+                return redirect(reverse(lesson_list, kwargs={'course_id':course_id}))
+    else:
+        formset = LessonFormset(queryset=Lesson.objects.none(), initial=[{'course':course.pk}])
+    context = {'formset': formset, 'course':course, 'choose_classroom_form':ChooseClassroomForm()}
+    return render_to_response('courses/lesson_create.html', RequestContext(request,context))
+#    course = get_object_or_404(Course, pk=course_id)
+#    return create_object(request, model=Lesson, form_class=LessonPlanForm, template_name='courses/lesson_create.html', extra_context={'course':course}, initial={'course':course.pk})
     
 def lesson_update(request, course_id, object_id):
     course = get_object_or_404(Course, pk=course_id)
