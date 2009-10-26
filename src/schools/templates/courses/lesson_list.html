@@ -1,6 +1,49 @@
 {% extends "courses/base.html" %}
 {% load i18n listtable %}
 
+{% block head %}
+	{{ block.super }}
+	<link rel="StyleSheet" href="{{ MEDIA_URL }}weekcalendar/jquery.weekcalendar.css" type="text/css" media="screen"/>
+	<script src="{{ MEDIA_URL }}weekcalendar/jquery.weekcalendar.js.min.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			$("#lesson_tabs").tabs({
+				show: function(event, ui) {
+					if ($(ui.panel)[0] == $("#lesson-calendar")[0]) {
+						$("#calendar").weekCalendar('refresh');
+					}
+				}
+			});
+		});
+	</script>
+	<script type="text/javascript">
+	$(function() {
+		$("#calendar").weekCalendar({
+			businessHours:{start: 6, end: 20, limitDisplay: true}, 
+			firstDayOfWeek:1, 
+			use24Hour: true,
+			dateFormat: 'd.m.Y',
+			timeFormat: 'H:i',
+			draggable: function(calEvent, eventElement) {
+				return Boolean(calEvent.id);
+			},
+			resizable: function(calEvent, eventElement) {
+				return Boolean(calEvent.id);
+			},
+			data: function(start, end, callback) {
+				  $.getJSON("{% url courses_lesson_list_json course.pk %}", {
+				     start: $("#calendar").weekCalendar("formatDate", start, format='d.m.Y H:i:s'),
+				     end: $("#calendar").weekCalendar("formatDate", end, format='d.m.Y H:i:s')
+				   },  function(result) {
+					   console.log(result);
+				     callback(result);
+				   });
+				},
+			});
+	});
+	</script>
+{% endblock %}
+
 {% block content %}
 	<div class="top-bar">
 		<a href="{% url courses_lesson_create course.pk %}" class="button">{% trans "Pridať" %}</a>
@@ -14,29 +57,41 @@
 	</label>
 	</div>
 	
-	<div class="table">
-		<img src="img/bg-th-left.gif" width="8" height="7" alt="" class="left" />
-		<img src="img/bg-th-right.gif" width="7" height="7" alt="" class="right" />
-		<table class="listing" cellpadding="0" cellspacing="0">
-			<tr>
-				<th class="first">{% trans "Lekcia" %}</th>
-				<th class="last">{% trans "Akcie" %}</th>
-			</tr>
-			{% for object in object_list %}
-			<tr class="{% cycle 'bg' '' %}">
-				<td class="first style1"><a href="{{ object.get_absolute_url }}">{{ object }}</a></td>
-				<td  class="last">
-					<a href="{{ object.get_absolute_url }}" title="{% trans "Upraviť" %}"><img src="{{ MEDIA_URL }}img/edit-icon.gif" width="16" height="16" alt="" /></a>
-					<a href="{{ object.get_attendance_url }}" title="{% trans "Prezenčka" %}"><img src="{{ MEDIA_URL }}img/login-icon.gif" width="16" height="16" alt="login" /></a>
-				</td>
-			</tr>
-			{% endfor %}
-		</table>
-		<div class="select">
-			<strong>Other Pages: </strong>
-			<select>
-				<option>1</option>
-			</select>
-	  	</div>
+	<div id="lesson_tabs">
+		
+		<ul>
+			<li><a href="#lesson-list">{% trans "Zoznam lekcií" %}</a></li>
+			<li><a href="#lesson-calendar">{% trans "Kalendár" %}</a></li>
+		</ul>
+		
+		<div class="table" id="lesson-list" style="padding: 0;">
+			<img src="img/bg-th-left.gif" width="8" height="7" alt="" class="left" />
+			<img src="img/bg-th-right.gif" width="7" height="7" alt="" class="right" />
+			<table class="listing" cellpadding="0" cellspacing="0">
+				<tr>
+					<th class="first">{% trans "Lekcia" %}</th>
+					<th class="last">{% trans "Akcie" %}</th>
+				</tr>
+				{% for object in object_list %}
+				<tr class="{% cycle 'bg' '' %}">
+					<td class="first style1"><a href="{{ object.get_absolute_url }}">{{ object }}</a></td>
+					<td  class="last">
+						<a href="{{ object.get_absolute_url }}" title="{% trans "Upraviť" %}"><img src="{{ MEDIA_URL }}img/edit-icon.gif" width="16" height="16" alt="" /></a>
+						<a href="{{ object.get_attendance_url }}" title="{% trans "Prezenčka" %}"><img src="{{ MEDIA_URL }}img/login-icon.gif" width="16" height="16" alt="login" /></a>
+					</td>
+				</tr>
+				{% endfor %}
+			</table>
+			<div class="select">
+				<strong>Other Pages: </strong>
+				<select>
+					<option>1</option>
+				</select>
+		  	</div>
+		</div>
+		
+		<div id="lesson-calendar"  style="padding: 0;">
+			<div id="calendar"></div>
+		</div>
 	</div>
 {% endblock %}

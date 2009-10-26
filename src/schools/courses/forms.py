@@ -74,3 +74,7 @@ class LessonAttendeeForm(forms.ModelForm):
         
 class ChooseClassroomForm(forms.Form):
     classroom = forms.ModelChoiceField(queryset=Classroom.objects.all())
+    
+class CourseLessonsForm(forms.Form):
+    start = forms.DateTimeField(required=False)
+    end = forms.DateTimeField(required=False)

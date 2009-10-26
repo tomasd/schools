@@ -16,6 +16,7 @@ urlpatterns = patterns('schools.courses.views',
     url(r'course/(?P<course_id>\d+)/lesson/(?P<object_id>\d+)/attendance/$', 'lesson_attendance', name='courses_lesson_attendance'),
     url(r'course/(?P<course_id>\d+)/lesson/(?P<object_id>\d+)/$', 'lesson_update', name='courses_lesson_update'),
     url(r'course/(?P<course_id>\d+)/lesson/$', 'lesson_list', name='courses_lesson_list'),
+    url(r'course/(?P<course_id>\d+)/lesson/json/$', 'lesson_list_json', name='courses_lesson_list_json'),
     
     
     url(r'course/create/$', create_object, {'model':Course, 'template_name':'courses/course_create.html'}, name='courses_course_create'),

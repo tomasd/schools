@@ -1,17 +1,20 @@
 # Create your views here.
 from django.core.urlresolvers import reverse
 from django.forms.models import modelformset_factory
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.template.context import RequestContext
+from django.utils import simplejson
 from django.utils.translation import ugettext
 from generic_views.views.create_update import update_object, create_object
 from schools.courses.forms import CourseMemberForm, ExpenseGroupForm, \
-    LessonPlanForm, LessonRealizedForm, LessonAttendeeForm, CourseMemberCreateForm,\
-    ChooseClassroomForm
+    LessonPlanForm, LessonRealizedForm, LessonAttendeeForm, CourseMemberCreateForm, \
+    ChooseClassroomForm, CourseLessonsForm
 from schools.courses.models import Course, CourseMember, ExpenseGroup, \
     ExpenseGroupPrice, Lesson, LessonAttendee, lesson_assign_attendees
 from schools.genericform.form import PreProcessForm
 from schools.search.views import object_list
+from django.utils.dateformat import format
 
 def course_update(request, object_id):
     course = get_object_or_404(Course, pk=object_id)
@@ -84,3 +87,19 @@ def lesson_attendance(request, course_id, object_id):
 def lesson_list(request, course_id):
     course = get_object_or_404(Course, pk=course_id)    
     return object_list(request, queryset=Lesson.objects.filter(course=course), extra_context={'course':course,})
+
+def lesson_list_json(request, course_id):
+    course = get_object_or_404(Course, pk=course_id)
+    form = CourseLessonsForm(request.GET)
+    lessons = course.lesson_set.filter(realized=False)
+    if form.is_valid():
+        if form.cleaned_data['start']:
+            lessons = lessons.filter(end__gte=form.cleaned_data['start'])
+        if form.cleaned_data['end']:
+            lessons = lessons.filter(start__lte=form.cleaned_data['end'])
+    lessons = [{'id':a.pk,
+                'start':format(a.start, 'Y-m-d\TH:i:s.000O'), 
+                'end':format(a.end, 'Y-m-d\TH:i:s.000O'),
+                'title':unicode(a.course)} for a in lessons]
+    text = simplejson.dumps(lessons)
+    return HttpResponse(text, mimetype='application/json')
