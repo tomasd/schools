@@ -14,7 +14,6 @@
 	<script type="text/javascript">
 		var editable = function(calEvent, eventElement){ if (calEvent.id) return false; else return true;};
 		var change_event = function(new_row, calEvent) {
-			console.log($(new_row).html());
 			$(new_row).find('.course').val('{{ course.pk }}');
 			$(new_row).find('.classroom').val(calEvent.classroom);
 			$(new_row).find('.start.datepicker').val($("#calendar").weekCalendar("formatDate", calEvent.start));
@@ -38,7 +37,6 @@
 			change_event(edit_row, calEvent);
 			events[calEvent] = edit_row;
 			events_list.push(calEvent);
-			console.log(events_list);
 		};
 		$(function() {
 			$("#calendar").weekCalendar({
