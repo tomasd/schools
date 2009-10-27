@@ -17,6 +17,16 @@
 		});
 	</script>
 	<script type="text/javascript">
+	var event_changed = function(calEvent, element) {
+		var data = {'start':$("#calendar").weekCalendar("formatDate", calEvent.start, format='d.m.Y H:i:s'),
+				 'end':$("#calendar").weekCalendar("formatDate", calEvent.end, format='d.m.Y H:i:s')};
+		$.post(calEvent.replan_url,data,
+			 function(data) {
+			 	if (data.success) {
+				 	$('#right-column').append('<strong class="h">INFO</strong> <div class="box">{% trans "Lekcia úspešne preplánovaná" %}</div>');
+			 	}
+			 }, 'json');
+	};
 	$(function() {
 		$("#calendar").weekCalendar({
 			businessHours:{start: 6, end: 20, limitDisplay: true}, 
@@ -35,10 +45,11 @@
 				     start: $("#calendar").weekCalendar("formatDate", start, format='d.m.Y H:i:s'),
 				     end: $("#calendar").weekCalendar("formatDate", end, format='d.m.Y H:i:s')
 				   },  function(result) {
-					   console.log(result);
 				     callback(result);
 				   });
 				},
+			eventDrop: event_changed,
+			eventResize: event_changed
 			});
 	});
 	</script>

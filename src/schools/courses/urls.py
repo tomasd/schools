@@ -2,6 +2,8 @@ from django.conf.urls.defaults import patterns, url
 from django.views.generic.create_update import create_object
 from schools.courses.models import Course
 from schools.search.views import object_list
+from generic_views.views.ajax import ajax_form_handler
+from schools.courses.forms import ReplanLessonForm
 
 urlpatterns = patterns('schools.courses.views',
     url(r'course/(?P<course_id>\d+)/member/create/$', 'coursemember_create', name='courses_coursemember_create'),
@@ -15,6 +17,7 @@ urlpatterns = patterns('schools.courses.views',
     url(r'course/(?P<course_id>\d+)/lesson/create/$', 'lesson_create', name='courses_lesson_create'),
     url(r'course/(?P<course_id>\d+)/lesson/(?P<object_id>\d+)/attendance/$', 'lesson_attendance', name='courses_lesson_attendance'),
     url(r'course/(?P<course_id>\d+)/lesson/(?P<object_id>\d+)/$', 'lesson_update', name='courses_lesson_update'),
+    url(r'course/(?P<course_id>\d+)/lesson/(?P<object_id>\d+)/replan/$', 'lesson_replan', name='courses_lesson_replan'),
     url(r'course/(?P<course_id>\d+)/lesson/$', 'lesson_list', name='courses_lesson_list'),
     url(r'course/(?P<course_id>\d+)/lesson/json/$', 'lesson_list_json', name='courses_lesson_list_json'),
     

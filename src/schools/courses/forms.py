@@ -1,7 +1,7 @@
 from django import forms
 from django.forms.models import save_instance
 from django.forms.util import ValidationError
-from django.forms.widgets import HiddenInput, Select
+from django.forms.widgets import HiddenInput, Select, DateTimeInput
 from django.utils.translation import ugettext
 from schools.courses.models import Course, CourseMember, ExpenseGroup, Lesson, \
     LessonAttendee
@@ -78,3 +78,13 @@ class ChooseClassroomForm(forms.Form):
 class CourseLessonsForm(forms.Form):
     start = forms.DateTimeField(required=False)
     end = forms.DateTimeField(required=False)
+    
+class ReplanLessonForm(forms.ModelForm):
+    '''
+        Plan lesson on the other time.
+    '''
+    start = forms.DateTimeField(widget=DateTimeInput)
+    end = forms.DateTimeField(widget=DateTimeInput)
+    class Meta:
+        model = Lesson
+        fields = ('start', 'end')
