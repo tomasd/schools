@@ -6,7 +6,33 @@ import django.dispatch
 from collections import defaultdict
 
 # Create your models here.
+
+class CourseManager(models.Manager):
+    def course_plan(self, start, end):
+        class CoursePlan():
+            def __init__(self, lessonhours, price):
+                self.lesson_hours = lessonhours
+                self.price = price
+                
+                
+        lessons = Lesson.objects.filter(end__range=(start, end))
+        # kurz, plánované lekciohodiny, plánované kurzohodiny, plánovaná cena
+        lesson_dict = defaultdict(list)
+        
+        for lesson in lessons:
+            lesson_dict[lesson.course].append(lesson)
+            
+        for course, lessons_list in lesson_dict.items():
+            lessonhours = sum([lesson.minutes_length for lesson in lessons_list])
+            course_members = course.coursemember_set.filter(Q(end__isnull=True) | Q(end__gte=start), start__lte=end)
+            price = sum([sum(course_member_price(lesson, course_members, lesson.start, lesson.end).values()) for lesson in lessons_list])
+            
+            course.course_plan = CoursePlan(lessonhours, price)
+            
+        return lesson_dict.keys()
+            
 class Course(models.Model):
+    objects = CourseManager()
     from django.contrib.auth.models import User
     from schools.lectors.models import Lector
 #    slug = models.SlugField(unique=True)
@@ -120,6 +146,10 @@ class Lesson(models.Model):
         self.real_classroom = self.classroom
         self.real_lector = self.course.lector
         return self
+    
+    @property
+    def minutes_length(self):
+        return delta_to_minutes(self.end - self.start)
 
 def calculate_price(hour_rate, delta):    
     return hour_rate * delta_to_minutes(delta) / 60
@@ -145,22 +175,31 @@ def lesson_length(sender, *args, **kwargs):
         lesson.real_minutes_length = delta_to_minutes(lesson.real_end - lesson.real_start)
 signals.pre_save.connect(lesson_length, sender=Lesson)
 
-def course_member_price(sender, *args, **kwargs):
+def lesson_attendee_price(sender, *args, **kwargs):
     lesson = kwargs['instance']
     if lesson.realized:
-        expense_groups = defaultdict(list)
-        for attendee in lesson.lessonattendee_set.all():
-            expense_groups[attendee.course_member.expense_group].append(attendee)
+        attendees = lesson.lessonattendee_set.all()
+        course_members = [a.course_member for a in attendees]
+        member_price = course_member_price(lesson, course_members, lesson.real_start, lesson.real_end)
         
-        for expense_group, attendees in expense_groups.items():
-            expense_group_prices = expense_group.expensegroupprice_set.filter(Q(end__isnull=True)|Q(end__gte=lesson.real_start), start__lte=lesson.real_end)
-            hour_rate = list(expense_group_prices)[-1]
-            price = calculate_price(hour_rate.price, lesson.real_end - lesson.real_start)
-            for attendee in attendees:
-                attendee.course_member_price = price / len(attendees)
-                attendee.save()
-                
-signals.post_save.connect(course_member_price, sender=Lesson)
+        for attendee in attendees:
+            attendee.course_member_price = member_price[attendee.course_member]
+            attendee.save()
+                        
+def course_member_price(lesson, course_members, start, end):
+    expense_groups = defaultdict(list)
+    for course_member in course_members:
+        expense_groups[course_member.expense_group].append(course_member)
+    
+    course_members_dict = {}
+    for expense_group, course_members in expense_groups.items():
+        expense_group_prices = expense_group.expensegroupprice_set.filter(Q(end__isnull=True)|Q(end__gte=start), start__lte=end)
+        hour_rate = list(expense_group_prices)[-1]
+        price = calculate_price(hour_rate.price, end - start)
+        for course_member in course_members:
+            course_members_dict[course_member] = price / len(course_members)
+    return course_members_dict
+signals.post_save.connect(lesson_attendee_price, sender=Lesson)
 
 #class AttendanceList(models.Model):
 #    from schools.lectors.models import Lector

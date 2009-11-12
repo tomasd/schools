@@ -2,8 +2,10 @@
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from schools.companies.models import Company
-from schools.reports.forms import InvoiceForm, LessonAnalysisForm
+from schools.courses.models import Course
 from schools.lectors.models import Lector
+from schools.reports.forms import InvoiceForm, LessonAnalysisForm, \
+    LessonPlanForm
 
 def invoice(request):
     if request.GET:
@@ -49,3 +51,22 @@ def lesson_analysis(request):
                'show_courses':show_courses,
                }
     return render_to_response('reports/lesson_analysis.html', RequestContext(request, context))
+
+def course_plan(request):
+    courses = Course.objects.none()
+    if request.GET:
+        form = LessonPlanForm(request.GET)
+        if form.is_valid():
+            courses = Course.objects.course_plan(form.cleaned_data['start'], form.cleaned_data['end'])
+    else:
+        form = LessonPlanForm()
+    
+    total_lesson_hours = sum([a.course_plan.lesson_hours for a in courses])
+    total_price = sum([a.course_plan.price for a in courses])
+    context = {'object_list':courses,
+               'total_lesson_hours':total_lesson_hours,
+               'total_price':total_price,
+               'form':form,
+#               'show_courses':show_courses,
+               }
+    return render_to_response('reports/course_plan.html', RequestContext(request, context))

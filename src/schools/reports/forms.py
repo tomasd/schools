@@ -27,3 +27,13 @@ class LessonAnalysisForm(forms.Form):
             if not self.cleaned_data['start'] <= self.cleaned_data['end']:
                 raise ValidationError(_(u'Začiatok musí byť menší ako koniec'))
         return self.cleaned_data
+    
+class LessonPlanForm(forms.Form):
+    start = forms.DateField()
+    end = forms.DateField()
+    
+    def clean(self):
+        if 'start' in self.cleaned_data and 'end' in self.cleaned_data:
+            if not self.cleaned_data['start'] <= self.cleaned_data['end']:
+                raise ValidationError(_(u'Začiatok musí byť menší ako koniec'))
+        return self.cleaned_data
