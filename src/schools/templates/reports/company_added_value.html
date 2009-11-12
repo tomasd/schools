@@ -1,0 +1,72 @@
+{% extends "reports/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="top-bar">
+	<h1>{% trans "Pridaná hodnota firmy" %}</h1>
+	<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
+</div><br />
+<div class="select-bar">
+	<form>
+		<table>
+		{% include "form_table.html" %}
+		</table>
+	   <input type="submit" name="Submit" value="Search" />
+	</form>
+</div>
+{% if not nolist %}
+<div class="table">
+	<img src="img/bg-th-left.gif" width="8" height="7" alt="" class="left" />
+	<img src="img/bg-th-right.gif" width="7" height="7" alt="" class="right" />
+	<table class="listing" cellpadding="0" cellspacing="0">
+		<tr>
+			<th class="first">{% trans "Meno/kurz" %}</th>
+			<th>{% trans "Cena" %}</th>
+			<th>{% trans "Budova" %}</th>
+			<th>{% trans "Lektorské" %}</th>
+			<th class="last">{% trans "Rozdiel" %}</th>
+		</tr>
+		{% for company in object_list %}
+			<tr class="{% cycle 'bg' '' %}">
+				<td class="first last style1">{{ company }}</td>
+				<td  class="style1">{{ company.invoice_price }}&nbsp;€</td>
+				<td class="style1">{{ company.invoice_building_price }}&nbsp;€</td>
+				<td class="style1">{{ company.invoice_lector_price }}&nbsp;€</td>
+				<td class="last style1">{{ company.invoice_delta }}&nbsp;€</td>
+			</tr>
+			{% for student in company.invoice_students %}
+				<tr class="{% cycle 'bg' '' as background %} style2">
+					<td class="first last style2">{{ student }}</td>
+					<td class="style2">{{ student.invoice_price }}&nbsp;€</td>
+					<td class="style2">{{ student.invoice_building_price }}&nbsp;€</td>
+					<td class="style2">{{ student.invoice_lector_price }}&nbsp;€</td>
+					<td class="last style2">{{ student.invoice_delta }}&nbsp;€</td>
+				</tr>
+				{% for course_member in student.invoice_course_members %}
+				<tr class="{% cycle background %} style3">
+					<td class="first style3">{{ course_member.course }}</td>
+					<td class="style3">{{ course_member.invoice_price }}&nbsp;€</td>
+					<td class="style3">{{ course_member.invoice_building_price }}&nbsp;€</td>
+					<td class="style3">{{ course_member.invoice_lector_price }}&nbsp;€</td>
+					<td class="last style3">{{ course_member.invoice_delta }}&nbsp;€</td>
+				</tr>
+				{% endfor %}
+			{% endfor %}
+		{% endfor %}
+		<tr class="style1">
+			<td class="first style1">{% trans "Spolu" %}</td>
+			<td>{{ total_price }}&nbsp;€</td>
+			<td>{{ total_building_price }}&nbsp;€</td>
+			<td>{{ total_lector_price }}&nbsp;€</td>
+			<td class="last">{{ total_delta }}&nbsp;€</td>
+		</tr>
+	</table>
+	<div class="select">
+		<strong>Other Pages: </strong>
+		<select>
+			<option>1</option>
+		</select>
+  	</div>
+</div>
+{% endif %}
+{% endblock %}

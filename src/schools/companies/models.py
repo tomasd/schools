@@ -7,34 +7,9 @@ from django.db.models import permalink
 class CompanyManager(models.Manager):
     def invoice(self, start, end, companies=[]):
         from schools.students.models import Student
-        from schools.courses.models import LessonAttendee, CourseMember
         
-        lesson_attendees = defaultdict(list)
-        _attendees = LessonAttendee.objects.filter(lesson__real_end__range=(start, end))
-        if companies: _attendees = _attendees.filter(course_member__student__company__in=companies)
-        for attendee in _attendees.select_related('lesson'):
-            lesson_attendees[attendee.course_member].append(attendee)
-
-        course_members = defaultdict(list)
-        _members = CourseMember.objects.filter(lessonattendee__lesson__real_end__range=(start, end))
-        if companies: _members = _members.filter(student__company__in=companies)
-        for course_member in _members.distinct():
-            course_member.invoice_attendees = lesson_attendees[course_member]
-            course_member.invoice_price = sum([a.course_member_price for a in lesson_attendees[course_member]])
-            course_member.invoice_length = sum([a.lesson.real_minutes_length for a in lesson_attendees[course_member]])
-            course_member.invoice_count = len(lesson_attendees[course_member])
-            course_members[course_member.student].append(course_member)
+        students = Student.objects.invoice(start, end, companies)
         
-        students_list = Student.objects.filter(coursemember__lessonattendee__lesson__real_end__range=(start, end)).distinct()
-        if companies: students_list = students_list.filter(company__in=companies)
-        students = defaultdict(list)
-        for student in students_list:
-            student.invoice_course_members = course_members[student]
-            student.invoice_price = sum([a.invoice_price for a in course_members[student]])
-            student.invoice_length = sum([a.invoice_length for a in course_members[student]])
-            student.invoice_count = sum([a.invoice_count for a in course_members[student]])
-            students[student.company].append(student)
-
         if not companies:
             companies = list(Company.objects.all())
         for company in companies:
@@ -44,6 +19,61 @@ class CompanyManager(models.Manager):
             company.invoice_count = sum([a.invoice_count for a in students[company]])
             
         return companies
+    
+    def added_value(self, start, end, companies=[]):
+        from schools.students.models import Student
+#        platca, kurzohodiny, cena vyučovania, cena budovy, lektorské, rozdiel
+        students = Student.objects.invoice(start, end, companies)
+        building_attendees = defaultdict(list)
+        lesson_attendees = defaultdict(list)
+        
+        for student_list in students.values():
+            for student in student_list:
+                student.invoice_building_price = Decimal(0)
+                student.invoice_lector_price = Decimal(0)
+                student.invoice_delta = Decimal(0)
+                for course_member in student.invoice_course_members:
+                    course_member.invoice_building_price = Decimal(0)
+                    course_member.invoice_lector_price = Decimal(0)
+                    course_member.invoice_delta = Decimal(0)
+                    course_member.student = student
+                    for lesson_attendee in course_member.invoice_attendees:
+                        building_attendees[lesson_attendee.lesson.real_classroom.building].append(lesson_attendee)
+                        lesson_attendees[lesson_attendee.lesson].append(lesson_attendee)
+                        lesson_attendee.course_member = course_member
+                        
+        for building, attendees in building_attendees.items():
+            building_price = building.building_price_for(start, end)
+            price_per_attendee = building_price / Decimal(len(attendees))
+            for lesson_attendee in attendees:
+                #building
+                lesson_attendee.invoice_building_price = price_per_attendee
+                lesson_attendee.course_member.invoice_building_price += price_per_attendee
+                lesson_attendee.course_member.student.invoice_building_price += price_per_attendee
+                
+                # lector
+                lesson_attendee.invoice_lector_price = lesson_attendee.lesson.real_lector_price / len(lesson_attendees[lesson_attendee.lesson])
+                lesson_attendee.course_member.invoice_lector_price += lesson_attendee.invoice_lector_price
+                lesson_attendee.course_member.student.invoice_lector_price += lesson_attendee.invoice_lector_price
+                
+                # delta
+                lesson_attendee.invoice_delta = lesson_attendee.course_member_price - lesson_attendee.invoice_building_price - lesson_attendee.invoice_lector_price
+                lesson_attendee.course_member.invoice_delta += lesson_attendee.invoice_delta
+                lesson_attendee.course_member.student.invoice_delta += lesson_attendee.invoice_delta 
+
+        if not companies:
+            companies = list(Company.objects.all())
+        for company in companies:
+            company.invoice_students = students[company]
+            company.invoice_price = sum([a.invoice_price for a in students[company]])
+            company.invoice_length = sum([a.invoice_length for a in students[company]])
+            company.invoice_count = sum([a.invoice_count for a in students[company]])
+            company.invoice_building_price = sum([a.invoice_building_price for a in students[company]])
+            company.invoice_lector_price = sum([a.invoice_lector_price for a in students[company]])
+            company.invoice_delta = sum([a.invoice_delta for a in students[company]])
+        
+        return companies
+                    
 
 class Subcount(object):
     def __init__(self, course):

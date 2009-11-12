@@ -5,7 +5,7 @@ from schools.companies.models import Company
 from schools.courses.models import Course
 from schools.lectors.models import Lector
 from schools.reports.forms import InvoiceForm, LessonAnalysisForm, \
-    LessonPlanForm
+    LessonPlanForm, CompanyAddedValueForm
 
 def invoice(request):
     if request.GET:
@@ -70,3 +70,30 @@ def course_plan(request):
 #               'show_courses':show_courses,
                }
     return render_to_response('reports/course_plan.html', RequestContext(request, context))
+
+def company_added_value(request):
+    companies = Company.objects.none()
+    if request.GET:
+        form = CompanyAddedValueForm(request.GET)
+        if form.is_valid():
+            companies = Company.objects.added_value(companies=form.cleaned_data['companies'],
+                                                start=form.cleaned_data['start'],
+                                                end=form.cleaned_data['end'])
+    else:
+        form = InvoiceForm()
+    total_length = sum([a.invoice_length for a in companies])
+    total_price = sum([a.invoice_price for a in companies])
+    total_count = sum([a.invoice_count for a in companies])
+    total_building_price = sum([a.invoice_building_price for a in companies])
+    total_lector_price = sum([a.invoice_lector_price for a in companies])
+    total_delta = sum([a.invoice_delta for a in companies])
+    context = {'object_list':companies,
+               'total_length':total_length,
+               'total_price':total_price,
+               'total_count':total_count,
+               'total_building_price':total_building_price,
+               'total_lector_price':total_lector_price,
+               'total_delta':total_delta,
+               'form': form,
+               }
+    return render_to_response('reports/company_added_value.html', RequestContext(request, context))

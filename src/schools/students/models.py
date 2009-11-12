@@ -1,9 +1,28 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.db.models import permalink
+from collections import defaultdict
 
-# Create your models here.
+class StudentManager(models.Manager):
+    def invoice(self, start, end, companies=[]):
+        from schools.courses.models import CourseMember
+        
+        course_members = CourseMember.objects.invoice(start, end, companies)
+        
+        students_list = Student.objects.filter(coursemember__lessonattendee__lesson__real_end__range=(start, end)).distinct()
+        if companies: students_list = students_list.filter(company__in=companies)
+        students = defaultdict(list)
+        for student in students_list:
+            student.invoice_course_members = course_members[student]
+            student.invoice_price = sum([a.invoice_price for a in course_members[student]])
+            student.invoice_length = sum([a.invoice_length for a in course_members[student]])
+            student.invoice_count = sum([a.invoice_count for a in course_members[student]])
+            students[student.company].append(student)
+            
+        return students
+
 class Student(models.Model):
+    objects = StudentManager()
     from schools.companies.models import Company
     last_name = models.CharField(max_length=30)
     first_name = models.CharField(max_length=30)

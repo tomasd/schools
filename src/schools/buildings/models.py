@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
+from decimal import Decimal
 from django.db import models
 from django.db.models import permalink
+from django.db.models.query_utils import Q
+from calendar import monthrange
+import calendar
+import datetime
 
 # Create your models here.
 class Classroom(models.Model):
@@ -34,6 +39,23 @@ class Building(models.Model):
     @permalink
     def get_absolute_url(self):
         return ('buildings_building_update', None, {'object_id':str(self.pk)})
+    
+    def building_price_for(self, start_date, end_date):
+        price = Decimal(0)
+        for start, end in iter_months(start_date, end_date):
+            expenses = BuildingMonthExpense.objects.filter(Q(end__isnull=True)|Q(end__gte=start), start__lte=end)
+            if expenses:
+                expense = expenses[0]
+                days = Decimal((end-start).days + 1)
+                price += (days/Decimal(monthrange(start.year, start.month)[1])) * expense.price
+        return price
+
+def iter_months(start, end):        
+    while start < end:
+        r = calendar.monthrange(start.year, start.month)
+        yield start, min(datetime.date(start.year, start.month, r[1]), end)
+        start += datetime.timedelta(days=r[1] - start.day + 1)
+        
     
 class BuildingMonthExpense(models.Model):
     building = models.ForeignKey('Building')

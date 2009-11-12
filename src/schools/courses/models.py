@@ -63,7 +63,28 @@ class Course(models.Model):
     def get_lessons_url(self):
         return ('courses_lesson_list', None, {'course_id':str(self.pk)})
 
+
+class CourseMemberManager(models.Manager):
+    def invoice(self, start, end, companies=[]):
+        lesson_attendees = defaultdict(list)
+        _attendees = LessonAttendee.objects.filter(lesson__real_end__range=(start, end))
+        if companies: _attendees = _attendees.filter(course_member__student__company__in=companies)
+        for attendee in _attendees.select_related('lesson'):
+            lesson_attendees[attendee.course_member].append(attendee)
+
+        course_members = defaultdict(list)
+        _members = CourseMember.objects.filter(lessonattendee__lesson__real_end__range=(start, end))
+        if companies: _members = _members.filter(student__company__in=companies)
+        for course_member in _members.distinct():
+            course_member.invoice_attendees = lesson_attendees[course_member]
+            course_member.invoice_price = sum([a.course_member_price for a in lesson_attendees[course_member]])
+            course_member.invoice_length = sum([a.lesson.real_minutes_length for a in lesson_attendees[course_member]])
+            course_member.invoice_count = len(lesson_attendees[course_member])
+            course_members[course_member.student].append(course_member)
+        return course_members
+    
 class CourseMember(models.Model):
+    objects = CourseMemberManager()
     from schools.students.models import Student
     course = models.ForeignKey('Course')
     student = models.ForeignKey(Student)
