@@ -91,7 +91,8 @@ a.logo {
 .lectors #top-navigation li.lectors,
 .students #top-navigation li.students,
 .buildings #top-navigation li.buildings,
-.reports #top-navigation li.reports
+.reports #top-navigation li.reports,
+.password-change #top-navigation li.password-change
  {
 	padding:0;
 	height:34px;
@@ -105,7 +106,8 @@ a.logo {
 .lectors #top-navigation li.lectors span,
 .students #top-navigation li.students span,
 .buildings #top-navigation li.buildings span,
-.reports #top-navigation li.reports span
+.reports #top-navigation li.reports span,
+.password-change #top-navigation li.password-change span
  {
 	background:url(../img/tab-active-left.gif) no-repeat left top;
 	height:34px;

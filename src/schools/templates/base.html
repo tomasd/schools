@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+{% load i18n %}<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -20,13 +20,15 @@
 	<div id="header">
 		<a href="index.html" class="logo"><img src="img/logo.gif" width="101" height="29" alt="" /></a>
 		<ul id="top-navigation">
-			<li class="homepage"><span><span><a href="">Homepage</a></span></span></li>
+			<li class="homepage"><span><span><a href="{% url home %}">Homepage</a></span></span></li>
 			<li class="courses"><span><span><a href="{% url courses_course_list %}">Kurzy</a></span></span></li>
 			<li class="companies"><span><span><a href="{% url companies_company_list %}">Firmy</a></span></span></li>
 			<li class="lectors"><span><span><a href="{% url lectors_lector_list %}">Lektori</a></span></span></li>
 			<li class="students"><span><span><a href="{% url students_student_list %}">Študenti</a></span></span></li>
 			<li class="buildings"><span><span><a href="{% url buildings_building_list %}">Budovy</a></span></span></li>
 			<li class="reports"><span><span><a href="{% url reports %}">Prehľady</a></span></span></li>
+			<li class="password-change"><span><span><a href="{% url password-change %}">{% trans "Zmeniť heslo" %}</a></span></span></li>
+			<li class="logout"><span><span><a href="{% url logout %}">{% trans "Odhlásiť" %}</a></span></span></li>
 		</ul>
 	</div>
 	<div id="middle">

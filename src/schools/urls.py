@@ -22,7 +22,15 @@ urlpatterns = patterns('',
     url(r'^students/', include('schools.students.urls')),
     url(r'^courses/', include('schools.courses.urls')),
     url(r'^reports/', include('schools.reports.urls')),
-    url(r'^$', direct_to_template, {'template':'base.html'}),
+    url(r'^$', direct_to_template, {'template':'home.html'}, name='home'),
+)
+
+# user management
+urlpatterns += patterns('', 
+    url('^change-password/$', 'django.contrib.auth.views.password_change', name='password-change'),
+    url('^change-password/done/$', 'django.contrib.auth.views.password_change_done', name='password-change-done'),
+    url('^login/$', 'django.contrib.auth.views.login', name='login'),
+    url('^logout/$', 'django.contrib.auth.views.logout', name='logout'),
 )
 
 urlpatterns += patterns('',

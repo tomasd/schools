@@ -63,6 +63,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'fullauthentication.middleware.FullAuthenticationMiddleware',
 )
 
 ROOT_URLCONF = 'schools.urls'
@@ -89,6 +90,9 @@ INSTALLED_APPS = (
     'schools.listtable',
     'datepicker',
 )
+
+LOGIN_URL='login/'
+LOGIN_REDIRECT_URL = '/'
 
 try:
     from local_settings import *
