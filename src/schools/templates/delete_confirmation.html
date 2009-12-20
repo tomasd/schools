@@ -1,0 +1,10 @@
+{% load i18n generic_views_tags %}
+	
+{% blocktrans %}
+	Chystáte sa odstrániť <b>{{ object }}</b>.
+{% endblocktrans %}
+	{% trans "Odstránené budú aj nasledujúce objekty:" %}
+	{% related_objects_list object %}
+<form action="" method="POST">
+	<input type="submit" value="{% trans "Áno, som si istý" %}"/>
+</form>

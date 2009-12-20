@@ -4,6 +4,7 @@ from django.db.models import permalink, signals
 from django.db.models.query_utils import Q
 import django.dispatch
 from collections import defaultdict
+from django.utils.datetime_safe import strftime
 
 # Create your models here.
 
@@ -44,12 +45,21 @@ class Course(models.Model):
  
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name=u'kurz'
+        verbose_name_plural=u'kurzy'
+        
     def __unicode__(self):
         return self.name
  
     @permalink
     def get_absolute_url(self):
         return ('courses_course_update', None, {'object_id':str(self.pk)})
+ 
+    @permalink
+    def get_delete_url(self):
+        return ('courses_course_delete', None, {'object_id':str(self.pk)})
  
     @permalink
     def get_coursemembers_url(self):
@@ -96,6 +106,11 @@ class CourseMember(models.Model):
     
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name=u'účastnik kurzu'
+        verbose_name_plural=u'účastníci kurzu'
+        
     def __unicode__(self):
         return unicode(self.student) + str(self.course.pk)
     
@@ -141,6 +156,10 @@ class Lesson(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     
+    class Meta:
+        verbose_name=u'lekcia'
+        verbose_name_plural=u'lekcie'
+        
     def __unicode__(self):
         start_format = '%d.%m.%Y %H:%M'
         end_format = '%H:%M' if self.end.date() == self.start.date() else start_format
@@ -255,6 +274,10 @@ class LessonAttendee(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     
+    class Meta:
+        verbose_name=u'Účastník lekcie'
+        verbose_name_plural=u'Účastníci lekcie'
+    
 class ExpenseGroup(models.Model):
     name = models.CharField(max_length=100)
     course = models.ForeignKey('Course')
@@ -262,6 +285,10 @@ class ExpenseGroup(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     
+    class Meta:
+        verbose_name=u'Nákladová skupina'
+        verbose_name_plural=u'Nákladové skupiny'
+        
     def __unicode__(self):
         return self.name
     
@@ -279,3 +306,8 @@ class ExpenseGroupPrice(models.Model):
     
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name=u'Hodinová sadzba nákladovej skupiny'
+        verbose_name_plural=u'Hodinové sazdby nákladovej skupiny'
+        

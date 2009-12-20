@@ -4,6 +4,7 @@ from schools.courses.models import Course
 from schools.search.views import object_list
 from generic_views.views.ajax import ajax_form_handler
 from schools.courses.forms import ReplanLessonForm
+from generic_views.views.delete import delete_object
 
 urlpatterns = patterns('schools.courses.views',
     url(r'course/(?P<course_id>\d+)/member/create/$', 'coursemember_create', name='courses_coursemember_create'),
@@ -24,6 +25,7 @@ urlpatterns = patterns('schools.courses.views',
     
     url(r'course/create/$', create_object, {'model':Course, 'template_name':'courses/course_create.html'}, name='courses_course_create'),
     url(r'course/(?P<object_id>\d+)/$', 'course_update', name='courses_course_update'),
+    url(r'course/(?P<object_id>\d+)/delete/$', delete_object, {'model':Course, 'post_delete_redirect':'courses_course_list'}, name='courses_course_delete'),
     url(r'course/$', object_list, {'queryset':Course.objects.all(), 'search_fields':['name__contains']}, name='courses_course_list'),
     
 )

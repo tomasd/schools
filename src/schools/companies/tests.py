@@ -6,6 +6,8 @@ Replace these with more appropriate tests for your application.
 """
 
 from django.test import TestCase
+from schools.companies.models import Company
+from schools.students.models import Student
 
 class SimpleTest(TestCase):
     def test_basic_addition(self):
@@ -21,3 +23,12 @@ Another way to test that 1 + 1 is equal to 2.
 True
 """}
 
+class CompanyTest(TestCase):
+    def testRemoveCompany(self):
+        company = Company(name='xxx')
+        company.save()
+        student = Student(first_name='a', last_name='b', company=company)
+        student.save()
+        self.assertTrue(Student.objects.get(pk=student.pk).company is not None)
+        company.delete()
+        self.assertTrue(Student.objects.get(pk=student.pk).company is None)

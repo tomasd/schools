@@ -1,9 +1,33 @@
 # -*- coding: utf-8 -*-
+from collections import defaultdict
 from django.db import models
 from django.db.models import permalink
-from schools.companies.models import LectorManager
 
+class LectorManager(models.Manager):
+    def lesson_analysis(self, start, end):
+        from schools.courses.models import Lesson
+        from schools.companies.models import Subcount
+        
+        lessons = Lesson.objects.filter(real_end__range=(start, end))
+        
+        lector_lessons = defaultdict(dict)
+        
+        for lesson in lessons:
+            if lesson.course not in lector_lessons[lesson.real_lector]:
+                lector_lessons[lesson.real_lector][lesson.course] = Subcount(lesson.course)
+            subcount = lector_lessons[lesson.real_lector][lesson.course]
+            subcount.length += lesson.real_minutes_length
+            subcount.price += lesson.real_lector_price
             
+        lectors = Lector.objects.all() #@UndefinedVariable
+        for lector in lectors:
+            lector.analysis_courses = lector_lessons[lector].values()
+            lector.analysis_length = sum([subcount.length 
+                                          for subcount in lector_lessons[lector].values() ])
+            lector.analysis_price = sum([subcount.price 
+                                          for subcount in lector_lessons[lector].values() ])
+        return lectors
+
 
 # Create your models here.
 class Lector(models.Model):
@@ -25,6 +49,11 @@ class Lector(models.Model):
     
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name=u'lektor'
+        verbose_name_plural=u'lektori'
+        
     def __unicode__(self):
         if self.title:
             return '%s, %s %s' % (self.last_name, self.first_name, self.title)
@@ -33,6 +62,10 @@ class Lector(models.Model):
     @permalink
     def get_absolute_url(self):
         return ('lectors_lector_update', None, {'object_id':str(self.pk)})
+    
+    @permalink
+    def get_delete_url(self):
+        return ('lectors_lector_delete', None, {'object_id':str(self.pk)})
     
     @permalink
     def get_contracts_url(self):
@@ -51,6 +84,10 @@ class Contract(models.Model):
     
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name=u'zmluva'
+        verbose_name_plural=u'zmluvy'
  
     def __unicode__(self):
         return self.contract_number
@@ -68,6 +105,10 @@ class HourRate(models.Model):
     
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name=u'hodinová sadzba'
+        verbose_name_plural=u'hodinové sadzby'
     
     def __unicode__(self):
         return unicode(self.hour_rate)

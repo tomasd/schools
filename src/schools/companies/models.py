@@ -2,7 +2,7 @@
 from collections import defaultdict
 from decimal import Decimal
 from django.db import models
-from django.db.models import permalink
+from django.db.models import permalink, signals
 
 class CompanyManager(models.Manager):
     def invoice(self, start, end, companies=[]):
@@ -82,30 +82,6 @@ class Subcount(object):
         self.length = 0
         self.price = Decimal(0)
         
-class LectorManager(models.Manager):
-    def lesson_analysis(self, start, end):
-        from schools.courses.models import Lesson
-        from schools.lectors.models import Lector
-        
-        lessons = Lesson.objects.filter(real_end__range=(start, end))
-        
-        lector_lessons = defaultdict(dict)
-        
-        for lesson in lessons:
-            if lesson.course not in lector_lessons[lesson.real_lector]:
-                lector_lessons[lesson.real_lector][lesson.course] = Subcount(lesson.course)
-            subcount = lector_lessons[lesson.real_lector][lesson.course]
-            subcount.length += lesson.real_minutes_length
-            subcount.price += lesson.real_lector_price
-            
-        lectors = Lector.objects.all() #@UndefinedVariable
-        for lector in lectors:
-            lector.analysis_courses = lector_lessons[lector].values()
-            lector.analysis_length = sum([subcount.length 
-                                          for subcount in lector_lessons[lector].values() ])
-            lector.analysis_price = sum([subcount.price 
-                                          for subcount in lector_lessons[lector].values() ])
-        return lectors
 
 # Create your models here.
 class Company(models.Model):
@@ -129,9 +105,28 @@ class Company(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     
+    class Meta:
+        verbose_name=u'firma'
+        verbose_name_plural=u'firmy'
+    
     def __unicode__(self):
         return self.name
     
     @permalink
     def get_absolute_url(self):
         return ('companies_company_update', None, {'object_id':str(self.pk)})
+    
+    @permalink
+    def get_delete_url(self):
+        return ('companies_company_delete', None, {'object_id':str(self.pk)})
+    
+    def can_remove(self):
+        return self.student_set.count() == 0
+    
+def _remove_company_from_student(sender, *args, **kwargs):
+    from schools.students.models import Student
+    company = kwargs['instance']
+    for student in company.student_set.all():
+        student.company = None
+        student.save()
+signals.pre_delete.connect(_remove_company_from_student, sender=Company)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from django.db.models import permalink
+from django.db.models import permalink, signals
 from collections import defaultdict
 
 class StudentManager(models.Manager):
@@ -42,6 +42,10 @@ class Student(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     
+    class Meta:
+        verbose_name=u'študent'
+        verbose_name_plural=u'študenti'
+    
     def __unicode__(self):
         if self.title:
             return '%s, %s %s' % (self.last_name, self.first_name, self.title)
@@ -50,3 +54,7 @@ class Student(models.Model):
     @permalink
     def get_absolute_url(self):    
         return ('students_student_update', None, {'object_id':str(self.pk)})
+
+    @permalink
+    def get_delete_url(self):    
+        return ('students_student_delete', None, {'object_id':str(self.pk)})

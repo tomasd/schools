@@ -1,0 +1,15 @@
+{% load model_class_tags %}
+<ul>
+{% for class, objects in related_objects %}
+	{% if objects %}
+	<li>
+		{% class_plural_name class %}:
+		<ul>
+		{% for id, object in objects.items %}
+			<li>{{ object }}</li>
+		{% endfor %}
+		</ul>
+	</li>
+	{% endif %}
+{% endfor %}
+</ul>

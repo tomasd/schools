@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+from calendar import monthrange
 from decimal import Decimal
 from django.db import models
 from django.db.models import permalink
-from django.db.models.query_utils import Q
-from calendar import monthrange
+from django.db.models.query_utils import Q, CollectedObjects
+from schools import get_related_objects
 import calendar
 import datetime
 
@@ -16,6 +17,11 @@ class Classroom(models.Model):
     
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name=u'učebňa'
+        verbose_name_plural=u'učebne'
+        
     def __unicode__(self):
         return self.name
     
@@ -33,12 +39,21 @@ class Building(models.Model):
     
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name=u'budova'
+        verbose_name_plural=u'budovy'
+        
     def __unicode__(self):
         return self.name
     
     @permalink
     def get_absolute_url(self):
         return ('buildings_building_update', None, {'object_id':str(self.pk)})
+    
+    @permalink
+    def get_delete_url(self):
+        return ('buildings_building_delete', None, {'object_id':str(self.pk)})
     
     def building_price_for(self, start_date, end_date):
         price = Decimal(0)
@@ -49,7 +64,7 @@ class Building(models.Model):
                 days = Decimal((end-start).days + 1)
                 price += (days/Decimal(monthrange(start.year, start.month)[1])) * expense.price
         return price
-
+    
 def iter_months(start, end):        
     while start < end:
         r = calendar.monthrange(start.year, start.month)
@@ -67,6 +82,10 @@ class BuildingMonthExpense(models.Model):
     
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name=u'Mesačný náklad na budovu'
+        verbose_name_plural=u'Mesačné náklady na budovu'
     
     def __unicode__(self):
         fmt = '%d.%m.%Y'

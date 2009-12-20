@@ -1,0 +1,11 @@
+{% extends "buildings/base.html" %}
+{% load i18n %}
+
+{% block content %}
+	<div class="top-bar">
+		<h1>{% trans "Odstrániť firmu" %}</h1>
+		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
+	</div><br />
+	
+	{% include "delete_confirmation.html" %}
+{% endblock %}

@@ -1,5 +1,5 @@
 {% extends "buildings/base.html" %}
-{% load i18n %}
+{% load i18n generic_views_tags %}
 {% block content %}
 	<div class="top-bar">
 		<h1>{% trans "Upraviť budovu" %}  {{ object }}</h1>
@@ -28,6 +28,7 @@
 			</table>
 					
 			<input type="submit" value="{% trans "Uložiť" %}"/>
+			<a href="{{ object.get_delete_url }}">{% trans "Odstrániť" %}</a>
 		</form>
 	</div>
 {% endblock %}
