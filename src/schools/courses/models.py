@@ -5,6 +5,7 @@ from django.db.models.query_utils import Q
 import django.dispatch
 from collections import defaultdict
 from django.utils.datetime_safe import strftime
+from schools import fix_date_boundaries
 
 # Create your models here.
 
@@ -16,7 +17,7 @@ class CourseManager(models.Manager):
                 self.price = price
                 
                 
-        lessons = Lesson.objects.filter(end__range=(start, end))
+        lessons = Lesson.objects.filter(end__range=(start, fix_date_boundaries(end)))
         # kurz, plánované lekciohodiny, plánované kurzohodiny, plánovaná cena
         lesson_dict = defaultdict(list)
         
@@ -25,7 +26,7 @@ class CourseManager(models.Manager):
             
         for course, lessons_list in lesson_dict.items():
             lessonhours = sum([lesson.minutes_length for lesson in lessons_list])
-            course_members = course.coursemember_set.filter(Q(end__isnull=True) | Q(end__gte=start), start__lte=end)
+            course_members = course.coursemember_set.filter(Q(end__isnull=True) | Q(end__gte=start), start__lt=fix_date_boundaries(end))
             price = sum([sum(course_member_price(lesson, course_members, lesson.start, lesson.end).values()) for lesson in lessons_list])
             
             course.course_plan = CoursePlan(lessonhours, price)
@@ -77,13 +78,13 @@ class Course(models.Model):
 class CourseMemberManager(models.Manager):
     def invoice(self, start, end, companies=[]):
         lesson_attendees = defaultdict(list)
-        _attendees = LessonAttendee.objects.filter(lesson__real_end__range=(start, end))
+        _attendees = LessonAttendee.objects.filter(lesson__real_end__range=(start, fix_date_boundaries(end)))
         if companies: _attendees = _attendees.filter(course_member__student__company__in=companies)
         for attendee in _attendees.select_related('lesson'):
             lesson_attendees[attendee.course_member].append(attendee)
 
         course_members = defaultdict(list)
-        _members = CourseMember.objects.filter(lessonattendee__lesson__real_end__range=(start, end))
+        _members = CourseMember.objects.filter(lessonattendee__lesson__real_end__range=(start, fix_date_boundaries(end)))
         if companies: _members = _members.filter(student__company__in=companies)
         for course_member in _members.distinct():
             course_member.invoice_attendees = lesson_attendees[course_member]
@@ -134,7 +135,7 @@ class CourseMember(models.Model):
 lesson_assign_attendees = django.dispatch.Signal(providing_args=["lesson"])
 def create_lesson_attendees(sender, *args, **kwargs):
     lesson = kwargs['lesson']
-    course_members = lesson.course.coursemember_set.filter(Q(end__isnull=True) | Q(end__gte=lesson.start), start__lte=lesson.end)
+    course_members = lesson.course.coursemember_set.filter(Q(end__isnull=True) | Q(end__gte=lesson.start), start__lt=fix_date_boundaries(lesson.end))
     lesson_members = [a.course_member for a in lesson.lessonattendee_set.all()]
     course_members = filter(lambda member:member not in lesson_members, course_members)
     lesson.lessonattendee_set = [LessonAttendee(course_member=a) for a in course_members] 
@@ -238,7 +239,7 @@ def course_member_price(lesson, course_members, start, end):
     
     course_members_dict = {}
     for expense_group, course_members in expense_groups.items():
-        expense_group_prices = expense_group.expensegroupprice_set.filter(Q(end__isnull=True)|Q(end__gte=start), start__lte=end)
+        expense_group_prices = expense_group.expensegroupprice_set.filter(Q(end__isnull=True)|Q(end__gte=start), start__lt=fix_date_boundaries(end))
         hour_rate = list(expense_group_prices)[-1]
         price = calculate_price(hour_rate.price, end - start)
         for course_member in course_members:

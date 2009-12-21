@@ -2,6 +2,7 @@
 from django.db import models
 from django.db.models import permalink, signals
 from collections import defaultdict
+from schools import fix_date_boundaries
 
 class StudentManager(models.Manager):
     def invoice(self, start, end, companies=[]):
@@ -9,7 +10,7 @@ class StudentManager(models.Manager):
         
         course_members = CourseMember.objects.invoice(start, end, companies)
         
-        students_list = Student.objects.filter(coursemember__lessonattendee__lesson__real_end__range=(start, end)).distinct()
+        students_list = Student.objects.filter(coursemember__lessonattendee__lesson__real_end__range=(start, fix_date_boundaries(end))).distinct()
         if companies: students_list = students_list.filter(company__in=companies)
         students = defaultdict(list)
         for student in students_list:

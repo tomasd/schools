@@ -7,6 +7,7 @@ from schools.buildings.forms import BuildingForm, ClassroomLessonsForm
 from schools.buildings.models import Building, Classroom, BuildingMonthExpense
 from django.utils import simplejson
 from django.utils.dateformat import format
+from schools import fix_date_boundaries
 
 def building_update(request, object_id):
     inlines = [{'model':Classroom}, {'model':BuildingMonthExpense, 'extra':1}]
@@ -22,7 +23,7 @@ def classroom_lessons(request, object_id):
         if form.cleaned_data['start']:
             lessons = lessons.filter(end__gte=form.cleaned_data['start'])
         if form.cleaned_data['end']:
-            lessons = lessons.filter(start__lte=form.cleaned_data['end'])
+            lessons = lessons.filter(start__lt=fix_date_boundaries(form.cleaned_data['end']))
     lessons = [{'id':a.pk,
                 'start':format(a.start, 'Y-m-d\TH:i:s.000O'), 
                 'end':format(a.end, 'Y-m-d\TH:i:s.000O'),

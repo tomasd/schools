@@ -4,10 +4,9 @@ from decimal import Decimal
 from django.db import models
 from django.db.models import permalink
 from django.db.models.query_utils import Q, CollectedObjects
-from schools import get_related_objects
+from schools import get_related_objects, fix_date_boundaries
 import calendar
 import datetime
-
 # Create your models here.
 class Classroom(models.Model):
     name = models.CharField(max_length=100)
@@ -58,7 +57,7 @@ class Building(models.Model):
     def building_price_for(self, start_date, end_date):
         price = Decimal(0)
         for start, end in iter_months(start_date, end_date):
-            expenses = BuildingMonthExpense.objects.filter(Q(end__isnull=True)|Q(end__gte=start), start__lte=end)
+            expenses = BuildingMonthExpense.objects.filter(Q(end__isnull=True)|Q(end__gte=start), start__lt=fix_date_boundaries(end))
             if expenses:
                 expense = expenses[0]
                 days = Decimal((end-start).days + 1)
