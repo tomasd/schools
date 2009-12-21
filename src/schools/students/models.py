@@ -54,6 +54,10 @@ class Student(models.Model):
     @permalink
     def get_absolute_url(self):    
         return ('students_student_update', None, {'object_id':str(self.pk)})
+    
+    @permalink
+    def get_courses_url(self):    
+        return ('students_student_courses', None, {'object_id':str(self.pk)})
 
     @permalink
     def get_delete_url(self):    

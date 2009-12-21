@@ -125,6 +125,11 @@ class CourseMember(models.Model):
     def get_absolute_url(self):
         return ('courses_coursemember_update', None, {'course_id':str(self.course.pk), 'object_id':str(self.pk)})
 
+    def duration(self):
+        start_format = '%d.%m.%Y'
+        if self.end is None:
+            return '%s - ' % format(self.start, start_format)
+        return '%s - %s' % (format(self.start, start_format), format(self.end, start_format))
 
 lesson_assign_attendees = django.dispatch.Signal(providing_args=["lesson"])
 def create_lesson_attendees(sender, *args, **kwargs):

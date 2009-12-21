@@ -6,7 +6,8 @@
 	{% if student.pk %}
 	<h3>{% trans "Študent" %} {{ student }}</h3>
 	<ul class="nav">
-		<li class="last"><a href="{{ student.get_absolute_url }}">{% trans "Úprava študenta" %}</a></li>
+		<li><a href="{{ student.get_absolute_url }}">{% trans "Úprava študenta" %}</a></li>
+		<li class="last"><a href="{{ student.get_courses_url }}">{% trans "Navštevované kurzy" %}</a></li>
 	</ul>
 	{% endif %}
 {% endblock %}

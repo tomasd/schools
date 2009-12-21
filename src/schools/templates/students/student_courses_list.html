@@ -1,0 +1,17 @@
+{% extends "students/base.html" %}
+{% load i18n listtable%}
+{% block content %}
+	<div class="top-bar">
+		<a href="{% url students_student_create %}" class="button">{% trans "Pridať" %}</a>
+		<h1>{% trans "Zoznam kurzov pre študenta" %} {{ student }}</h1>
+		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
+	</div><br />
+	<div class="select-bar">
+		<form>
+			{% include "form_inline.html" %}
+		    <input type="submit" name="Submit" value="Search" />
+		</form>
+	</div>
+	
+	{% listtable_columns object_list course as _("Kurz") duration as _("Termín") %}
+{% endblock %}
