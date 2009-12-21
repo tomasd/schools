@@ -1,15 +1,28 @@
 """Create and Update views with inlines."""
 from django import http
-from django.core.xheaders import populate_xheaders
 from django.contrib.auth.views import redirect_to_login
+from django.core.xheaders import populate_xheaders
 from django.forms.formsets import all_valid
-from django.forms.models import inlineformset_factory
+from django.forms.models import inlineformset_factory, ModelForm
 from django.template import loader, RequestContext
 from django.utils.translation import ugettext
 from django.views.generic.create_update import get_model_and_form_class, \
     lookup_object, redirect, apply_extra_context
 
 __all__ = ('create_object', 'update_object')
+
+#def my_view(request):
+#
+#     class MyModelForm(ModelForm):
+#         class Meta:
+#             model = MyModel
+#
+#         def __init__(self, *args, **kwargs):
+#             kwargs['initial'] = {'field1': request.GET.get('field1','')}
+#             return super(MyModelForm, self).__init__(*args, **kwargs)
+#
+#     return create_object(request, form_class=MyModelForm)
+
 
 def create_object(request, model=None, template_name=None,
         template_loader=loader, extra_context=None, post_save_redirect=None,
@@ -34,8 +47,18 @@ def create_object(request, model=None, template_name=None,
     formset_classes = []
     formsets = []
     
-    model, form_class = get_model_and_form_class(model, form_class)
+    tmodel, form_class = get_model_and_form_class(model, form_class)
+    class InitialModelForm(form_class):
+        class Meta:
+            model = tmodel
 
+        def __init__(self, *args, **kwargs):
+            kwargs['initial'] = dict(request.GET.items())#{'field1': request.GET.get('field1','')}
+            return super(InitialModelForm, self).__init__(*args, **kwargs)
+    model = tmodel
+    form_class = InitialModelForm
+    print dict(request.GET.items())
+    
     for inline in inlines:
         formset_classes.append(inlineformset_factory(model, **inline))
 
@@ -63,7 +86,8 @@ def create_object(request, model=None, template_name=None,
                         {"verbose_name": model._meta.verbose_name})
             return redirect(post_save_redirect, new_object)
     else:
-        form = form_class(initial=initial)
+
+        form = form_class()
         for klass in formset_classes:
             formset = klass()
             formsets.append(formset)

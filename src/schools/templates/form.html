@@ -9,9 +9,11 @@
 	
 					
 			<input type="submit" value="{% trans "Uložiť" %}"/>
+			{% if object %}
 			{% candelete object %}
 				<a href="{{ object.get_delete_url }}">{% trans "Odstrániť" %}</a>
 			{% endcandelete %}
+			{% endif %}
 		</form>
 	</div>
 {% endblock %}

@@ -1,8 +1,8 @@
 from django.conf.urls.defaults import patterns, url
-from django.views.generic.create_update import create_object
+from generic_views.views.create_update import create_object
+from generic_views.views.delete import delete_object
 from schools.search.views import object_list
 from schools.students.models import Student
-from generic_views.views.delete import delete_object
 
 urlpatterns = patterns('schools.students.views',
     url(r'student/create/$', create_object, {'model':Student}, name='students_student_create'),

@@ -1,6 +1,7 @@
 from django import template
 from django.template import Variable
 from schools import get_related_objects
+from django.utils.safestring import mark_safe
 
 register=template.Library() 
 
@@ -22,11 +23,12 @@ class CanDeleteNode(template.Node):
     def render(self, context):
         object = self.object_name.resolve(context)
         if object is not None:
-            if hasattr(object, 'get_absolute_url'):
+            if hasattr(object, 'get_remove_url'):
                 if hasattr(object, 'can_remove'):
                     if not getattr(object, 'can_remove'):
                         return ''
                 return self.body.render(context)
+            
 
 @register.inclusion_tag('generic_views/related_objects.html')
 def related_objects_list(obj):
