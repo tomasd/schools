@@ -1,0 +1,29 @@
+{% load i18n %}
+{% load listtable %}
+<div class="pager">
+   {% if has_previous %}
+      <span class="page">
+      <a href="?{% page_query previous request.GET %}">&lt; {% trans "Predošlá" %}</a>
+      </span>
+   {% endif %}
+
+   {% if show_first %}
+      <span class="page"><a href="?{% page_query 1 request.GET %}">1</a></span>
+      <span class="ellipsis">...</span>
+   {% endif %}
+   {% for linkpage in page_numbers %}
+      {% ifequal linkpage page %}
+         <span class="current">{{ page }}</span>
+      {% else %}
+         <span class="page"><a href="?{% page_query linkpage request.GET %}"
+               >{{ linkpage }}</a></span>
+      {% endifequal %}
+   {% endfor %}
+   {% if show_last %}
+      <span class="ellipsis">...</span>
+      <span class="page"><a href="?{% page_query last request.GET">{{ pages }}</a></span>
+   {% endif %}
+   {% if has_next %}
+      <span class="page"><a href="?{% page_query next request.GET %}">{% trans "Ďalšia" %} &gt;</a></span>
+   {% endif %}
+</div>

@@ -17,4 +17,5 @@ def object_list(request, search_fields=[], *args, **kwargs):
     kwargs['extra_context'] = kwargs.get('extra_context', {})
     kwargs['extra_context']['form'] = form
     kwargs['queryset'] = queryset
+    kwargs['paginate_by'] = kwargs.get('paginate_by', 1)
     return generic_object_list(request, *args, **kwargs)
