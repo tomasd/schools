@@ -64,6 +64,10 @@ class Lector(models.Model):
         return ('lectors_lector_update', None, {'object_id':str(self.pk)})
     
     @permalink
+    def get_courses_url(self):
+        return ('lectors_lector_courses', None, {'object_id':str(self.pk)})
+    
+    @permalink
     def get_delete_url(self):
         return ('lectors_lector_delete', None, {'object_id':str(self.pk)})
     

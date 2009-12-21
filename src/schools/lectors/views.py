@@ -22,3 +22,9 @@ def lector_update(request, *args, **kwargs):
     kwargs['extra_context'] = kwargs.get('extra_context', {})
     kwargs['extra_context']['lector'] = get_object_or_404(Lector, pk=kwargs['object_id'])
     return update_object(request, *args, **kwargs)
+
+def lector_courses(request, object_id):
+    lector = get_object_or_404(Lector, pk=object_id)
+    queryset = lector.course_set.all()
+    return object_list(request, ('name__contains', ), queryset=queryset, template_name='lectors/lector_courses.html',
+                       extra_context={'lector':lector})

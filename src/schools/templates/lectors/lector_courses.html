@@ -1,0 +1,9 @@
+{% extends "lectors/base.html" %}
+{% load i18n listtable %}
+{% block content %}
+	<div class="top-bar">
+		<h1>{% trans "Zoznam vyučovaných kurzov lektora" %}  {{ lector }}</h1>
+		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
+	</div><br />
+	{% listtable object_list _("Kurz") %}
+{% endblock %}
