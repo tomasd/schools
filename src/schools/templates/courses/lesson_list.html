@@ -32,6 +32,8 @@
 			businessHours:{start: 6, end: 20, limitDisplay: true}, 
 			firstDayOfWeek:1, 
 			use24Hour: true,
+			overlapEventsSeparate: true,
+			allowCalEventOverlap: true,
 			dateFormat: 'd.m.Y',
 			timeFormat: 'H:i',
 			draggable: function(calEvent, eventElement) {
@@ -41,9 +43,17 @@
 				return Boolean(calEvent.id);
 			},
 			data: function(start, end, callback) {
-				  $.getJSON("{% url courses_lesson_list_json course.pk %}", {
-				     start: $("#calendar").weekCalendar("formatDate", start, format='d.m.Y H:i:s'),
-				     end: $("#calendar").weekCalendar("formatDate", end, format='d.m.Y H:i:s')
+				  $.getJSON("{% url courses_lesson_list_json  %}", {
+				     start: $("#calendar").weekCalendar("formatDate", start, format='d.m.Y'),
+				     end: $("#calendar").weekCalendar("formatDate", end, format='d.m.Y'),
+				     realized: $("#id_realized").val(),
+				     lector: $("#id_lector").val(),
+				     building: $("#id_building").val(),
+				     {% if course %}
+				     	course: {{ course.pk }},
+				     	{% else %}
+				     	course: $("#id_course").val(),
+				     {% endif %}
 				   },  function(result) {
 				     callback(result);
 				   });
@@ -57,14 +67,17 @@
 
 {% block content %}
 	<div class="top-bar">
-		<a href="{% url courses_lesson_create course.pk %}" class="button">{% trans "Pridať" %}</a>
+		{% if course %}<a href="{% url courses_lesson_create course.pk %}" class="button">{% trans "Pridať" %}</a>{% endif %}
 		<h1>{% trans "Zoznam lekcií" %}</h1>
 		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
 	</div><br />
 	<div class="select-bar">
-	TODO: Doplnit filter
-	   <label> <input type="text" name="textfield" /> </label>
-	   <label> <input type="submit" name="Submit" value="Search" />
+		<form action="" method="GET">
+			<table>
+			{{ form }}
+			</table>
+			<input type="submit" value="{% trans "Hľadať" %}"/>
+		</form>
 	</label>
 	</div>
 	
@@ -81,11 +94,17 @@
 			<table class="listing" cellpadding="0" cellspacing="0">
 				<tr>
 					<th class="first">{% trans "Lekcia" %}</th>
+					{% if not course %}
+					<th>{% trans "Kurz" %}</th>
+					{% endif %}
 					<th class="last">{% trans "Akcie" %}</th>
 				</tr>
 				{% for object in object_list %}
 				<tr class="{% cycle 'bg' '' %}">
 					<td class="first style1"><a href="{{ object.get_absolute_url }}">{{ object }}</a></td>
+					{% if not course %}
+					<td>{{ object.course }}</td>
+					{% endif %}
 					<td  class="last">
 						<a href="{{ object.get_absolute_url }}" title="{% trans "Upraviť" %}"><img src="{{ MEDIA_URL }}img/edit-icon.gif" width="16" height="16" alt="" /></a>
 						<a href="{{ object.get_attendance_url }}" title="{% trans "Prezenčka" %}"><img src="{{ MEDIA_URL }}img/login-icon.gif" width="16" height="16" alt="login" /></a>
@@ -101,8 +120,8 @@
 		  	{% endif %}
 		</div>
 		
-		<div id="lesson-calendar"  style="padding: 0;">
+		<div id="lesson-calendar"  style="padding: 0; position: absolute; width: 100%;left: 0;background: white;">
 			<div id="calendar"></div>
-		</div>
+		</div>		
 	</div>
 {% endblock %}

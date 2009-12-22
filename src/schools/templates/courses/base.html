@@ -2,13 +2,21 @@
 {% block body_class %}{{ block.super }} courses{% endblock %}
 
 {% block left_content %}
-	{% if course.pk %}
-	<h3>Kurz {{ course }}</h3>
-	<ul class="nav">
-		<li><a href="{{ course.get_absolute_url }}">Úprava kurzu</a></li>
-		<li><a href="{{ course.get_coursemembers_url }}">Účastníci kurzu</a></li>
-		<li><a href="{{ course.get_lessons_url }}">Lekcie</a></li>
-		<li class="last"><a href="{{ course.get_expensegroups_url }}">Nákladové skupiny</a></li>
-	</ul>
+	{% if course %}
+		{% if course.pk %}
+		<h3>Kurz {{ course }}</h3>
+		<ul class="nav">
+			<li><a href="{{ course.get_absolute_url }}">Úprava kurzu</a></li>
+			<li><a href="{{ course.get_coursemembers_url }}">Účastníci kurzu</a></li>
+			<li><a href="{{ course.get_lessons_url }}">Lekcie</a></li>
+			<li class="last"><a href="{{ course.get_expensegroups_url }}">Nákladové skupiny</a></li>
+		</ul>
+		{% endif %}
+	{% else %}
+		<h3>Kurzy</h3>
+		<ul class="nav">
+			<li><a href="{% url courses_course_list %}">Zoznam kurzov</a></li>
+			<li class="last"><a href="{% url courses_lessons %}">Prezenčky</a></li>
+		</ul>
 	{% endif %}
 {% endblock %}

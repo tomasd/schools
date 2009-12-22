@@ -362,3 +362,7 @@ div.table .select select {
 .error {
 	color: red !important;
 }
+
+.wc-scrollable-grid {
+	height: 100em;
+}

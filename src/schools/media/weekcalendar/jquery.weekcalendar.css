@@ -1,60 +1,60 @@
 
 
-.week-calendar {
+.wc-container {
 	font-size: 14px;	
 	font-family: arial, helvetica;
 }
 
-.week-calendar .calendar-nav {
+.wc-nav {
 	padding: 1em;
 	text-align: right;	
 }
 
-.week-calendar .calendar-nav button {
+.wc-nav button {
 	margin: 0 0.5em;	
 }
  
 
-.week-calendar table {
+.wc-container table {
 	border-collapse: collapse;
     border-spacing: 0;
 }
-.week-calendar table td {
+.wc-container table td {
 	margin: 0;
 	padding: 0;
 }
 
-.week-calendar-header {
+.wc-header {
 	background: #eee;
 	border-top: 1px solid #aaa;
 	border-bottom: 1px solid #aaa;
 	width: 100%;
 }
 
-.week-calendar-header .time-column-header {
-	width: 5%;	
+.wc-header .wc-time-column-header {
+	width: 6%;	
 }
 
-.week-calendar-header .scrollbar-shim {
+.wc-header .wc-scrollbar-shim {
 	width: 16px;	
 }
 
-.week-calendar-header .day-column-header {
+.wc-header .wc-day-column-header {
 	text-align: center;
 	padding: 0.4em;
 }
-.week-calendar-header td {
+.wc-header td {
 	background-color: #eee;	
 }
 
-.grid-timeslot-header {
+.wc-grid-timeslot-header {
 	width: 6%;
 	background: #eee;	
 }
 
 
 
-.calendar-scrollable-grid {
+.wc-scrollable-grid {
 	overflow: auto;
 	overflow-x: hidden !important;
 	overflow-y: auto !important; 
@@ -64,67 +64,67 @@
 }
 
 
-table.week-calendar-time-slots {
+table.wc-time-slots {
 	width: 100%;
 	table-layout: fixed;
 	cursor: default;
 }
 
-.week-calendar-time-slots .day-column {
+.wc-day-column {
 	width: 13.5%;
 	border-left: 1px solid #ddd;	
 	overflow: visible;
 	vertical-align: top;
 }
 
-.week-calendar-time-slots .day-column-inner {
+.wc-day-column-inner {
 	width: 100%;
 	position:relative;	
 }
 
-.time-slot-wrapper {
+.wc-time-slot-wrapper {
 	position:relative;	
 	height: 1px;
 	top: 1px;
 }
 
-.time-slots {
+.wc-time-slots {
 	position: absolute;	
 	width: 100%;
 }
 
 
-.time-header-cell {
+.wc-time-header-cell {
 	padding: 5px;	
 	height: 80px; /* reference height */
 }
 
 
-.time-slot {
+.wc-time-slot {
 	border-bottom: 1px dotted #ddd;	
 }
 
-.hour-header {
+.wc-hour-header {
 	text-align: right;
 }
 
-.hour-end, .hour-header {
+.wc-hour-end, .wc-hour-header {
 	border-bottom: 1px solid #ccc;	
 	color: #555;
 }
 
-.business-hours {
+.wc-business-hours {
 	background-color: #E6EEF1;
 	border-bottom: 1px solid #ccc;
 	color: #333;
 	font-size: 1.4em;
 }
 
-.business-hours .am-pm {
+.wc-business-hours .wc-am-pm {
 	font-size: 0.6em;	
 }
 
-.day-header-cell {
+.wc-day-header-cell {
 	text-align: center;
 	vertical-align: middle;
 	padding: 5px;
@@ -132,21 +132,21 @@ table.week-calendar-time-slots {
 
 
 
-.time-slot-header .header-cell {
+.wc-time-slot-header .wc-header-cell {
 	text-align: right;
 	padding-right: 10px;	
 }
 
-.week-calendar-header .today  {
+.wc-header .wc-today  {
 	font-weight: bold;
 }
 
-.week-calendar-time-slots .today {
+.wc-time-slots .wc-today {
 	background-color: #ffffcc;	
 }
 
 
-.cal-event {
+.wc-cal-event {
 	background-color: #68a1e5;	
 	filter:alpha(opacity=80);
 	-moz-opacity:0.8;
@@ -162,12 +162,12 @@ table.week-calendar-time-slots {
 }
 
 
-.cal-event div {
+.wc-cal-event div {
 	padding: 0 5px;
 	
 }
 
-.cal-event .time {
+.wc-cal-event .wc-time {
 	background-color: #2b72d0;
 	border: 1px solid #1b62c0;
 	color: #fff;
@@ -175,17 +175,20 @@ table.week-calendar-time-slots {
 	font-weight: bold;
 }
 
-.ui-draggable .time {
+.wc-container .ui-draggable .wc-time {
 	cursor: move;
 }
 
-.cal-event .title {
+.wc-cal-event .wc-title {
 	position: relative;	
 }
 
-.ui-resizable-s {
+.wc-container .ui-resizable-s {
 	height: 10px;
 	bottom: -8px;	
 }
 
 
+.wc-container .ui-draggable-dragging {
+   z-index: 1000;
+}

@@ -8,15 +8,17 @@ from django.utils import simplejson
 from django.utils.dateformat import format
 from django.utils.translation import ugettext
 from django.views.decorators.http import require_POST
+from generic_views.views.ajax import JSONResponse
 from generic_views.views.create_update import update_object, create_object
+from schools import fix_date_boundaries
 from schools.courses.forms import CourseMemberForm, ExpenseGroupForm, \
     LessonPlanForm, LessonRealizedForm, LessonAttendeeForm, CourseMemberCreateForm, \
-    ChooseClassroomForm, CourseLessonsForm, ReplanLessonForm
+    ChooseClassroomForm, ReplanLessonForm, LessonSearchForm
 from schools.courses.models import Course, CourseMember, ExpenseGroup, \
     ExpenseGroupPrice, Lesson, LessonAttendee, lesson_assign_attendees
 from schools.genericform.form import PreProcessForm
 from schools.search.views import object_list
-from generic_views.views.ajax import JSONResponse
+from django.views.generic.list_detail import object_list as django_object_list
 
 def course_update(request, object_id):
     course = get_object_or_404(Course, pk=object_id)
@@ -87,26 +89,19 @@ def lesson_attendance(request, course_id, object_id):
                          inlines=inlines,post_save_redirect=lesson.get_attendance_url())
 
 def lesson_list(request, course_id):
-    course = get_object_or_404(Course, pk=course_id)    
-    return object_list(request, queryset=Lesson.objects.filter(course=course), extra_context={'course':course,})
-
-def lesson_list_json(request, course_id):
+    def _remove_course_field(form):
+        del form.fields['course']
+        return form
     course = get_object_or_404(Course, pk=course_id)
-    form = CourseLessonsForm(request.GET)
-    lessons = course.lesson_set.filter(realized=False)
-    if form.is_valid():
-        if form.cleaned_data['start']:
-            lessons = lessons.filter(end__gte=form.cleaned_data['start'])
-        if form.cleaned_data['end']:
-            lessons = lessons.filter(start__lte=form.cleaned_data['end'])
-    lessons = [{'id':a.pk,
-                'start':format(a.start, 'Y-m-d\TH:i:s.000O'), 
-                'end':format(a.end, 'Y-m-d\TH:i:s.000O'),
-                'title':unicode(a.course),
-                'replan_url':reverse(lesson_replan, kwargs={'course_id':course_id, 'object_id':str(a.pk)})} 
-                for a in lessons]
-    text = simplejson.dumps(lessons)
-    return HttpResponse(text, mimetype='application/json')
+    queryset = course.lesson_set.all()
+    if request.GET:
+        form = _remove_course_field(LessonSearchForm(request.GET))
+        if form.is_valid():
+            queryset = _search_lessons(queryset, form)
+    else:
+        form = _remove_course_field(LessonSearchForm())
+    return django_object_list(request, queryset=queryset, extra_context={'course':course, 'form':form})
+
 
 @require_POST
 def lesson_replan(request, course_id, object_id):
@@ -118,3 +113,46 @@ def lesson_replan(request, course_id, object_id):
         return JSONResponse({'success':True, })
     return  JSONResponse({'success':False, 'errors':form.errors})
         
+def _search_lessons(queryset, form):
+    if form.cleaned_data['course']:
+        queryset = queryset.filter(course=form.cleaned_data['course'])
+    if form.cleaned_data['start']:
+        queryset = queryset.filter(end__gte=form.cleaned_data['start'])
+    if form.cleaned_data['end']:
+        queryset = queryset.filter(start__lt=fix_date_boundaries(form.cleaned_data['end']))
+    if form.cleaned_data['realized'] is not None:
+            queryset = queryset.filter(realized=form.cleaned_data['realized'])
+    if form.cleaned_data['building']:
+        queryset = queryset.filter(classroom__building=form.cleaned_data['building'])
+    if form.cleaned_data['lector']:
+        queryset = queryset.filter(course__lector=form.cleaned_data['lector'])
+    return queryset
+
+def courses_lessons(request):
+    queryset = Lesson.objects.none()
+    
+    if request.GET:
+        queryset = Lesson.objects.all()
+        form = LessonSearchForm(request.GET)
+        if form.is_valid():
+            queryset = _search_lessons(queryset, form)
+    else:
+        form = LessonSearchForm()
+    
+    return django_object_list(request, queryset=queryset, template_name='courses/lesson_list.html', extra_context={'form':form})
+
+def lesson_list_json(request):
+#    course = get_object_or_404(Course, pk=course_id)
+    form = LessonSearchForm(request.GET)
+    lessons = Lesson.objects.none()
+    if form.is_valid():
+        lessons = Lesson.objects.all()
+        lessons = _search_lessons(lessons, form)
+    lessons = [{'id':a.pk,
+                'start':format(a.start, 'Y-m-d\TH:i:s.000O'), 
+                'end':format(a.end, 'Y-m-d\TH:i:s.000O'),
+                'title':u'%s - %s' % (a.classroom, a.course),
+                'replan_url':reverse(lesson_replan, kwargs={'course_id':a.course.pk, 'object_id':str(a.pk)})} 
+                for a in lessons]
+    text = simplejson.dumps(lessons)
+    return HttpResponse(text, mimetype='application/json')

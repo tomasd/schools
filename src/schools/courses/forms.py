@@ -1,12 +1,13 @@
+from datepicker.widgets import SplitDatePickerTimePickerWidget
 from django import forms
 from django.forms.models import save_instance
 from django.forms.util import ValidationError
 from django.forms.widgets import HiddenInput, Select, DateTimeInput
 from django.utils.translation import ugettext
+from schools.buildings.models import Classroom, Building
 from schools.courses.models import Course, CourseMember, ExpenseGroup, Lesson, \
     LessonAttendee
-from schools.buildings.models import Classroom
-from datepicker.widgets import SplitDatePickerTimePickerWidget
+from schools.lectors.models import Lector
 
 
 class CourseForm(forms.ModelForm):
@@ -75,9 +76,7 @@ class LessonAttendeeForm(forms.ModelForm):
 class ChooseClassroomForm(forms.Form):
     classroom = forms.ModelChoiceField(queryset=Classroom.objects.all())
     
-class CourseLessonsForm(forms.Form):
-    start = forms.DateTimeField(required=False)
-    end = forms.DateTimeField(required=False)
+
     
 class ReplanLessonForm(forms.ModelForm):
     '''
@@ -88,3 +87,11 @@ class ReplanLessonForm(forms.ModelForm):
     class Meta:
         model = Lesson
         fields = ('start', 'end')
+        
+class LessonSearchForm(forms.Form):
+    start = forms.DateField(required=False)
+    end = forms.DateField(required=False)
+    realized = forms.NullBooleanField(required=False)
+    lector = forms.ModelChoiceField(queryset=Lector.objects.all(), required=False)
+    building = forms.ModelChoiceField(queryset=Building.objects.all(), required=False)
+    course = forms.ModelChoiceField(queryset=Course.objects.all(), required=False)
