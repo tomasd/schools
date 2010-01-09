@@ -1,0 +1,45 @@
+{% extends "courses/base.html" %}
+{% load i18n %}
+
+{% block content %}
+	<div class="top-bar">
+		<h1>Upraviť  testovanie</h1>
+		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
+	</div>
+	<form action="." method="post">
+			<br/>
+			<table class="listing form" cellpadding="0" cellspacing="0">
+					{% include "form_table.html" %}
+			</table>
+			
+			{{ testresult_formset.management_form }}
+			<table class="listing" cellpadding="0" cellspacing="0">
+			<thead>
+				<tr>
+					<th>{% trans "Študent" %}</th>
+					<th>{% trans "Skóre" %}</th>
+				</tr>
+			</thead>
+			{% for form_result in testresult_formset.forms %}
+			<tr valign="top" class="{% cycle 'bg' '' as rowcolor %}">
+				<td>
+					{{ form_result.course_member }}{% if form_result.course_member.errors %}<div class="error">{{ form_result.course_member.errors|join:", " }}</div>{% endif %}
+					{{ form_result.id }}
+				</td>
+				<td>
+					{{ form_result.score }}{% if form_result.score.errors %}<div class="error">{{ form_result.score.errors|join:", " }}</div>{% endif %}
+				</td>
+			</tr>		
+			<tr class="{{ rowcolor }}">
+				<td colspan="2" align="left">
+					{{ form_result.description.label_tag }}<br/>
+					{{ form_result.description }}
+					{% if form_result.description.errors %}<div class="error">{{ form_result.description.errors|join:", " }}</div>{% endif %}
+					{% if form_result.non_form_errors %}<div class="error">{{ form_result.non_form_errors|join:", " }}</div>{% endif %}
+				</td>
+			</tr>
+		{% endfor %}
+		</table>
+		<input type="submit" value="{% trans "Uložiť" %}"/>
+	</form>
+{% endblock %}

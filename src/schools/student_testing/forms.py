@@ -1,0 +1,52 @@
+# -*- coding: utf-8 -*-
+from django import forms
+from django.conf import settings
+from django.forms.widgets import HiddenInput, Textarea
+from django.utils.translation import ugettext as _
+from schools.courses.models import CourseMember, Course
+from schools.student_testing.models import TestingTerm, TestResult, StudentTest
+
+class CreateTestingTermForm(forms.Form):
+    student_test = forms.ModelChoiceField(queryset=StudentTest.objects.all(), required=False)
+    name = forms.CharField(max_length=150, required=False)
+    description = forms.CharField(required=False, widget=Textarea)
+    max_score = forms.IntegerField(required=False)
+    date = forms.DateField()
+    course = forms.ModelChoiceField(queryset=Course.objects.all(), widget=HiddenInput)
+    
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        
+        if cleaned_data['student_test'] is None:
+            if not cleaned_data['name'] or not cleaned_data['max_score']:
+                raise forms.ValidationError(_(u'Musíte vybrať test, alebo zadať údaje pre vytvorenie nového testu.'))
+        return cleaned_data
+
+    def save(self):
+        test = self.cleaned_data['student_test']
+        if test is None:
+            test = StudentTest(name=self.cleaned_data['name'], description=self.cleaned_data['description'], max_score=self.cleaned_data['max_score'], language=self.cleaned_data['course'].language)
+            test.save()
+        testing_term = TestingTerm(date=self.cleaned_data['date'], test=test, course=self.cleaned_data['course'])
+        testing_term.save()
+        return testing_term
+         
+
+        
+class CreateTestResultForm(forms.ModelForm):
+    course_member = forms.ModelChoiceField(queryset=CourseMember.objects.all(), widget=HiddenInput)
+    description = forms.CharField(widget=Textarea(attrs={"rows":2, 'style':'width: 100%;'}, ))
+    class Meta:
+        model = TestResult
+        exclude = ('testing_term', )
+        
+
+class TestingTermForm(forms.ModelForm):
+    class Meta:
+        model = TestingTerm
+
+class TestResultForm(forms.ModelForm):
+    description = forms.CharField(widget=Textarea(attrs={"rows":2, 'style':'width: 100%;'}, ))
+    class Meta:
+        model = TestResult
+        exclude = ('testing_term', )

@@ -41,7 +41,7 @@ class CourseMemberForm(forms.ModelForm):
     course = forms.ModelChoiceField(queryset=Course.objects.all(), widget=HiddenInput)
     class Meta:
         model = CourseMember
-        
+        exclude = ('student',)
     def limit_to_course(self, course):
         self.fields['expense_group'].queryset = self.fields['expense_group'].queryset.filter(course=course) 
         

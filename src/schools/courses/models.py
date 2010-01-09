@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
+from collections import defaultdict
+from django.conf import settings
 from django.db import models
 from django.db.models import permalink, signals
 from django.db.models.query_utils import Q
-import django.dispatch
-from collections import defaultdict
-from django.utils.datetime_safe import strftime
 from schools import fix_date_boundaries
+import django.dispatch
 
 # Create your models here.
 
@@ -43,6 +43,7 @@ class Course(models.Model):
     
     name = models.CharField(max_length=100, null=True, blank=True)
     note = models.TextField(null=True, blank=True)
+    language = models.CharField(max_length=2,choices=settings.SCHOOL_LANGUAGES)
  
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -69,6 +70,10 @@ class Course(models.Model):
     @permalink
     def get_expensegroups_url(self):
         return ('courses_expensegroup_list', None, {'course_id':str(self.pk)})
+    
+    @permalink
+    def get_testing_url(self):
+        return ('courses_course_test_result_list', None, {'course_id':str(self.pk)})
     
     @permalink
     def get_lessons_url(self):
@@ -247,29 +252,7 @@ def course_member_price(lesson, course_members, start, end):
     return course_members_dict
 signals.post_save.connect(lesson_attendee_price, sender=Lesson)
 
-#class AttendanceList(models.Model):
-#    from schools.lectors.models import Lector
-#    from schools.buildings.models import Classroom
-#    classroom = models.ForeignKey(Classroom)
-#    lesson = models.OneToOneField('Lesson')
-#    lector = models.ForeignKey(Lector)
-#    
-#    lector_price = models.DecimalField(max_digits=10, decimal_places=2)
-#    start = models.DateTimeField()
-#    end = models.DateTimeField()
-#    
-#    content = models.TextField(null=True, blank=True)
-#    
-#    created = models.DateTimeField(auto_now_add=True)
-#    updated = models.DateTimeField(auto_now=True)
-#    
-#        
-#    def new_course_members(self):
-#        course_members = CourseMember.objects.exclude(lessonattendee=self)
-#        return [LessonAttendee(attendance_list=self, course_member=a, present=False) for a in course_members]
-#           
-    
-    
+
 class LessonAttendee(models.Model):
     lesson = models.ForeignKey('Lesson')
     course_member = models.ForeignKey('CourseMember')
@@ -316,4 +299,3 @@ class ExpenseGroupPrice(models.Model):
     class Meta:
         verbose_name=u'Hodinová sadzba nákladovej skupiny'
         verbose_name_plural=u'Hodinové sazdby nákladovej skupiny'
-        

@@ -64,6 +64,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'fullauthentication.middleware.FullAuthenticationMiddleware',
+    'django.middleware.transaction.TransactionMiddleware',
 )
 
 ROOT_URLCONF = 'schools.urls'
@@ -94,6 +95,7 @@ INSTALLED_APPS = (
     'schools.courses',
     'schools.lectors',
     'schools.students',
+    'schools.student_testing',
     'generic_views',
     'schools.listtable',
     'datepicker',
@@ -101,6 +103,12 @@ INSTALLED_APPS = (
 
 LOGIN_URL='login/'
 LOGIN_REDIRECT_URL = '/'
+
+_ = lambda a:a
+SCHOOL_LANGUAGES=(
+                  ('en', _('English')),
+                  ('de', _('German')),
+)
 
 try:
     from local_settings import *
