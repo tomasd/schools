@@ -130,6 +130,10 @@ class CourseMember(models.Model):
     @permalink
     def get_absolute_url(self):
         return ('courses_coursemember_update', None, {'course_id':str(self.course.pk), 'object_id':str(self.pk)})
+    
+    @permalink
+    def get_delete_url(self):
+        return ('courses_coursemember_delete', None, {'course_id':str(self.course.pk), 'object_id':str(self.pk)})
 
     def duration(self):
         start_format = '%d.%m.%Y'
@@ -228,14 +232,8 @@ signals.pre_save.connect(lesson_length, sender=Lesson)
 
 def lesson_attendee_price(sender, *args, **kwargs):
     lesson = kwargs['instance']
-    if lesson.realized:
-        attendees = lesson.lessonattendee_set.all()
-        course_members = [a.course_member for a in attendees]
-        member_price = course_member_price(lesson, course_members, lesson.real_start, lesson.real_end)
-        
-        for attendee in attendees:
-            attendee.course_member_price = member_price[attendee.course_member]
-            attendee.save()
+    update_lesson_price(lesson)
+signals.post_save.connect(lesson_attendee_price, sender=Lesson)
                         
 def course_member_price(lesson, course_members, start, end):
     expense_groups = defaultdict(list)
@@ -250,8 +248,16 @@ def course_member_price(lesson, course_members, start, end):
         for course_member in course_members:
             course_members_dict[course_member] = price / len(course_members)
     return course_members_dict
-signals.post_save.connect(lesson_attendee_price, sender=Lesson)
 
+def update_lesson_price(lesson):
+    if lesson.realized:
+        attendees = lesson.lessonattendee_set.all()
+        course_members = [a.course_member for a in attendees]
+        member_price = course_member_price(lesson, course_members, lesson.real_start, lesson.real_end)
+        
+        for attendee in attendees:
+            attendee.course_member_price = member_price[attendee.course_member]
+            attendee.save()
 
 class LessonAttendee(models.Model):
     lesson = models.ForeignKey('Lesson')
@@ -266,6 +272,12 @@ class LessonAttendee(models.Model):
     class Meta:
         verbose_name=u'Účastník lekcie'
         verbose_name_plural=u'Účastníci lekcie'
+        
+        
+def lesson_attendee_price_update(sender, *args, **kwargs):
+    lesson_attendee = kwargs['instance']
+    update_lesson_price(lesson_attendee.lesson)
+signals.pre_delete.connect(lesson_attendee_price_update, sender=LessonAttendee)
     
 class ExpenseGroup(models.Model):
     name = models.CharField(max_length=100)

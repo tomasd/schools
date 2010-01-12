@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import patterns, url
 from django.views.generic.create_update import create_object
 from generic_views.views.delete import delete_object
-from schools.courses.models import Course
+from schools.courses.models import Course, CourseMember
 from schools.search.views import object_list
 from schools.student_testing.views import create_test_result, update_test_result, \
     list_test_result
@@ -9,6 +9,7 @@ from schools.student_testing.views import create_test_result, update_test_result
 urlpatterns = patterns('schools.courses.views',
     url(r'course/(?P<course_id>\d+)/member/create/$', 'coursemember_create', name='courses_coursemember_create'),
     url(r'course/(?P<course_id>\d+)/member/(?P<object_id>\d+)/$', 'coursemember_update', name='courses_coursemember_update'),
+    url(r'course/(?P<course_id>\d+)/member/(?P<object_id>\d+)/delete/$', 'coursemember_delete', name='courses_coursemember_delete'),
     url(r'course/(?P<course_id>\d+)/member/$', 'coursemember_list', name='courses_coursemember_list'),
     
     url(r'course/(?P<course_id>\d+)/expense/create/$', 'expensegroup_create', name='courses_expensegroup_create'),

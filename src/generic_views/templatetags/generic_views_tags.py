@@ -23,7 +23,7 @@ class CanDeleteNode(template.Node):
     def render(self, context):
         object = self.object_name.resolve(context)
         if object is not None:
-            if hasattr(object, 'get_remove_url'):
+            if hasattr(object, 'get_delete_url'):
                 if hasattr(object, 'can_remove'):
                     if not getattr(object, 'can_remove'):
                         return ''

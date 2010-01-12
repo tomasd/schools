@@ -2,6 +2,7 @@
 from django import http
 from django.contrib.auth.views import redirect_to_login
 from django.core.xheaders import populate_xheaders
+from django.forms.forms import Form, BaseForm
 from django.forms.formsets import all_valid
 from django.forms.models import inlineformset_factory, ModelForm
 from django.template import loader, RequestContext
@@ -48,16 +49,18 @@ def create_object(request, model=None, template_name=None,
     formsets = []
     
     tmodel, form_class = get_model_and_form_class(model, form_class)
-    class InitialModelForm(form_class):
-        class Meta:
-            model = tmodel
-
-        def __init__(self, *args, **kwargs):
-            kwargs['initial'] = dict(request.GET.items())#{'field1': request.GET.get('field1','')}
-            return super(InitialModelForm, self).__init__(*args, **kwargs)
+    if issubclass(form_class, BaseForm):
+        class InitialModelForm(form_class):
+            class Meta:
+                model = tmodel
+    
+            def __init__(self, *args, **kwargs):
+                request_initial = dict(request.GET.items())
+                request_initial.update(initial)
+                kwargs['initial'] = request_initial#{'field1': request.GET.get('field1','')}
+                return super(InitialModelForm, self).__init__(*args, **kwargs)
+        form_class = InitialModelForm
     model = tmodel
-    form_class = InitialModelForm
-    print dict(request.GET.items())
     
     for inline in inlines:
         formset_classes.append(inlineformset_factory(model, **inline))
