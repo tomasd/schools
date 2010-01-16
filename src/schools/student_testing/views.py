@@ -1,12 +1,10 @@
 # Create your views here.
-from django.forms.models import modelformset_factory, inlineformset_factory
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.template.context import RequestContext
 from generic_views.views.create_update import update_object
 from schools.courses.models import Course
 from schools.student_testing.forms import CreateTestResultForm, \
-    CreateTestingTermForm, TestingTermForm, TestResultForm
+    CreateTestingTermForm, TestResultForm
 from schools.student_testing.models import TestingTerm, TestResult
 from django.views.generic.list_detail import object_list
 import operator
@@ -20,9 +18,9 @@ def create_test_result(request, object_id):
     if request.method =='POST':
         form = CreateTestingTermForm(request.POST, prefix="testing")
         forms = list(_create_forms(course, data=request.POST))
-        if form.is_valid() and reduce(operator.__and__, [a.is_valid() for k, a in forms]):
+        if form.is_valid() and reduce(operator.__and__, [a.is_valid() for k, a in forms]): #@UnusedVariable
             test = form.save()
-            results = [a.save(False) for x, a in forms]
+            results = [a.save(False) for x, a in forms] #@UnusedVariable
             for result in results:
                 result.testing_term = test
                 result.save()

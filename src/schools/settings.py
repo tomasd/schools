@@ -96,6 +96,7 @@ INSTALLED_APPS = (
     'schools.lectors',
     'schools.students',
     'schools.student_testing',
+    'schools.course_member_references',
     'generic_views',
     'schools.listtable',
     'datepicker',

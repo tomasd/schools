@@ -13,6 +13,7 @@ from generic_views.views.ajax import JSONResponse
 from generic_views.views.create_update import update_object, create_object
 from generic_views.views.delete import delete_object
 from schools import fix_date_boundaries
+from schools.course_member_references.models import CourseMemberReference
 from schools.courses.forms import CourseMemberForm, ExpenseGroupForm, \
     LessonPlanForm, LessonRealizedForm, LessonAttendeeForm, CourseMemberCreateForm, \
     ChooseClassroomForm, ReplanLessonForm, LessonSearchForm
@@ -20,6 +21,7 @@ from schools.courses.models import Course, CourseMember, ExpenseGroup, \
     ExpenseGroupPrice, Lesson, LessonAttendee, lesson_assign_attendees
 from schools.genericform.form import PreProcessForm
 from schools.search.views import object_list
+from schools.course_member_references.forms import CourseMemberReferenceForm
 
 def course_update(request, object_id):
     course = get_object_or_404(Course, pk=object_id)
@@ -37,7 +39,8 @@ def coursemember_create(request, course_id):
 def coursemember_update(request, course_id, object_id):
     course = get_object_or_404(Course, pk=course_id)
     get_object_or_404(course.coursemember_set, pk=object_id)
-    return update_object(request, model=CourseMember, form_class=CourseMemberForm, object_id=object_id, extra_context={'course':course})
+    inlines = [{'model':CourseMemberReference, 'extra':1, 'form':CourseMemberReferenceForm}]
+    return update_object(request, model=CourseMember, form_class=CourseMemberForm, object_id=object_id, extra_context={'course':course}, inlines=inlines)
 
 def coursemember_delete(request, course_id, object_id):
     return delete_object(request, model=CourseMember, object_id=object_id, post_delete_redirect='courses_coursemember_list', post_delete_redirect_args=(course_id,))

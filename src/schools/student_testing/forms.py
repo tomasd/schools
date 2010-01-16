@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django import forms
-from django.conf import settings
 from django.forms.widgets import HiddenInput, Textarea
 from django.utils.translation import ugettext as _
 from schools.courses.models import CourseMember, Course

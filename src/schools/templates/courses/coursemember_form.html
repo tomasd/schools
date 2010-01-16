@@ -7,5 +7,44 @@
 		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
 	</div><br />
 	<h2>{% trans "Študent" %} {{ object.student }}</h2>
-	{% include "form.html" %}
+	<div class="table">
+		<form method="post">
+			<table class="listing form" cellpadding="0" cellspacing="0">
+			{% include "form_table.html" %}
+			</table>
+			
+			
+			{{ coursememberreference_formset.management_form }}
+			<table class="listing form" cellpadding="0" cellspacing="0">
+				<caption>{% trans "Hodnotenia" %}</caption>
+			{% with coursememberreference_formset as formset %}
+				{% for form in formset.forms %}
+				  {% if forloop.first %}
+				  <thead><tr>
+				  	<th>{% trans "Hodnotenie" %}</th>
+				  	<th>{% trans "Delete" %}</th>
+				  </tr></thead>
+				  {% endif %}
+				  <tr class="{% cycle '' 'bg' %}">
+				  <td style="text-align: left;">
+				  	{# Include the hidden fields in the form #}
+				    {% if forloop.first %}
+				      {% for hidden in form.hidden_fields %}
+				      {{ hidden }}
+				      {% endfor %}
+				    {% endif %}
+				    {{ form.date.label_tag }}:{{ form.date }}<br/>
+				    {{ form.text.label_tag }}:{{ form.text }}
+				  </td>
+				  <td>
+				    {{ form.DELETE }}
+				  </td>
+				  </tr>
+				{% endfor %}
+			{% endwith %}
+			</table>
+					
+			<input type="submit" value="{% trans "Uložiť" %}"/>
+		</form>
+	</div>
 {% endblock %}
