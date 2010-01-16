@@ -1,0 +1,74 @@
+{% extends "courses/base.html" %}
+{% load i18n listtable %}
+
+{% block head %}
+	{{ block.super }}
+	<link rel="StyleSheet" href="{{ MEDIA_URL }}weekcalendar/jquery.weekcalendar.css" type="text/css" media="screen"/>
+	<script src="{{ MEDIA_URL }}weekcalendar/jquery.weekcalendar.js.min.js"></script>
+	<script type="text/javascript">
+	$(function() {
+		$("#calendar").weekCalendar({
+			businessHours:{start: 6, end: 20, limitDisplay: true}, 
+			firstDayOfWeek:1, 
+			use24Hour: true,
+			overlapEventsSeparate: true,
+			allowCalEventOverlap: true,
+			dateFormat: 'd.m.Y',
+			timeFormat: 'H:i',
+			readonly: true,
+			data: function(start, end, callback) {
+				  $.getJSON("{% url courses_lesson_list_json  %}", {
+				     start: $("#calendar").weekCalendar("formatDate", start, format='d.m.Y'),
+				     end: $("#calendar").weekCalendar("formatDate", end, format='d.m.Y'),
+				     course: $("#id_course").val(),
+				     lector: $("#id_lector").val(),
+				     building: $("#id_building").val(),
+				     classroom: $("#id_classroom").val(),
+				     {% if course %}
+				     	course: {{ course.pk }},
+				     	{% else %}
+				     	course: $("#id_course").val(),
+				     {% endif %}
+				   },  function(result) {
+				     callback(result);
+				   });
+				},
+			});
+	});
+	</script>
+<script type="text/javascript">
+	$(function() {
+		// ked sa zmeni nieco, tak refreshni calendar
+		$(":input").change(function() {
+			$("#calendar").weekCalendar('refresh');
+		});
+	});
+</script>	
+{% endblock %}
+
+{% block content %}
+	<div class="top-bar">
+		<h1>{% trans "Rozvrh hodín" %}</h1>
+		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
+	</div><br />
+	<div class="select-bar">
+		<form action="" method="GET">
+			<table>
+				<tr>
+					<td>{{ form.building.label_tag }}:</td><td>{{ form.building }}{{ form.building.errors.as_ul }}</td>
+					<td>{{ form.classroom.label_tag }}:</td><td>{{ form.classroom }}{{ form.classroom.errors.as_ul }}</td>
+				</tr>
+				<tr>
+					<td>{{ form.lector.label_tag }}:</td><td>{{ form.lector }}{{ form.lector.errors.as_ul }}</td>
+					<td>{{ form.course.label_tag }}:</td><td>{{ form.course }}{{ form.course.errors.as_ul }}</td>
+				</tr>
+			</table>
+			<input type="submit" value="{% trans "Hľadať" %}"/>
+		</form>
+	</label>
+	</div>
+	
+		<div id="lesson-calendar"  style="padding: 0; position: absolute; width: 100%;left: 0;background: white;">
+			<div id="calendar"></div>
+		</div>		
+{% endblock %}

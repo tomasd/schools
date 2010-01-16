@@ -121,7 +121,7 @@ def lesson_replan(request, course_id, object_id):
     return  JSONResponse({'success':False, 'errors':form.errors})
         
 def _search_lessons(queryset, form):
-    if form.cleaned_data['course']:
+    if 'course' in form.cleaned_data and form.cleaned_data['course']:
         queryset = queryset.filter(course=form.cleaned_data['course'])
     if form.cleaned_data['start']:
         queryset = queryset.filter(end__gte=form.cleaned_data['start'])
@@ -133,6 +133,9 @@ def _search_lessons(queryset, form):
         queryset = queryset.filter(classroom__building=form.cleaned_data['building'])
     if form.cleaned_data['lector']:
         queryset = queryset.filter(course__lector=form.cleaned_data['lector'])
+    if form.cleaned_data['classroom']:
+        queryset = queryset.filter(classroom=form.cleaned_data['classroom'])
+    print queryset.query.as_sql()
     return queryset
 
 def courses_lessons(request):
@@ -163,3 +166,7 @@ def lesson_list_json(request):
                 for a in lessons]
     text = simplejson.dumps(lessons)
     return HttpResponse(text, mimetype='application/json')
+
+def timetable(request):
+    form = LessonSearchForm(request.GET)
+    return render_to_response('courses/timetable.html', {'form':form}, context_instance=RequestContext(request))

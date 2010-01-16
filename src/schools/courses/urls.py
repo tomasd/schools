@@ -1,10 +1,11 @@
 from django.conf.urls.defaults import patterns, url
 from django.views.generic.create_update import create_object
 from generic_views.views.delete import delete_object
-from schools.courses.models import Course, CourseMember
+from schools.courses.models import Course
 from schools.search.views import object_list
 from schools.student_testing.views import create_test_result, update_test_result, \
     list_test_result
+from django.views.generic.simple import direct_to_template
 
 urlpatterns = patterns('schools.courses.views',
     url(r'course/(?P<course_id>\d+)/member/create/$', 'coursemember_create', name='courses_coursemember_create'),
@@ -33,5 +34,7 @@ urlpatterns = patterns('schools.courses.views',
     url(r'course/(?P<object_id>\d+)/$', 'course_update', name='courses_course_update'),
     url(r'course/(?P<object_id>\d+)/delete/$', delete_object, {'model':Course, 'post_delete_redirect':'courses_course_list'}, name='courses_course_delete'),
     url(r'course/$', object_list, {'queryset':Course.objects.all(), 'search_fields':['name__contains']}, name='courses_course_list'),
+    
+    url(r'time-table/$', 'timetable', name='courses_time-table'),
     
 )

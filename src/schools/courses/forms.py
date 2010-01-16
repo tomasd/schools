@@ -1,6 +1,5 @@
 from datepicker.widgets import SplitDatePickerTimePickerWidget
 from django import forms
-from django.forms.models import save_instance
 from django.forms.util import ValidationError
 from django.forms.widgets import HiddenInput, Select, DateTimeInput
 from django.utils.translation import ugettext
@@ -95,3 +94,4 @@ class LessonSearchForm(forms.Form):
     lector = forms.ModelChoiceField(queryset=Lector.objects.all(), required=False)
     building = forms.ModelChoiceField(queryset=Building.objects.all(), required=False)
     course = forms.ModelChoiceField(queryset=Course.objects.all(), required=False)
+    classroom = forms.ModelChoiceField(queryset=Classroom.objects.all(), required=False)    
