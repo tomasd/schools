@@ -127,10 +127,3 @@ class Company(models.Model):
     def can_remove(self):
         return self.student_set.count() == 0
     
-def _remove_company_from_student(sender, *args, **kwargs):
-    from schools.students.models import Student
-    company = kwargs['instance']
-    for student in company.student_set.all():
-        student.company = None
-        student.save()
-signals.pre_delete.connect(_remove_company_from_student, sender=Company)
