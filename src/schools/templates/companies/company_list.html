@@ -2,7 +2,7 @@
 {% load i18n listtable%}
 {% block content %}
 	<div class="top-bar">
-		<a href="{% url companies_company_create %}" class="button">{% trans "Pridať" %}</a>
+		{% if perms.companies.add_company %}<a href="{% url companies_company_create %}" class="button">{% trans "Pridať" %}</a>{% endif %}
 		<h1>{% trans "Zoznam firiem" %}</h1>
 		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
 	</div><br />
