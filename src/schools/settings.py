@@ -103,7 +103,7 @@ INSTALLED_APPS = (
     'datepicker',
 )
 
-LOGIN_URL='login/'
+LOGIN_URL='/login/'
 LOGIN_REDIRECT_URL = '/'
 
 _ = lambda a:a
