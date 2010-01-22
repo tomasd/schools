@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block body_class %}{{ block.super }} studentbook{% endblock %}
+
+{% block left_content %}
+	<h3>{% trans "Žiacka knižka" %}</h3>
+	<ul class="nav">
+		<li class="last"></li>
+	</ul>
+{% endblock %}

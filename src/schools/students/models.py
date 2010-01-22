@@ -25,6 +25,7 @@ class StudentManager(models.Manager):
 class Student(models.Model):
     objects = StudentManager()
     from schools.companies.models import Company
+    from django.contrib.auth.models import User
     last_name = models.CharField(max_length=30)
     first_name = models.CharField(max_length=30)
     title = models.CharField(max_length=10, null=True, blank=True)
@@ -37,8 +38,10 @@ class Student(models.Model):
     phone = models.CharField(max_length=30, null=True, blank=True)
     mobile = models.CharField(max_length=30, null=True, blank=True)
     fax = models.CharField(max_length=30, null=True, blank=True)
-    www = models.URLField(null=True, blank=True)
+    www = models.URLField(null=True, blank=True,verify_exists=False)
     email = models.EmailField(null=True, blank=True)
+    
+    user = models.OneToOneField(User, null=True, blank=True)
     
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -63,3 +66,7 @@ class Student(models.Model):
     @permalink
     def get_delete_url(self):    
         return ('students_student_delete', None, {'object_id':str(self.pk)})
+    
+    @property
+    def address(self):
+        return '%s, %s %s' % (self.street, self.postal, self.town)

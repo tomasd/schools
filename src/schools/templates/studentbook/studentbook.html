@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head %}
+	{{ block.super }}
+	<style>
+		.student_data td {
+			text-align: left !important;
+		}
+		.student_data label {
+			font-weight: bold;
+		}
+	</style>
+{% endblock %}
+
+{% block content %}
+
+	<table class="listing form student_data" cellpadding="0" cellspacing="0">
+		<caption>{% trans "Osobné údaje" %}</caption>
+		<tbody>
+			<tr> <td><label>{% trans "Meno" %}:</label></td> <td> {{ student }} </td> </tr>
+			<tr class="bg"> <td><label>{% trans "Platca" %}:</label></td> <td> {{ student.company }} </td> </tr>
+			<tr><td><label>{% trans "Adresa" %}:</label></td><td>{{ student.address }}</td></tr>
+			<tr class="bg"><td><label>{% trans "Telefón" %}</td><td>{{ student.phone }}</td></tr>
+			<tr><td><label>{% trans "Mobil" %}:</label></td><td>{{ student.mobile }}</td></tr>
+			<tr class="bg"><td><label>{% trans "Fax" %}:</label></td><td>{{ student.fax }}</td></tr>
+			<tr><td><label>{% trans "www" %}:</label></td><td>{{ student.www|urlize }}</td></tr>
+			<tr class="bg"><td><label>{% trans "Email" %}:</label></td><td>{{ student.email|urlize }}</tr>
+		</tbody>
+		{% for field in form.visible_fields %}
+			<tr class="{% cycle '' 'bg' %}">
+				<td class="first"><b>{{ field.label_tag }}</b>:</td> 
+				<td class="last">{{ field }}{% if field.errors %}<div class="error">{{ field.errors|join:", " }}</div>{% endif %}</td>
+			</tr>
+		{% endfor %}
+	</table>
+	
+	<div class="table" style="margin: 0;">
+		<img src="img/bg-th-left.gif" width="8" height="7" alt="" class="left" />
+		<img src="img/bg-th-right.gif" width="7" height="7" alt="" class="right" />
+		<table class="listing" cellpadding="0" cellspacing="0">
+			<caption>{% trans "Navštevované kurzy" %}</caption>
+			<tr>
+				<th class="first">{% trans "Názov kurzu" %}</th>
+				<th>{% trans "Obdobie" %}</th>
+				<th class="last">{% trans "Akcie" %}</th>
+			</tr>
+			{% for object in student.coursemember_set.all %}
+			<tr class="{% cycle 'bg' '' %}">
+				<td class="first style1">{{ object.course }}</td>
+				<td>{{ object.duration }}</td>
+				<td  class="last"><a href="{{ object.get_absolute_url }}"><img src="{{ MEDIA_URL }}img/edit-icon.gif" width="16" height="16" alt="" /></a></td>
+			</tr>
+			{% endfor %}
+		</table>
+	</div>
+	
+	<div class="table" style="margin: 0;">
+		<img src="img/bg-th-left.gif" width="8" height="7" alt="" class="left" />
+		<img src="img/bg-th-right.gif" width="7" height="7" alt="" class="right" />
+		<table class="listing" cellpadding="0" cellspacing="0">
+			<caption>{% trans "Výsledky testov" %}</caption>
+			<tr>
+					<th class="first">{% trans "Kurz" %}</th>
+					<th>{% trans "Dátum" %}</th>
+					<th>{% trans "Test" %}</th>
+					<th>{% trans "Výsledok" %}</th>
+					<th  class="last">{% trans "Hodnotenie" %}</th>
+			</tr>
+			{% for course_member in student.coursemember_set.all %}
+					{% for test_result in course_member.testresult_set.all %}
+						<tr class="{% cycle 'bg' '' %}">
+							<td class="first style1">{{ course_member.course }}</td>
+							<td>{{ test_result.testing_term.date|date:"d.m.Y" }}</td>
+							<td title="{{ test_result.description }}">{{ test_result.test.name }}</td>
+							<td>{{ test_result.score }}/{{ test_result.test.max_score }}</td>
+							<td  class="last">{{ test_result.description }}</td>
+						</tr>
+					{% endfor %}
+				{% endfor %}
+		</table>
+	</div>
+{% endblock %}

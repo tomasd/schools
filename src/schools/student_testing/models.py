@@ -34,3 +34,7 @@ class TestResult(models.Model):
     course_member = models.ForeignKey(CourseMember)
     score = models.IntegerField()
     description = models.TextField(blank=True)
+    
+    @property
+    def test(self):
+        return self.testing_term.test

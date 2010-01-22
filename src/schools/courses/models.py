@@ -6,6 +6,7 @@ from django.db.models import permalink, signals
 from django.db.models.query_utils import Q
 from schools import fix_date_boundaries
 import django.dispatch
+from django.utils.dateformat import format
 
 # Create your models here.
 
@@ -136,11 +137,12 @@ class CourseMember(models.Model):
         return ('courses_coursemember_delete', None, {'course_id':str(self.course.pk), 'object_id':str(self.pk)})
 
     def duration(self):
-        start_format = '%d.%m.%Y'
+        start_format = 'd.m.Y'
         if self.end is None:
             return '%s - ' % format(self.start, start_format)
         return '%s - %s' % (format(self.start, start_format), format(self.end, start_format))
-
+    
+    
 lesson_assign_attendees = django.dispatch.Signal(providing_args=["lesson"])
 def create_lesson_attendees(sender, *args, **kwargs):
     lesson = kwargs['lesson']
@@ -176,8 +178,8 @@ class Lesson(models.Model):
         verbose_name_plural=u'lekcie'
         
     def __unicode__(self):
-        start_format = '%d.%m.%Y %H:%M'
-        end_format = '%H:%M' if self.end.date() == self.start.date() else start_format
+        start_format = 'd.m.Y H:i'
+        end_format = 'H:i' if self.end.date() == self.start.date() else start_format
         
         start, end = self.start, self.end
         if self.realized:
