@@ -3,6 +3,7 @@ from django.conf import settings
 from django.template.defaultfilters import stringfilter
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
+from django.utils.safestring import mark_safe
 import re
 register = template.Library()
 
@@ -24,6 +25,7 @@ def listtable_columns(parser, token):
     column_names = [_(a[3:-2]) if pattern.match(a) else a for i, a in enumerate( values) if i%3==2 ]
     
     return ListTableNode(object_list, column_names, field_values)
+
 
 class ListTableNode(template.Node):
     def __init__(self, object_list, column_names, field_values):
@@ -85,3 +87,32 @@ def page_query(page, query):
         del query['page']
     query.appendlist('page', page)
     return query.urlencode()
+
+@register.tag
+def table(parser, token):
+    values = token.split_contents()
+    object_name = values[1]
+    object_list = values[3]
+    header_nodelist = parser.parse(('rows',))
+    parser.delete_first_token()
+    rows_nodelist = parser.parse(('endtable',))
+    parser.delete_first_token()
+    return Listtable1Node(object_name, object_list, header_nodelist, rows_nodelist)
+
+class Listtable1Node(template.Node):
+    def __init__(self, object_name, object_list, headers_nodelist, rows_nodelist):
+        self.object_name = object_name
+        self.object_list = template.Variable(object_list)
+        self.headers_nodelist = headers_nodelist
+        self.rows_nodelist = rows_nodelist
+        
+    def render(self, context):
+        object_list = self.object_list.resolve(context)
+        header = self.headers_nodelist.render(context)
+        rows = []
+        for i, object in enumerate(object_list):
+            context[self.object_name] = object
+            content = self.rows_nodelist.render(context)
+            content = '<tr class="%s">\n%s\n</tr>' % ('bg' if i % 2 == 0 else '', content)
+            rows.append(content)
+        return render_to_string('listtable1.html', {'object_list':object_list, 'headers':mark_safe(header), 'rows':mark_safe('\n'.join(rows))})            
