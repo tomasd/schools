@@ -90,6 +90,7 @@ a.logo {
 .companies #top-navigation li.companies,
 .lectors #top-navigation li.lectors,
 .students #top-navigation li.students,
+.studentbook #top-navigation li.studentbook,
 .buildings #top-navigation li.buildings,
 .reports #top-navigation li.reports,
 .password-change #top-navigation li.password-change
@@ -105,6 +106,7 @@ a.logo {
 .companies #top-navigation li.companies span,
 .lectors #top-navigation li.lectors span,
 .students #top-navigation li.students span,
+.studentbook #top-navigation li.studentbook span,
 .buildings #top-navigation li.buildings span,
 .reports #top-navigation li.reports span,
 .password-change #top-navigation li.password-change span
@@ -118,6 +120,7 @@ a.logo {
 .companies #top-navigation li.companies span span,
 .lectors #top-navigation li.lectors span span,
 .students #top-navigation li.students span span,
+.studentbook #top-navigation li.studentbook span span,
 .buildings #top-navigation li.buildings span span,
 .reports #top-navigation li.reports span span {
 	background:url(../img/tab-active-right.gif) no-repeat right top;
