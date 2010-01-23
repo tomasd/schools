@@ -90,9 +90,6 @@ class Contract(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     
-    def get_delete_url(self):
-        return ('lectors_contract_delete', None, {'lector_id':str(self.lector.pk), 'object_id':str(self.pk)})
-    
     class Meta:
         verbose_name=u'zmluva'
         verbose_name_plural=u'zmluvy'
