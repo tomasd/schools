@@ -12,7 +12,7 @@ from django.views.generic.list_detail import object_list as django_object_list
 from generic_views.views.ajax import JSONResponse
 from generic_views.views.create_update import update_object, create_object
 from generic_views.views.delete import delete_object
-from schools import fix_date_boundaries
+from schools import fix_date_boundaries, permission_required
 from schools.course_member_references.models import CourseMemberReference
 from schools.courses.forms import CourseMemberForm, ExpenseGroupForm, \
     LessonPlanForm, LessonRealizedForm, LessonAttendeeForm, CourseMemberCreateForm, \
@@ -22,42 +22,64 @@ from schools.courses.models import Course, CourseMember, ExpenseGroup, \
 from schools.genericform.form import PreProcessForm
 from schools.search.views import object_list
 from schools.course_member_references.forms import CourseMemberReferenceForm
+from django.contrib.auth.decorators import user_passes_test
 
+@permission_required('courses.add_course')
+def course_create(*args, **kwargs):
+    return create_object(*args, **kwargs)
+
+@permission_required('courses.change_course')
 def course_update(request, object_id):
     course = get_object_or_404(Course, pk=object_id)
     return update_object(request, model=Course, object_id=object_id, extra_context={'course':course})
 
+@permission_required('courses.delete_course')
+def course_delete(*args, **kwargs):
+    return delete_object(*args, **kwargs)
+
+@user_passes_test(lambda user:user.has_module_perms('courses'))
+def course_list(*args, **kwargs):
+    return object_list(*args, **kwargs)
+
+@permission_required('courses.add_coursemember', 'courses.change_coursemember', 'courses.delete_coursemember')
 def coursemember_list(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
     return object_list(request, queryset=CourseMember.objects.filter(course=course), extra_context={'course':course}, search_fields=['student__first_name__contains', 'student__last_name__contains'])
 
+@permission_required('courses.add_coursemember')
 def coursemember_create(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
     form_class = PreProcessForm(CourseMemberCreateForm, lambda form:form.limit_to_course(course))
     return create_object(request, model=CourseMember, form_class=form_class, template_name='courses/coursemember_create.html', extra_context={'course':course}, initial={'course':course.pk})
 
+@permission_required('courses.update_coursemember')
 def coursemember_update(request, course_id, object_id):
     course = get_object_or_404(Course, pk=course_id)
     get_object_or_404(course.coursemember_set, pk=object_id)
     inlines = [{'model':CourseMemberReference, 'extra':1, 'form':CourseMemberReferenceForm}]
     return update_object(request, model=CourseMember, form_class=CourseMemberForm, object_id=object_id, extra_context={'course':course}, inlines=inlines)
 
+@permission_required('courses.delete_coursemember')
 def coursemember_delete(request, course_id, object_id):
     return delete_object(request, model=CourseMember, object_id=object_id, post_delete_redirect='courses_coursemember_list', post_delete_redirect_args=(course_id,))
     
+@permission_required('courses.add_expensegroup')
 def expensegroup_create(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
     return create_object(request, model=ExpenseGroup, form_class=ExpenseGroupForm, template_name='courses/expensegroup_create.html', extra_context={'course':course}, initial={'course':course.pk})
 
+@permission_required('courses.change_expensegroup')
 def expensegroup_update(request, course_id, object_id):
     course = get_object_or_404(Course, pk=course_id)
     inlines = [{'model':ExpenseGroupPrice, 'extra':1}]
     return update_object(request, model=ExpenseGroup, object_id=object_id, extra_context={'course':course,}, inlines=inlines)
 
+@permission_required('courses.add_expensegroup', 'courses.change_expensegroup', 'courses.delete_expensegroup')
 def expensegroup_list(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
     return object_list(request, queryset=ExpenseGroup.objects.filter(course=course), extra_context={'course':course})
 
+@permission_required('courses.add_lesson')
 def lesson_create(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
     LessonFormset = modelformset_factory(Lesson, LessonPlanForm)
@@ -79,10 +101,12 @@ def lesson_create(request, course_id):
 #    course = get_object_or_404(Course, pk=course_id)
 #    return create_object(request, model=Lesson, form_class=LessonPlanForm, template_name='courses/lesson_create.html', extra_context={'course':course}, initial={'course':course.pk})
     
+@permission_required('courses.change_lesson')
 def lesson_update(request, course_id, object_id):
     course = get_object_or_404(Course, pk=course_id)
     return update_object(request, model=Lesson, form_class=LessonPlanForm, object_id=object_id, extra_context={'course':course,})
 
+@permission_required('courses.change_lesson')
 def lesson_attendance(request, course_id, object_id):
     course = get_object_or_404(Course, pk=course_id)
     lesson = get_object_or_404(course.lesson_set, pk=object_id)
@@ -95,6 +119,7 @@ def lesson_attendance(request, course_id, object_id):
                          extra_context={'course':course,}, 
                          inlines=inlines,post_save_redirect=lesson.get_attendance_url())
 
+@permission_required('courses.add_lesson', 'courses.change_lesson', 'courses.delete_lesson')
 def lesson_list(request, course_id):
     def _remove_course_field(form):
         del form.fields['course']
@@ -109,7 +134,7 @@ def lesson_list(request, course_id):
         form = _remove_course_field(LessonSearchForm())
     return django_object_list(request, queryset=queryset, extra_context={'course':course, 'form':form})
 
-
+@permission_required('courses.change_lesson')
 @require_POST
 def lesson_replan(request, course_id, object_id):
     course = get_object_or_404(Course, pk=course_id)

@@ -36,6 +36,7 @@
 			allowCalEventOverlap: true,
 			dateFormat: 'd.m.Y',
 			timeFormat: 'H:i',
+			readonly: {% if perms.courses.change_lesson %}false{% else %}true{% endif %},
 			draggable: function(calEvent, eventElement) {
 				return Boolean(calEvent.id);
 			},
@@ -74,7 +75,7 @@
 
 {% block content %}
 	<div class="top-bar">
-		{% if course %}<a href="{% url courses_lesson_create course.pk %}" class="button">{% trans "Pridať" %}</a>{% endif %}
+		{% if course and perms.courses.add_lesson %}<a href="{% url courses_lesson_create course.pk %}" class="button">{% trans "Pridať" %}</a>{% endif %}
 		<h1>{% trans "Zoznam lekcií" %}</h1>
 		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
 	</div><br />
