@@ -52,7 +52,7 @@ def coursemember_create(request, course_id):
     form_class = PreProcessForm(CourseMemberCreateForm, lambda form:form.limit_to_course(course))
     return create_object(request, model=CourseMember, form_class=form_class, template_name='courses/coursemember_create.html', extra_context={'course':course}, initial={'course':course.pk})
 
-@permission_required('courses.update_coursemember')
+@permission_required('courses.change_coursemember')
 def coursemember_update(request, course_id, object_id):
     course = get_object_or_404(Course, pk=course_id)
     get_object_or_404(course.coursemember_set, pk=object_id)
@@ -160,7 +160,6 @@ def _search_lessons(queryset, form):
         queryset = queryset.filter(course__lector=form.cleaned_data['lector'])
     if form.cleaned_data['classroom']:
         queryset = queryset.filter(classroom=form.cleaned_data['classroom'])
-    print queryset.query.as_sql()
     return queryset
 
 def courses_lessons(request):

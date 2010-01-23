@@ -30,7 +30,5 @@ def permission_required(*args, **kwargs):
     enabled, redirecting to the log-in page if necessary.
     """
     def _test(user):
-        print [user.has_perm(p) for p in args]
-        print reduce(operator.or_, [user.has_perm(p) for p in args])
         return reduce(operator.or_, [user.has_perm(p) for p in args])
     return user_passes_test(_test, login_url=kwargs.get('login_url', None))
