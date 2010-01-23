@@ -49,8 +49,11 @@ def coursemember_list(request, course_id):
 @permission_required('courses.add_coursemember')
 def coursemember_create(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
-    form_class = PreProcessForm(CourseMemberCreateForm, lambda form:form.limit_to_course(course))
-    return create_object(request, model=CourseMember, form_class=form_class, template_name='courses/coursemember_create.html', extra_context={'course':course}, initial={'course':course.pk})
+    form_class = CourseMemberCreateForm#PreProcessForm(CourseMemberCreateForm, lambda form:form.limit_to_course(course))
+    return create_object(request, model=CourseMember, form_class=form_class, 
+                         template_name='courses/coursemember_create.html', 
+                         extra_context={'course':course}, initial={'course':course.pk},
+                         preprocess_form=lambda form:form.limit_to_course(course))
 
 @permission_required('courses.change_coursemember')
 def coursemember_update(request, course_id, object_id):
@@ -61,6 +64,7 @@ def coursemember_update(request, course_id, object_id):
 
 @permission_required('courses.delete_coursemember')
 def coursemember_delete(request, course_id, object_id):
+    get_object_or_404(Course, pk=course_id)
     return delete_object(request, model=CourseMember, object_id=object_id, post_delete_redirect='courses_coursemember_list', post_delete_redirect_args=(course_id,))
     
 @permission_required('courses.add_expensegroup')

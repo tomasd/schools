@@ -1,5 +1,5 @@
 {% extends "lectors/base.html" %}
-{% load i18n %}
+{% load i18n generic_views_tags %}
 {% block content %}
 	<div class="top-bar">
 		<h1>{% if object.pk %}{% trans "Upraviť zmluvu lektora" %}  {{ object }}{% else %}{% trans "Vytvoriť zmluvu lektora" %}{% endif %}</h1>
@@ -21,6 +21,9 @@
 			</table>
 					
 			<input type="submit" value="{% trans "Uložiť" %}"/>
+			{% if object and perms.lectors.delete_contract %}
+				<a href="{{ object.get_delete_url }}">{% trans "Odstrániť" %}</a>
+			{% endif %}
 		</form>
 	</div>
 {% endblock %}

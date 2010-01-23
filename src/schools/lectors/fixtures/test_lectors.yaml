@@ -1,0 +1,27 @@
+- fields: {created: !!timestamp '2009-10-17 09:12:43.110542', email: '', fax: '',
+    first_name: lector, last_name: lector, mobile: '', phone: '', postal: '', street: '',
+    title: '', town: '', updated: !!timestamp '2009-10-17 09:12:43.110600', www: ''}
+  model: lectors.lector
+  pk: 1
+- fields: {contract_number: 2008/01, end: 2009-12-01, hour_rate: '5', lector: 1, start: 2009-01-01}
+  model: lectors.contract
+  pk: 1
+- fields: {contract: 1, course: 2, hour_rate: '1'}
+  model: lectors.hourrate
+  pk: 1
+- fields:
+    date_joined: 2009-10-17 08:26:19
+    email: tomas@drencak.com
+    first_name: ''
+    groups: []
+    is_active: true
+    is_staff: true
+    is_superuser: true
+    last_login: 2010-01-23 10:50:02.930484
+    last_name: ''
+    password: sha1$1fcab$20411b867b80e874b15f886e7a1aa83389e32e76
+    user_permissions: []
+    username: tomas
+  model: auth.user
+  pk: 1
+  

@@ -4,7 +4,7 @@
 </tr>
 {% endif %}
 {% for field in form.hidden_fields %}
-	{{ field }}
+	{{ field }} {{ field.errors }}
 {% endfor %}
 {% for field in form.visible_fields %}
 	<tr class="{% cycle '' 'bg' %}">
