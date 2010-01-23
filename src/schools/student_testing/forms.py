@@ -48,4 +48,16 @@ class TestResultForm(forms.ModelForm):
     description = forms.CharField(widget=Textarea(attrs={"rows":2, 'style':'width: 100%;'}, ))
     class Meta:
         model = TestResult
-        exclude = ('testing_term', )
+        exclude = ('testing_term' )
+        
+    def limit_to_course(self, course):
+        self.fields['course_member'].queryset = self.fields['course_member'].queryset.filter(course=course)
+        
+
+class EditTestResultForm(TestResultForm):
+    def __init__(self, *args, **kwargs):
+        super(EditTestResultForm, self).__init__(*args, **kwargs)
+        if kwargs.get('instance', False):
+            self.fields['course_member'] = forms.ModelChoiceField(queryset=CourseMember.objects.all(), widget=HiddenInput)
+            self.fields['course_member'].student = kwargs['instance'].course_member.student 
+        

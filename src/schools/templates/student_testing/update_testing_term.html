@@ -1,5 +1,5 @@
 {% extends "courses/base.html" %}
-{% load i18n %}
+{% load i18n listtable %}
 
 {% block content %}
 	<div class="top-bar">
@@ -23,6 +23,7 @@
 			{% for form_result in testresult_formset.forms %}
 			<tr valign="top" class="{% cycle 'bg' '' as rowcolor %}">
 				<td>
+					<b>{{ form_result.course_member.field.student }}</b>
 					{{ form_result.course_member }}{% if form_result.course_member.errors %}<div class="error">{{ form_result.course_member.errors|join:", " }}</div>{% endif %}
 					{{ form_result.id }}
 				</td>

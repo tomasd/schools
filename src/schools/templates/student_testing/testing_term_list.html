@@ -2,7 +2,7 @@
 {% load i18n listtable %}
 {% block content %}
 	<div class="top-bar">
-		<a href="{% url courses_course_test_result_create course.pk %}" class="button">{% trans "Pridať" %}</a>
+		{% if perms.student_testing.add_testresult %}<a href="{% url courses_course_test_result_create course.pk %}" class="button">{% trans "Pridať" %}</a>{% endif %}
 		<h1>{% trans "Zoznam testovaní" %}</h1>
 		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
 	</div><br />

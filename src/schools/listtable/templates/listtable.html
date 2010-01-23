@@ -3,9 +3,11 @@
 		<th class="first">{{ main_column }}</th>
 		<th class="last">{% trans "Akcie" %}</th>
 	{% rows %}
-		<td class="first style1">{% canchange object %}<a href="{{ object.get_absolute_url }}">{{ object }}</a>{% else %}{{ object }}{% endcanchange %}</td>
-		<td class="last">
-			{% canchange object %}<a href="{{ object.get_absolute_url }}"><img src="{{ MEDIA_URL }}img/edit-icon.gif" width="16" height="16" /></a>{% endcanchange %}
-			{% candelete object %}<a href="{{ object.get_delete_url }}"><img src="{{ MEDIA_URL }}img/hr.gif" width="16" height="16" /></a>{% endcandelete %}
-		</td>
+		<tr class="{{ tr_class }}">
+			<td class="first style1">{% canchange object %}<a href="{{ object.get_absolute_url }}">{{ object }}</a>{% else %}{{ object }}{% endcanchange %}</td>
+			<td class="last">
+				{% canchange object %}<a href="{{ object.get_absolute_url }}"><img src="{{ MEDIA_URL }}img/edit-icon.gif" width="16" height="16" /></a>{% endcanchange %}
+				{% candelete object %}<a href="{{ object.get_delete_url }}"><img src="{{ MEDIA_URL }}img/hr.gif" width="16" height="16" /></a>{% endcandelete %}
+			</td>
+		</tr>
 	{% endtable %}

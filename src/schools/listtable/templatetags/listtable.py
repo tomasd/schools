@@ -112,7 +112,8 @@ class Listtable1Node(template.Node):
         rows = []
         for i, object in enumerate(object_list):
             context[self.object_name] = object
+            context['tr_class'] = 'bg' if i % 2 == 0 else ''
             content = self.rows_nodelist.render(context)
-            content = '<tr class="%s">\n%s\n</tr>' % ('bg' if i % 2 == 0 else '', content)
+#            content = '<tr class="%s">\n%s\n</tr>' % ('bg' if i % 2 == 0 else '', content)
             rows.append(content)
         return render_to_string('listtable1.html', {'object_list':object_list, 'headers':mark_safe(header), 'rows':mark_safe('\n'.join(rows))})            
