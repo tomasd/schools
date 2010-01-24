@@ -13,5 +13,25 @@
 		</form>
 	</div>
 	
-	{% listtable_columns object_list course as _("Kurz") duration as _("Termín") %}
+	{% table object in object_list %}
+	<th>{% trans "Kurz" %}</th>
+	<th>{% trans "Termín" %}</th>
+	<th>{% trans "Akcie" %}</th>
+	{% rows %}
+	<tr class="{{ tr_class }}">
+		<td class="first">
+			<b> {% if perms.courses.change_course %}
+				<a href="{{ object.course.get_absolute_url }}">{{ object.course }}</a>
+			{% else %}
+				{{ object.course }}
+			{% endif %}</b>
+		</td>
+		<td>{{ object.duration }}</td>
+		<td>
+			{% if perms.courses.change_coursemember %}
+			<a href="{{ object.get_absolute_url }}"><img src="{{ MEDIA_URL }}img/edit-icon.gif" width="16" height="16" /></a>
+			{% endif %}
+		</td>
+	</tr>
+	{% endtable %}
 {% endblock %}
