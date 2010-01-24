@@ -8,11 +8,17 @@ from schools.reports.forms import InvoiceForm, LessonAnalysisForm, \
     LessonPlanForm, CompanyAddedValueForm
 
 def invoice(request, companies=None, template='reports/invoice.html', extra_context=None, empty_when_no_companies=False):
-    if not companies: companies = Company.objects.all()
+    acompanies = companies
+    if companies is None: companies = Company.objects.all()
     if request.GET:
         form = InvoiceForm(companies, request.GET)
         if form.is_valid():
-            ret_companies = Company.objects.invoice(companies=set(form.cleaned_data['companies']) & set(companies),
+            invoice_companies = set(form.cleaned_data['companies'])
+            if acompanies is None: 
+                invoice_companies = Company.objects.all() if not form.cleaned_data['companies'] else set(form.cleaned_data['companies'])
+            else:
+                invoice_companies &= set(acompanies)
+            ret_companies = Company.objects.invoice(companies=invoice_companies,
                                                 start=form.cleaned_data['start'],
                                                 end=form.cleaned_data['end'], )
             total_length = sum([a.invoice_length for a in ret_companies])
@@ -28,7 +34,7 @@ def invoice(request, companies=None, template='reports/invoice.html', extra_cont
             context = { 'nolist':True, 'object_list':companies}
     else:
         context = { 'nolist':True, 'object_list':companies}
-        form = InvoiceForm(companies=companies)
+        form = InvoiceForm(companies=companies, initial={'companies':','.join(str(a.pk) for a in companies)})
     context['form'] = form
     if extra_context:
         context.update(extra_context)
