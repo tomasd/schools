@@ -41,6 +41,9 @@
 			{% if user.student %}
 			<li class="studentbook"><span><span><a href="{% url studentbook %}">Žiacka knižka</a></span></span></li>
 			{% endif %}
+			{% if user.company_set.all %}
+			<li class="companybook"><span><span><a href="{% url companybook %}">Údaje o platiteľovi</a></span></span></li>
+			{% endif %}
 			<li class="logout"><span><span><a href="{% url logout %}">{% trans "Odhlásiť" %}</a></span></span></li>
 		</ul>
 	</div>

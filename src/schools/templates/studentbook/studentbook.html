@@ -26,12 +26,6 @@
 			<tr><td><label>{% trans "www" %}:</label></td><td>{{ student.www|urlize }}</td></tr>
 			<tr class="bg"><td><label>{% trans "Email" %}:</label></td><td>{{ student.email|urlize }}</tr>
 		</tbody>
-		{% for field in form.visible_fields %}
-			<tr class="{% cycle '' 'bg' %}">
-				<td class="first"><b>{{ field.label_tag }}</b>:</td> 
-				<td class="last">{{ field }}{% if field.errors %}<div class="error">{{ field.errors|join:", " }}</div>{% endif %}</td>
-			</tr>
-		{% endfor %}
 	</table>
 	
 	<div class="table" style="margin: 0;">

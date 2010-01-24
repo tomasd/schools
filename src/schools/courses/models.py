@@ -82,16 +82,16 @@ class Course(models.Model):
 
 
 class CourseMemberManager(models.Manager):
-    def invoice(self, start, end, companies=[]):
+    def invoice(self, start, end, companies=None):
         lesson_attendees = defaultdict(list)
         _attendees = LessonAttendee.objects.filter(lesson__real_end__range=(start, fix_date_boundaries(end)))
-        if companies: _attendees = _attendees.filter(course_member__student__company__in=companies)
+        if companies is not None: _attendees = _attendees.filter(course_member__student__company__in=companies)
         for attendee in _attendees.select_related('lesson'):
             lesson_attendees[attendee.course_member].append(attendee)
 
         course_members = defaultdict(list)
         _members = CourseMember.objects.filter(lessonattendee__lesson__real_end__range=(start, fix_date_boundaries(end)))
-        if companies: _members = _members.filter(student__company__in=companies)
+        if companies is not None: _members = _members.filter(student__company__in=companies)
         for course_member in _members.distinct():
             course_member.invoice_attendees = lesson_attendees[course_member]
             course_member.invoice_price = sum([a.course_member_price for a in lesson_attendees[course_member]])

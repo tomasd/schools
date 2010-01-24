@@ -11,6 +11,10 @@ class InvoiceForm(forms.Form):
     companies = forms.ModelMultipleChoiceField(queryset=Company.objects.all(), required=False)
     show_students = forms.BooleanField(required=False)
     
+    def __init__(self, companies, *args, **kwargs):
+        super(InvoiceForm, self).__init__(*args, **kwargs)
+        self.fields['companies'].queryset = companies
+    
     def clean(self):
         if 'start' in self.cleaned_data and 'end' in self.cleaned_data:
             if not self.cleaned_data['start'] <= self.cleaned_data['end']:

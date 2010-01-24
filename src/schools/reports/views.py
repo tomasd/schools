@@ -7,29 +7,32 @@ from schools.lectors.models import Lector
 from schools.reports.forms import InvoiceForm, LessonAnalysisForm, \
     LessonPlanForm, CompanyAddedValueForm
 
-def invoice(request):
+def invoice(request, companies=None, template='reports/invoice.html', extra_context=None, empty_when_no_companies=False):
+    if not companies: companies = Company.objects.all()
     if request.GET:
-        form = InvoiceForm(request.GET)
+        form = InvoiceForm(companies, request.GET)
         if form.is_valid():
-            companies = Company.objects.invoice(companies=form.cleaned_data['companies'],
+            ret_companies = Company.objects.invoice(companies=set(form.cleaned_data['companies']) & set(companies),
                                                 start=form.cleaned_data['start'],
-                                                end=form.cleaned_data['end'])
-            total_length = sum([a.invoice_length for a in companies])
-            total_price = sum([a.invoice_price for a in companies])
-            total_count = sum([a.invoice_count for a in companies])
-            context = {'object_list':companies,
+                                                end=form.cleaned_data['end'], )
+            total_length = sum([a.invoice_length for a in ret_companies])
+            total_price = sum([a.invoice_price for a in ret_companies])
+            total_count = sum([a.invoice_count for a in ret_companies])
+            context = {'object_list':ret_companies,
                        'total_length':total_length,
                        'total_price':total_price,
                        'total_count':total_count,
                        'show_students':form.cleaned_data['show_students'],
                        }
         else:
-            context = { 'nolist':True}
+            context = { 'nolist':True, 'object_list':companies}
     else:
-        context = { 'nolist':True}
-        form = InvoiceForm()
+        context = { 'nolist':True, 'object_list':companies}
+        form = InvoiceForm(companies=companies)
     context['form'] = form
-    return render_to_response('reports/invoice.html', RequestContext(request, context))
+    if extra_context:
+        context.update(extra_context)
+    return render_to_response(template, RequestContext(request, context))
 
 def lesson_analysis(request):
     lectors = Lector.objects.none()

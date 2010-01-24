@@ -5,13 +5,13 @@ from collections import defaultdict
 from schools import fix_date_boundaries
 
 class StudentManager(models.Manager):
-    def invoice(self, start, end, companies=[]):
+    def invoice(self, start, end, companies=None):
         from schools.courses.models import CourseMember
         
         course_members = CourseMember.objects.invoice(start, end, companies)
         
         students_list = Student.objects.filter(coursemember__lessonattendee__lesson__real_end__range=(start, fix_date_boundaries(end))).distinct()
-        if companies: students_list = students_list.filter(company__in=companies)
+        if companies is not None: students_list = students_list.filter(company__in=companies)
         students = defaultdict(list)
         for student in students_list:
             student.invoice_course_members = course_members[student]

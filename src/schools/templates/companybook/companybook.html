@@ -1,0 +1,100 @@
+{% extends "companybook/base.html" %}
+{% load i18n %}
+{% block head %}
+	{{ block.super }}
+	<style>
+		.company_data td {
+			text-align: left !important;
+		}
+		.company_data label {
+			font-weight: bold;
+		}
+	</style>
+{% endblock %}
+
+{% block content %}
+	<div class="top-bar">
+		<h1>{% trans "Údaje o platiteľovi" %}</h1>
+		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
+	</div><br />
+	<div class="select-bar">
+		<form>
+			<table>
+			{% include "form_table.html" %}
+			</table>
+		   <input type="submit" name="Submit" value="Search" />
+		</form>
+	</div>
+	{% for company in companies %}
+	<table class="listing form company_data" cellpadding="0" cellspacing="0">
+		<caption><h2>{% trans "Údaje o platiteľovi" %}</h2></caption>
+		<tbody>
+			<tr> <td><label>{% trans "Názov" %}:</label></td> <td> {{ company }} </td> </tr>
+			<tr class="bg"> <td><label>{% trans "IČO" %}:</label></td> <td> {{ company.ico }} </td> </tr>
+			<tr><td><label>{% trans "DIČ" %}:</label></td><td>{{ company.dic }}</td></tr>
+			<tr class="bg"><td><label>{% trans "IČ DPH" %}</td><td>{{ company.ic_dph }}</td></tr>
+			<tr><td><label>{% trans "Adresa" %}:</label></td><td>{{ company.address }}</td></tr>
+			<tr class="bg"><td><label>{% trans "Telefón" %}:</label></td><td>{{ company.phone }}</td></tr>
+			<tr><td><label>{% trans "Mobil" %}:</label></td><td>{{ company.mobile }}</td></tr>
+			<tr class="bg"><td><label>{% trans "Fax" %}:</label></td><td>{{ company.fax }}</tr>
+			<tr><td><label>{% trans "WWW" %}:</label></td><td>{{ company.www|urlize }}</td></tr>
+			<tr class="bg"><td><label>{% trans "Email" %}:</label></td><td>{{ company.email|urlize }}</tr>
+		</tbody>
+	</table>
+	{% endfor %}
+	
+{% if not nolist %}
+<div class="table">
+	<img src="img/bg-th-left.gif" width="8" height="7" alt="" class="left" />
+	<img src="img/bg-th-right.gif" width="7" height="7" alt="" class="right" />
+	<table class="listing" cellpadding="0" cellspacing="0">
+		<caption><h2>{% trans "Fakturácia" %}</h2></caption>
+		<tr>
+			<th class="first">{% trans "Meno/kurz" %}</th>
+			<th>{% trans "Počet lekcií" %}</th>
+			<th>{% trans "Človekominúty" %}</th>
+			<th class="last">{% trans "Cena" %}</th>
+		</tr>
+		{% for company in object_list %}
+			<tr class="{% cycle 'bg' '' %}">
+				<td class="first last style1">{{ company }}</td>
+				<td class="style1">{{ company.invoice_count }}</td>
+				<td class="style1">{{ company.invoice_length }}</td>
+				<td  class="last style1">{{ company.invoice_price }}&nbsp;€</td>
+			</tr>
+			{% if show_students %}
+			{% for student in company.invoice_students %}
+				<tr class="{% cycle 'bg' '' as background %} style2">
+					<td class="first last style2">{{ student }}</td>
+					<td class="style2">{{ student.invoice_count }}</td>
+					<td class="style2">{{ student.invoice_length }}</td>
+					<td  class="last style2">{{ student.invoice_price }}&nbsp;€</td>
+				</tr>
+				{% for course_member in student.invoice_course_members %}
+				<tr class="{% cycle background %} style3">
+					<td class="first style3">{{ course_member.course }}</td>
+					<td class="style3">{{ course_member.invoice_count }}</td>
+					<td class="style3">{{ course_member.invoice_length }}</td>
+					<td  class="last style3">{{ course_member.invoice_price }}&nbsp;€</td>
+				</tr>
+				{% endfor %}
+			{% endfor %}
+			{% endif %}
+		{% endfor %}
+		<tr class="style1">
+			<td class="first style1">{% trans "Spolu" %}</td>
+			<td>{{ total_count }}</td>
+			<td>{{ total_length }}</td>
+			<td class="last">{{ total_price }}&nbsp;€</td>
+		</tr>
+	</table>
+	<div class="select">
+		<strong>Other Pages: </strong>
+		<select>
+			<option>1</option>
+		</select>
+  	</div>
+</div>
+{% endif %}
+	
+{% endblock %}

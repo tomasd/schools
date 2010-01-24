@@ -5,12 +5,12 @@ from django.db import models
 from django.db.models import permalink, signals
 
 class CompanyManager(models.Manager):
-    def invoice(self, start, end, companies=[]):
+    def invoice(self, start, end, companies=None):
         from schools.students.models import Student
         
         students = Student.objects.invoice(start, end, companies)
         
-        if not companies:
+        if companies is None:
             companies = list(Company.objects.all())
         for company in companies:
             company.invoice_students = students[company]
@@ -85,6 +85,7 @@ class Subcount(object):
 
 # Create your models here.
 class Company(models.Model):
+    from django.contrib.auth.models import User
     objects = CompanyManager()
     name = models.CharField(max_length=100)
     
@@ -101,6 +102,8 @@ class Company(models.Model):
     fax = models.CharField(max_length=30, null=True, blank=True)
     www = models.URLField(null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
+    
+    users = models.ManyToManyField(User)
     
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
