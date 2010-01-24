@@ -15,7 +15,7 @@
 {% block content %}
 
 	<table class="listing form student_data" cellpadding="0" cellspacing="0">
-		<caption>{% trans "Osobné údaje" %}</caption>
+		<caption><h2>{% trans "Osobné údaje" %}</h2></caption>
 		<tbody>
 			<tr> <td><label>{% trans "Meno" %}:</label></td> <td> {{ student }} </td> </tr>
 			<tr class="bg"> <td><label>{% trans "Platca" %}:</label></td> <td> {{ student.company }} </td> </tr>
@@ -38,27 +38,81 @@
 		<img src="img/bg-th-left.gif" width="8" height="7" alt="" class="left" />
 		<img src="img/bg-th-right.gif" width="7" height="7" alt="" class="right" />
 		<table class="listing" cellpadding="0" cellspacing="0">
-			<caption>{% trans "Navštevované kurzy" %}</caption>
+			<caption><h2>{% trans "Navštevované kurzy" %}</h2></caption>
 			<tr>
 				<th class="first">{% trans "Názov kurzu" %}</th>
 				<th>{% trans "Obdobie" %}</th>
 				<th class="last">{% trans "Akcie" %}</th>
 			</tr>
 			{% for object in student.coursemember_set.all %}
-			<tr class="{% cycle 'bg' '' %}">
+			<tr class="{% cycle 'bg' '' as tr_class %}">
 				<td class="first style1">{{ object.course }}</td>
 				<td>{{ object.duration }}</td>
-				<td  class="last"><a href="{{ object.get_absolute_url }}"><img src="{{ MEDIA_URL }}img/edit-icon.gif" width="16" height="16" alt="" /></a></td>
+				<td class="last">
+					<a href="#" coursememberid="{{ object.pk }}" class="attendance_link">{% trans "Dochádzka" %}</a>
+					&nbsp;|&nbsp;
+					<a href="#" coursememberid="{{ object.pk }}" class="reference_link">{% trans "Hodnotenie" %}</a>
+				</td>
+			</tr>
+			<tr class="attendance_table attendance_table_{{ object.pk }}">
+				<td colspan="3">
+					<table width="100%" >
+					<tr>
+						<th>{% trans "Dátum a miesto" %}</th>
+						<th>{% trans "Obsah výučby" %}</th>
+						<th>{% trans "Prítomnosť" %}</th>
+					</tr>
+					{% for lesson_attendee in object.lessonattendee_set.all reversed %}
+					<tr>
+						<td>{{ lesson_attendee.lesson }}</td>
+						<td>{{ lesson_attendee.lesson.real_content|default:"" }}</td>
+						<td>{{ lesson_attendee.present|yesno:"prítomný,neprítomný" }}</td>
+					</tr>
+					{% endfor %}
+					</table>
+				</td>
+			</tr>
+			<tr class="reference_table reference_table_{{ object.pk }}">
+				<td colspan="3">
+					<table width="100%" >
+					<tr>
+						<th>{% trans "Dátum" %}</th>
+						<th>{% trans "Hodnotenie" %}</th>
+					</tr>
+					{% for reference in object.coursememberreference_set.all reversed %}
+					<tr>
+						<td>{{ reference.date|date:"d.m.Y" }}</td>
+						<td>{{ reference.text }}</td>
+					</tr>
+					{% endfor %}
+					</table>
+				</td>
 			</tr>
 			{% endfor %}
 		</table>
 	</div>
+	<script type="text/javascript">
+		$(function() {
+			$(".attendance_table").hide();
+			$(".attendance_link").click(function() {
+				$(".attendance_table_" + $(this).attr("coursememberid")).toggle();
+				return false;
+			});
+		});
+		$(function() {
+			$(".reference_table").hide();
+			$(".reference_link").click(function() {
+				$(".reference_table_" + $(this).attr("coursememberid")).toggle();
+				return false;
+			});
+		});
+	</script>
 	
 	<div class="table" style="margin: 0;">
 		<img src="img/bg-th-left.gif" width="8" height="7" alt="" class="left" />
 		<img src="img/bg-th-right.gif" width="7" height="7" alt="" class="right" />
 		<table class="listing" cellpadding="0" cellspacing="0">
-			<caption>{% trans "Výsledky testov" %}</caption>
+			<caption><h2>{% trans "Výsledky testov" %}</h2></caption>
 			<tr>
 					<th class="first">{% trans "Kurz" %}</th>
 					<th>{% trans "Dátum" %}</th>
