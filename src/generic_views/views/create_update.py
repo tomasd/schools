@@ -2,9 +2,9 @@
 from django import http
 from django.contrib.auth.views import redirect_to_login
 from django.core.xheaders import populate_xheaders
-from django.forms.forms import Form, BaseForm
+from django.forms.forms import BaseForm
 from django.forms.formsets import all_valid
-from django.forms.models import inlineformset_factory, ModelForm
+from django.forms.models import inlineformset_factory
 from django.template import loader, RequestContext
 from django.utils.translation import ugettext
 from django.views.generic.create_update import get_model_and_form_class, \
@@ -28,7 +28,7 @@ __all__ = ('create_object', 'update_object')
 def create_object(request, model=None, template_name=None,
         template_loader=loader, extra_context=None, post_save_redirect=None,
         login_required=False, context_processors=None, form_class=None,
-        inlines=None, initial={}):
+        inlines=None, initial={}, preprocess_form=lambda _:_):
     """
     Generic object-creation function with inlines capability.
 
@@ -49,7 +49,7 @@ def create_object(request, model=None, template_name=None,
     formsets = []
     
     tmodel, form_class = get_model_and_form_class(model, form_class)
-    if issubclass(form_class, BaseForm):
+    if True or issubclass(form_class, BaseForm):
         class InitialModelForm(form_class):
             class Meta:
                 model = tmodel
@@ -67,13 +67,14 @@ def create_object(request, model=None, template_name=None,
 
     if request.method == 'POST':
         form = form_class(request.POST, request.FILES)
+        preprocess_form(form)
         if form.is_valid():
             form_validated = True
             new_object = form.save()
         else:
             form_validated = False
             new_object = model()
-
+            
         for klass in formset_classes:
             formset = klass(request.POST, request.FILES, instance=new_object)
             formsets.append(formset)
@@ -91,6 +92,7 @@ def create_object(request, model=None, template_name=None,
     else:
 
         form = form_class()
+        preprocess_form(form)
         for klass in formset_classes:
             formset = klass()
             formsets.append(formset)
@@ -112,7 +114,7 @@ def update_object(request, model=None, object_id=None, slug=None,
         slug_field='slug', template_name=None, template_loader=loader,
         extra_context=None, post_save_redirect=None, login_required=False,
         context_processors=None, template_object_name='object',
-        form_class=None, inlines=None, obj=None):
+        form_class=None, inlines=None, obj=None, preprocess_form=lambda _:_, preprocess_formset=lambda _:_):
     """
     Generic object-update function with inlines.
 
@@ -143,6 +145,7 @@ def update_object(request, model=None, object_id=None, slug=None,
 
     if request.method == 'POST':
         form = form_class(request.POST, request.FILES, instance=obj)
+        preprocess_form(form)
         if form.is_valid():
             form_validated = True
             new_object = form.save()
@@ -152,6 +155,7 @@ def update_object(request, model=None, object_id=None, slug=None,
 
         for klass in formset_classes:
             formset = klass(request.POST, request.FILES, instance=new_object)
+            preprocess_formset(formset)
             formsets.append(formset)
 
         if all_valid(formsets) and form_validated:
@@ -166,8 +170,10 @@ def update_object(request, model=None, object_id=None, slug=None,
             return redirect(post_save_redirect, new_object)
     else:
         form = form_class(instance=obj)
+        preprocess_form(form)
         for klass in formset_classes:
             formset = klass(instance=obj)
+            preprocess_formset(formset)
             formsets.append(formset)
 
     if not template_name:
