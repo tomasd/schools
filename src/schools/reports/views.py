@@ -1,11 +1,62 @@
+# -*- coding: utf-8 -*-
 # Create your views here.
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
+from pyjasper.client import JasperGenerator
 from schools.companies.models import Company
-from schools.courses.models import Course
+from schools.courses.models import Course, LessonAttendee
 from schools.lectors.models import Lector
 from schools.reports.forms import InvoiceForm, LessonAnalysisForm, \
     LessonPlanForm, CompanyAddedValueForm
+from xml.etree import ElementTree as ET
+from django.template.defaultfilters import yesno
+from django.utils.translation import ugettext
+from django.http import HttpResponse
+from django.utils import dateformat
+
+class InvoicePdfGenerator(JasperGenerator):
+    '''
+        Jasper generator for invoices.
+    '''
+    def __init__(self):
+        super(InvoicePdfGenerator, self).__init__()
+        self.reportname = 'reports/invoice.jrxml'
+        print open(self.reportname).read()
+        self.xpath = '/invoice/lesson'
+        self.root = ET.Element('invoice')
+    def generate_xml(self, (lesson_attendees, from_, to_)): 
+        """Generates the XML File used by Jasperreports""" 
+        self.root.attrib['from'] = dateformat.format(from_, 'd.m.Y')
+        self.root.attrib['to'] = dateformat.format(to_, 'd.m.Y')
+        for lesson_attendee in lesson_attendees: 
+            lesson = ET.SubElement(self.root, 'lesson') 
+            course_member =lesson_attendee.course_member
+            course = course_member.course
+            student = course_member.student
+            company = student.company
+            ET.SubElement(lesson, 'student').text = unicode(student.pk)
+            ET.SubElement(lesson, 'company').text = unicode(company.pk)
+            ET.SubElement(lesson, 'course').text = unicode(course.pk)
+            ET.SubElement(lesson, 'companyName').text = unicode(company)
+            ET.SubElement(lesson, 'studentName').text = unicode(student)
+            ET.SubElement(lesson, 'courseName').text = unicode(course)
+            ET.SubElement(lesson, 'lessonDate').text = unicode(lesson_attendee.lesson)
+            ET.SubElement(lesson, 'length').text = unicode(lesson_attendee.lesson.real_minutes_length)
+            ET.SubElement(lesson, 'price').text = unicode(lesson_attendee.course_member_price)
+            ET.SubElement(lesson, 'present').text = yesno(lesson_attendee.present, ugettext(u'áno,nie'))
+            
+        return self.root
+
+def invoice_pdf(request, companies=None):
+    if companies is None: companies = Company.objects.all()
+    form = InvoiceForm(companies, request.GET)
+    if form.is_valid():
+        lesson_attendees = LessonAttendee.objects.filter(lesson__real_end__range=(form.cleaned_data['start'], form.cleaned_data['end']))
+        lesson_attendees = lesson_attendees.filter(course_member__student__company__in=form.cleaned_data['companies'])                
+        pdf = InvoicePdfGenerator().generate((lesson_attendees.all(), form.cleaned_data['start'], form.cleaned_data['end']))
+        return HttpResponse(pdf, 'application/pdf')
+    else:
+        return HttpResponse(form.errors.as_ul)
 
 def invoice(request, companies=None, template='reports/invoice.html', extra_context=None, empty_when_no_companies=False):
     acompanies = companies

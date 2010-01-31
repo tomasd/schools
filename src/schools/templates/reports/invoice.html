@@ -16,6 +16,7 @@
 </div>
 {% if not nolist %}
 <div class="table">
+	<div align="right"><a href="{% url invoice_pdf %}?{{ request.GET.urlencode }}">Uložiť ako pdf</a></div>
 	<img src="img/bg-th-left.gif" width="8" height="7" alt="" class="left" />
 	<img src="img/bg-th-right.gif" width="7" height="7" alt="" class="right" />
 	<table class="listing" cellpadding="0" cellspacing="0">

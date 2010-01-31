@@ -7,3 +7,4 @@ dist
 *.egg-info
 pip-log.txt
 local_settings.py
+*.jasper

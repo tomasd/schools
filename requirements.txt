@@ -1,2 +1,3 @@
 django
 pyYAML
+-e git+git://github.com/tomasd/pyJasper.git#egg=pyJasper

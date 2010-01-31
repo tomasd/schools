@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<invoice from="01.01.2010" to="31.01.2010">
+	<lesson>
+		<student>1</student>
+		<company>1</company>
+		<course>1</course>
+		<companyName>Firma 1</companyName>
+		<studentName>Kovac, Peter</studentName>
+		<courseName>ja24.23</courseName>
+		<lessonDate>24.1.2010</lessonDate>
+		<length>45</length>
+		<price>10</price>
+	</lesson>
+	<lesson>
+		<student>1</student>
+		<company>1</company>
+		<course>1</course>
+		<companyName>Firma 1</companyName>
+		<studentName>Kovac, Peter</studentName>
+		<courseName>ja24.23</courseName>
+		<lessonDate>24.1.2010</lessonDate>
+		<length>45</length>
+		<price>10</price>
+	</lesson>
+	<lesson>
+		<student>1</student>
+		<company>1</company>
+		<course>1</course>
+		<companyName>Firma 1</companyName>
+		<studentName>Kovac, Peter</studentName>
+		<courseName>ja24.23</courseName>
+		<lessonDate>24.1.2010</lessonDate>
+		<length>45</length>
+		<price>10</price>
+	</lesson>
+	<lesson>
+		<student>1</student>
+		<company>1</company>
+		<course>2</course>
+		<companyName>Firma 1</companyName>
+		<studentName>Kovac, Peter</studentName>
+		<courseName>ja24.24</courseName>
+		<lessonDate>24.1.2010</lessonDate>
+		<length>45</length>
+		<price>10</price>
+	</lesson>
+	<lesson>
+		<student>2</student>
+		<company>1</company>
+		<course>1</course>
+		<companyName>Firma 1</companyName>
+		<studentName>Baca, Juraj</studentName>
+		<courseName>ja24.23</courseName>
+		<lessonDate>24.1.2010</lessonDate>
+		<length>45</length>
+		<price>10</price>
+	</lesson>
+	<lesson>
+		<student>2</student>
+		<company>1</company>
+		<course>1</course>
+		<companyName>Firma 1</companyName>
+		<studentName>Baca, Juraj</studentName>
+		<courseName>ja24.23</courseName>
+		<lessonDate>24.1.2010</lessonDate>
+		<length>45</length>
+		<price>10</price>
+	</lesson>
+	<lesson>
+		<student>3</student>
+		<company>2</company>
+		<course>1</course>
+		<companyName>Firma 2</companyName>
+		<studentName>Pekar, Milan</studentName>
+		<courseName>ja24.23</courseName>
+		<lessonDate>24.1.2010</lessonDate>
+		<length>45</length>
+		<price>10</price>
+	</lesson>
+	<lesson>
+		<student>3</student>
+		<company>3</company>
+		<course>1</course>
+		<companyName>Firma 2</companyName>
+		<studentName>Pekar, Milan</studentName>
+		<courseName>ja24.23</courseName>
+		<lessonDate>24.1.2010</lessonDate>
+		<length>45</length>
+		<price>10</price>
+	</lesson>
+	<lesson>
+		<student>3</student>
+		<company>4</company>
+		<course>1</course>
+		<companyName>Firma 2</companyName>
+		<studentName>Pekar, Milan</studentName>
+		<courseName>ja24.23</courseName>
+		<lessonDate>24.1.2010</lessonDate>
+		<length>45</length>
+		<price>10</price>
+	</lesson>
+	<lesson>
+		<student>3</student>
+		<company>5</company>
+		<course>1</course>
+		<companyName>Firma 2</companyName>
+		<studentName>Pekar, Milan</studentName>
+		<courseName>ja24.23</courseName>
+		<lessonDate>24.1.2010</lessonDate>
+		<length>45</length>
+		<price>10</price>
+	</lesson>
+	<lesson>
+		<student>3</student>
+		<company>6</company>
+		<course>1</course>
+		<companyName>Firma 2</companyName>
+		<studentName>Pekar, Milan</studentName>
+		<courseName>ja24.23</courseName>
+		<lessonDate>24.1.2010</lessonDate>
+		<length>45</length>
+		<price>10</price>
+	</lesson>
+	<lesson>
+		<student>3</student>
+		<company>7</company>
+		<course>1</course>
+		<companyName>Firma 2</companyName>
+		<studentName>Pekar, Milan</studentName>
+		<courseName>ja24.23</courseName>
+		<lessonDate>24.1.2010</lessonDate>
+		<length>45</length>
+		<price>10</price>
+	</lesson>
+	<lesson>
+		<student>3</student>
+		<company>7</company>
+		<course>1</course>
+		<companyName>Firma 2</companyName>
+		<studentName>Pekar, Milan</studentName>
+		<courseName>ja24.23</courseName>
+		<lessonDate>24.1.2010</lessonDate>
+		<length>45</length>
+		<price>10</price>
+	</lesson>
+	<lesson>
+		<student>3</student>
+		<company>7</company>
+		<course>1</course>
+		<companyName>Firma 2</companyName>
+		<studentName>Pekar, Milan</studentName>
+		<courseName>ja24.23</courseName>
+		<lessonDate>24.1.2010</lessonDate>
+		<length>45</length>
+		<price>10</price>
+	</lesson>
+	<lesson>
+		<student>3</student>
+		<company>7</company>
+		<course>1</course>
+		<companyName>Firma 2</companyName>
+		<studentName>Pekar, Milan</studentName>
+		<courseName>ja24.23</courseName>
+		<lessonDate>24.1.2010</lessonDate>
+		<length>45</length>
+		<price>10</price>
+	</lesson>
+	<lesson>
+		<student>3</student>
+		<company>7</company>
+		<course>1</course>
+		<companyName>Firma 2</companyName>
+		<studentName>Pekar, Milan</studentName>
+		<courseName>ja24.23</courseName>
+		<lessonDate>24.1.2010</lessonDate>
+		<length>45</length>
+		<price>10</price>
+	</lesson>
+	<lesson>
+		<student>3</student>
+		<company>8</company>
+		<course>1</course>
+		<companyName>Firma 2</companyName>
+		<studentName>Pekar, Milan</studentName>
+		<courseName>ja24.23</courseName>
+		<lessonDate>24.1.2010</lessonDate>
+		<length>45</length>
+		<price>10</price>
+	</lesson>
+	<lesson>
+		<student>3</student>
+		<company>8</company>
+		<course>1</course>
+		<companyName>Firma 2</companyName>
+		<studentName>Pekar, Milan</studentName>
+		<courseName>ja24.23</courseName>
+		<lessonDate>24.1.2010</lessonDate>
+		<length>45</length>
+		<price>10</price>
+	</lesson>
+	<lesson>
+		<student>3</student>
+		<company>8</company>
+		<course>1</course>
+		<companyName>Firma 2</companyName>
+		<studentName>Pekar, Milan</studentName>
+		<courseName>ja24.23</courseName>
+		<lessonDate>24.1.2010</lessonDate>
+		<length>45</length>
+		<price>10</price>
+	</lesson>
+	<lesson>
+		<student>3</student>
+		<company>8</company>
+		<course>1</course>
+		<companyName>Firma 2</companyName>
+		<studentName>Pekar, Milan</studentName>
+		<courseName>ja24.23</courseName>
+		<lessonDate>24.1.2010</lessonDate>
+		<length>45</length>
+		<price>10</price>
+	</lesson>
+	<lesson>
+		<student>3</student>
+		<company>8</company>
+		<course>1</course>
+		<companyName>Firma 2</companyName>
+		<studentName>Pekar, Milan</studentName>
+		<courseName>ja24.23</courseName>
+		<lessonDate>24.1.2010</lessonDate>
+		<length>45</length>
+		<price>10</price>
+	</lesson>
+</invoice>
