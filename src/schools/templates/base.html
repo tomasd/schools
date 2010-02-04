@@ -36,7 +36,9 @@
 			{% hasmoduleperms buildings %}
 			<li class="buildings"><span><span><a href="{% url buildings_building_list %}">Budovy</a></span></span></li>
 			{% endhasmoduleperms %}
+			{% if perms.companies.can_see_invoice or perms.courses.can_see_lesson_plan or perms.companies.can_see_added_value or perms.courses.can_see_lesson_analysis %}
 			<li class="reports"><span><span><a href="{% url reports %}">Prehľady</a></span></span></li>
+			{% endif %}
 			<li class="password-change"><span><span><a href="{% url password-change %}">{% trans "Zmeniť heslo" %}</a></span></span></li>
 			{% if user.student %}
 			<li class="studentbook"><span><span><a href="{% url studentbook %}">Žiacka knižka</a></span></span></li>

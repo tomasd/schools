@@ -53,6 +53,12 @@ class Course(models.Model):
         verbose_name=u'kurz'
         verbose_name_plural=u'kurzy'
         
+        permissions = (
+            ("can_see_lesson_plan", ("Can see lesson plan")),
+            ("can_see_lesson_analysis", ("Can see lesson analysis")),
+        )
+
+        
     def __unicode__(self):
         return self.name
  

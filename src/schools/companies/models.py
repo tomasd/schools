@@ -111,6 +111,12 @@ class Company(models.Model):
     class Meta:
         verbose_name=u'firma'
         verbose_name_plural=u'firmy'
+        
+        permissions = (
+            ("can_see_invoice", ("Can see invoice")),
+            ("can_see_added_value", ("Can see added value")),
+        )
+
     
     def __unicode__(self):
         return self.name

@@ -5,9 +5,17 @@
 {% block left_content %}
 	<h3>{% trans "Prehľady" %}</h3>
 	<ul class="nav">
+		{% if perms.companies.can_see_invoice %}
 		<li><a href="{% url invoice %}">{% trans "Fakturácia" %}</a></li>
+		{% endif %}
+		{% if perms.courses.can_see_lesson_plan %}
 		<li><a href="{% url course-plan %}">{% trans "Plán kurzov" %}</a></li>
+		{% endif %}
+		{% if perms.companies.can_see_added_value %}
 		<li><a href="{% url company-added-value %}">{% trans "Pridaná hodnota firmy" %}</a></li>
+		{% endif %}
+		{% if perms.courses.can_see_lesson_analysis %}
 		<li class="last"><a href="{% url lesson-analysis %}">{% trans "Analýza lekciohodín" %}</a></li>
+		{% endif %}
 	</ul>
 {% endblock %}
