@@ -1,5 +1,5 @@
 {% extends "courses/base.html" %}
-{% load i18n listtable %}
+{% load i18n listtable generic_views_tags %}
 {% block content %}
 	<div class="top-bar">
 		{% if perms.courses.add_course %}<a href="{% url courses_course_create %}" class="button">{% trans "Pridať" %}</a>{% endif %}
@@ -12,5 +12,21 @@
 		   <input type="submit" name="Submit" value="Search" />
 		</form>
 	</div>
-	{% listtable object_list _("Kurz") %}
+	
+	{% table object in object_list %}
+		<th class="first">{% trans "Kurz" %}</th>
+		<th>{% trans "Lektor" %}</th>
+		<th>{% trans "Jazyk" %}</th>
+		<th class="last">{% trans "Akcie" %}</th>
+	{% rows %}
+		<tr class="{{ tr_class }}">
+			<td class="first style1">{% canchange object %}<a href="{{ object.get_absolute_url }}">{{ object }}</a>{% else %}{{ object }}{% endcanchange %}</td>
+			<td>{% canchange object %}<a href="{{ object.lector.get_absolute_url }}">{{ object.lector }}</a>{% else %}{{ object.lector }}{% endcanchange %}</td>
+			<td>{{ object.get_language_display|default:"" }}</td>
+			<td class="last">
+				{% canchange object %}<a href="{{ object.get_absolute_url }}"><img src="{{ MEDIA_URL }}img/edit-icon.gif" width="16" height="16" /></a>{% endcanchange %}
+				{% candelete object %}<a href="{{ object.get_delete_url }}"><img src="{{ MEDIA_URL }}img/hr.gif" width="16" height="16" /></a>{% endcandelete %}
+			</td>
+		</tr>
+	{% endtable %}
 {% endblock %}
