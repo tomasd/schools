@@ -1,5 +1,5 @@
 {% extends "students/base.html" %}
-{% load i18n listtable%}
+{% load i18n listtable  generic_views_tags%}
 {% block content %}
 	<div class="top-bar">
 		<a href="{% url students_student_create %}" class="button">{% trans "Pridať" %}</a>
@@ -13,5 +13,21 @@
 		</form>
 	</div>
 	
+	{% table object in object_list %}
+		<th class="first">{% trans "Meno" %}</th>
+		<th>{% trans "Firma" %}</th>
+		<th>{% trans "Email" %}</th>
+		<th class="last">{% trans "Akcie" %}</th>
+	{% rows %}
+		<tr class="{{ tr_class }}">
+			<td class="first style1">{% canchange object %}<a href="{{ object.get_absolute_url }}">{{ object }}</a>{% else %}{{ object }}{% endcanchange %}</td>
+			<td>{% canchange object.company %}<a href="{{ object.company.get_absolute_url }}">{{ object.company }}</a>{% else %}{{ object.company }}{% endcanchange %}</td>
+			<td>{{ object.email|urlize }}</td>
+			<td class="last">
+				{% canchange object %}<a href="{{ object.get_absolute_url }}"><img src="{{ MEDIA_URL }}img/edit-icon.gif" width="16" height="16" /></a>{% endcanchange %}
+				{% candelete object %}<a href="{{ object.get_delete_url }}"><img src="{{ MEDIA_URL }}img/hr.gif" width="16" height="16" /></a>{% endcandelete %}
+			</td>
+		</tr>
+	{% endtable %}
 	{% listtable object_list _("Študent") %}
 {% endblock %}
