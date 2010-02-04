@@ -26,8 +26,8 @@ class Student(models.Model):
     objects = StudentManager()
     from schools.companies.models import Company
     from django.contrib.auth.models import User
-    last_name = models.CharField(max_length=30)
     first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
     title = models.CharField(max_length=10, null=True, blank=True)
     company = models.ForeignKey(Company, null=True, blank=True)
     
