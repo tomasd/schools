@@ -1,0 +1,89 @@
+- fields: {company: 1, email: '', fax: '', first_name: tomas, 
+    last_name: drencak, mobile: '', phone: '', postal: '', street: '', title: '', town: '', www: ''}
+  model: students.student
+  pk: 1
+- fields: {company: 1, created: !!timestamp '2009-10-17 09:18:55.022089', email: '',
+    fax: '', first_name: dasf, last_name: asdf, mobile: '', phone: '', postal: '',
+    street: '', title: '', town: '', www: ''}
+  model: students.student
+  pk: 2
+- fields: {company: 1, email: '',
+    fax: '', first_name: dasf, last_name: asdf, mobile: '', phone: '', postal: '',
+    street: '', title: '', town: '', www: ''}
+  model: students.student
+  pk: 3
+- fields: {created: !!timestamp '2009-10-17 09:12:43.110542', email: '', fax: '',
+    first_name: lector, last_name: lector, mobile: '', phone: '', postal: '', street: '',
+    title: '', town: '', updated: !!timestamp '2009-10-17 09:12:43.110600', www: ''}
+  model: lectors.lector
+  pk: 1
+- fields: {contract_number: 2008/01, end: 2009-12-01, hour_rate: '5', lector: 1, start: 2009-01-01}
+  model: lectors.contract
+  pk: 1
+- fields: {contract: 1, course: 2, hour_rate: '1'}
+  model: lectors.hourrate
+  pk: 1
+- fields: {lector: 1, name: dasf, note: '', responsible: 1}
+  model: courses.course
+  pk: 1
+- fields: {lector: 1, name: dasf, note: '', responsible: 1}
+  model: courses.course
+  pk: 2
+- fields: {classroom: 1, course: 1, end: !!timestamp '2009-01-01 11:00:00', start: !!timestamp '2009-01-01 10:00:00'}
+  model: courses.lesson
+  pk: 1
+- fields: {classroom: 1, course: 2, end: !!timestamp '2009-01-01 12:00:00', start: !!timestamp '2009-01-01 11:00:00'}
+  model: courses.lesson
+  pk: 2
+- fields: {building: 1, infinite_room: false, name: asdf}
+  model: buildings.classroom
+  pk: 1
+- fields: {name: budova 2, postal: fad, street: dasf, town: dasfd}
+  model: buildings.building
+  pk: 1
+- fields: {course: 1, name: xxx}
+  model: courses.expensegroup
+  pk: 1
+- fields: {course: 1, name: xxx}
+  model: courses.expensegroup
+  pk: 2
+- fields: {end: null, expense_group: 1, price: '3', start: 2009-01-01}
+  model: courses.expensegroupprice
+  pk: 1
+- fields: {end: null, expense_group: 2, price: '2', start: 2009-01-01}
+  model: courses.expensegroupprice
+  pk: 2
+- fields: {course: 1, end: null, expense_group: 1, start: 2009-01-01, student: 1}
+  model: courses.coursemember
+  pk: 1
+- fields: {course: 1, end: null, expense_group: 2, start: 2009-01-01, student: 2}
+  model: courses.coursemember
+  pk: 2
+- fields: {course: 1, end: null, expense_group: 2, start: 2009-01-01, student: 3}
+  model: courses.coursemember
+  pk: 3
+- fields: {course_member: 1, lesson: 1, present: true}
+  model: courses.lessonattendee
+  pk: 1
+- fields: {course_member: 2, lesson: 1, present: true}
+  model: courses.lessonattendee
+  pk: 2
+- fields: {course_member: 3, lesson: 1, present: true}
+  model: courses.lessonattendee
+  pk: 3
+- fields:
+    date_joined: 2009-10-17 08:26:19
+    email: tomas@drencak.com
+    first_name: ''
+    groups: []
+    is_active: true
+    is_staff: true
+    is_superuser: true
+    last_login: 2010-01-23 10:50:02.930484
+    last_name: ''
+    password: sha1$1fcab$20411b867b80e874b15f886e7a1aa83389e32e76
+    user_permissions: []
+    username: tomas
+  model: auth.user
+  pk: 1
+  

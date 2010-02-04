@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from collections import defaultdict
 from django.db import models
 from django.db.models import permalink
 from schools import fix_date_boundaries
@@ -8,8 +7,12 @@ class LectorManager(models.Manager):
     def lesson_analysis(self, start, end):
         from schools.courses.models import Lesson
         from schools.companies.models import Subcount
-        
-        lessons = Lesson.objects.filter(real_end__range=(start, fix_date_boundaries(end)))
+        from collections import defaultdict
+        import schools
+        from schools.lectors.models import Lector
+
+        print schools.fix_date_boundaries
+        lessons = Lesson.objects.filter(real_end__range=(start, schools.fix_date_boundaries(end)))
         
         lector_lessons = defaultdict(dict)
         
