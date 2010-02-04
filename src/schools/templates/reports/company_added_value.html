@@ -29,36 +29,36 @@
 		{% for company in object_list %}
 			<tr class="{% cycle 'bg' '' %}">
 				<td class="first last style1">{{ company }}</td>
-				<td  class="style1">{{ company.invoice_price }}&nbsp;€</td>
-				<td class="style1">{{ company.invoice_building_price }}&nbsp;€</td>
-				<td class="style1">{{ company.invoice_lector_price }}&nbsp;€</td>
-				<td class="last style1">{{ company.invoice_delta }}&nbsp;€</td>
+				<td  class="style1">{{ company.invoice_price|floatformat:"2" }}&nbsp;€</td>
+				<td class="style1">{{ company.invoice_building_price|floatformat:"2" }}&nbsp;€</td>
+				<td class="style1">{{ company.invoice_lector_price|floatformat:"2" }}&nbsp;€</td>
+				<td class="last style1">{{ company.invoice_delta|floatformat:"2" }}&nbsp;€</td>
 			</tr>
 			{% for student in company.invoice_students %}
 				<tr class="{% cycle 'bg' '' as background %} style2">
 					<td class="first last style2">{{ student }}</td>
-					<td class="style2">{{ student.invoice_price }}&nbsp;€</td>
-					<td class="style2">{{ student.invoice_building_price }}&nbsp;€</td>
-					<td class="style2">{{ student.invoice_lector_price }}&nbsp;€</td>
-					<td class="last style2">{{ student.invoice_delta }}&nbsp;€</td>
+					<td class="style2">{{ student.invoice_price|floatformat:"2" }}&nbsp;€</td>
+					<td class="style2">{{ student.invoice_building_price|floatformat:"2" }}&nbsp;€</td>
+					<td class="style2">{{ student.invoice_lector_price|floatformat:"2" }}&nbsp;€</td>
+					<td class="last style2">{{ student.invoice_delta|floatformat:"2" }}&nbsp;€</td>
 				</tr>
 				{% for course_member in student.invoice_course_members %}
 				<tr class="{% cycle background %} style3">
 					<td class="first style3">{{ course_member.course }}</td>
-					<td class="style3">{{ course_member.invoice_price }}&nbsp;€</td>
-					<td class="style3">{{ course_member.invoice_building_price }}&nbsp;€</td>
-					<td class="style3">{{ course_member.invoice_lector_price }}&nbsp;€</td>
-					<td class="last style3">{{ course_member.invoice_delta }}&nbsp;€</td>
+					<td class="style3">{{ course_member.invoice_price|floatformat:"2" }}&nbsp;€</td>
+					<td class="style3">{{ course_member.invoice_building_price|floatformat:"2" }}&nbsp;€</td>
+					<td class="style3">{{ course_member.invoice_lector_price|floatformat:"2" }}&nbsp;€</td>
+					<td class="last style3">{{ course_member.invoice_delta|floatformat:"2" }}&nbsp;€</td>
 				</tr>
 				{% endfor %}
 			{% endfor %}
 		{% endfor %}
 		<tr class="style1">
 			<td class="first style1">{% trans "Spolu" %}</td>
-			<td>{{ total_price }}&nbsp;€</td>
-			<td>{{ total_building_price }}&nbsp;€</td>
-			<td>{{ total_lector_price }}&nbsp;€</td>
-			<td class="last">{{ total_delta }}&nbsp;€</td>
+			<td>{{ total_price|floatformat:"2" }}&nbsp;€</td>
+			<td>{{ total_building_price|floatformat:"2" }}&nbsp;€</td>
+			<td>{{ total_lector_price|floatformat:"2" }}&nbsp;€</td>
+			<td class="last">{{ total_delta|floatformat:"2" }}&nbsp;€</td>
 		</tr>
 	</table>
 	<div class="select">

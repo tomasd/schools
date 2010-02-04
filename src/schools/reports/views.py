@@ -140,7 +140,7 @@ def company_added_value(request):
                                                 start=form.cleaned_data['start'],
                                                 end=form.cleaned_data['end'])
     else:
-        form = InvoiceForm()
+        form = InvoiceForm(Company.objects.all())
     total_length = sum([a.invoice_length for a in companies])
     total_price = sum([a.invoice_price for a in companies])
     total_count = sum([a.invoice_count for a in companies])

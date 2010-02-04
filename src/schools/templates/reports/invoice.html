@@ -31,7 +31,7 @@
 				<td class="first last style1">{{ company }}</td>
 				<td class="style1">{{ company.invoice_count }}</td>
 				<td class="style1">{{ company.invoice_length }}</td>
-				<td  class="last style1">{{ company.invoice_price }}&nbsp;€</td>
+				<td  class="last style1">{{ company.invoice_price|floatformat:"2" }}&nbsp;€</td>
 			</tr>
 			{% if show_students %}
 			{% for student in company.invoice_students %}
@@ -39,14 +39,14 @@
 					<td class="first last style2">{{ student }}</td>
 					<td class="style2">{{ student.invoice_count }}</td>
 					<td class="style2">{{ student.invoice_length }}</td>
-					<td  class="last style2">{{ student.invoice_price }}&nbsp;€</td>
+					<td  class="last style2">{{ student.invoice_price|floatformat:"2" }}&nbsp;€</td>
 				</tr>
 				{% for course_member in student.invoice_course_members %}
 				<tr class="{% cycle background %} style3">
 					<td class="first style3">{{ course_member.course }}</td>
 					<td class="style3">{{ course_member.invoice_count }}</td>
 					<td class="style3">{{ course_member.invoice_length }}</td>
-					<td  class="last style3">{{ course_member.invoice_price }}&nbsp;€</td>
+					<td  class="last style3">{{ course_member.invoice_price|floatformat:"2" }}&nbsp;€</td>
 				</tr>
 				{% endfor %}
 			{% endfor %}
@@ -56,7 +56,7 @@
 			<td class="first style1">{% trans "Spolu" %}</td>
 			<td>{{ total_count }}</td>
 			<td>{{ total_length }}</td>
-			<td class="last">{{ total_price }}&nbsp;€</td>
+			<td class="last">{{ total_price|floatformat:"2" }}&nbsp;€</td>
 		</tr>
 	</table>
 	<div class="select">
