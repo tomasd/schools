@@ -6,7 +6,7 @@ from generic_views.views.create_update import update_object
 from schools import permission_required
 from schools.courses.models import Course
 from schools.student_testing.forms import CreateTestResultForm, \
-    CreateTestingTermForm, TestResultForm, EditTestResultForm
+    CreateTestingTermForm, TestResultForm, EditTestResultForm, TestingTermForm
 from schools.student_testing.models import TestingTerm, TestResult
 import operator
 
@@ -40,7 +40,8 @@ def create_test_result(request, object_id):
     return render_to_response('student_testing/create_testing_term.html', 
                               {'form':form, 'form_results':forms,'course':course}, 
                               context_instance=RequestContext(request))
-    
+
+@permission_required('student_testing.change_testingterm')
 def update_test_result(request, course_id, object_id):
     def acl(formset):
         for f in formset.forms:
@@ -48,7 +49,7 @@ def update_test_result(request, course_id, object_id):
     test = get_object_or_404(TestingTerm, pk=object_id)
     course = get_object_or_404(Course, pk=course_id)
     inlines = [{'model':TestResult, 'extra':1, 'form':EditTestResultForm}]
-    return update_object(request, obj=test, model=TestingTerm,
+    return update_object(request, obj=test, model=TestingTerm,form_class=TestingTermForm,
                          template_name='student_testing/update_testing_term.html', 
                          extra_context={'course':course,}, 
                          inlines=inlines, preprocess_formset=acl)

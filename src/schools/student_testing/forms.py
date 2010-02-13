@@ -41,6 +41,9 @@ class CreateTestResultForm(forms.ModelForm):
         
 
 class TestingTermForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(TestingTermForm, self).__init__(*args, **kwargs)
+        self.fields['course'].widget = HiddenInput()
     class Meta:
         model = TestingTerm
 

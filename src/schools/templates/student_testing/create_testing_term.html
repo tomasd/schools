@@ -5,12 +5,17 @@
 	{{ block.super }}
 	<script type="text/javascript">
 	<!--
-	$("id_testingterm-test").change(function() {
-		if ($(this).val()) {
-			$("new_test").hide();
+	var test_changed = function() {
+		var fields = $("#id_testing-name, #id_testing-description, #id_testing-max_score").parents("tr");
+		if ($("#id_testing-student_test").val()) {
+			fields.hide();
 		} else {
-			$("new_test").show();
+			fields.show();
 		}
+	};
+	$(function() {
+		$("#id_testing-student_test").change(test_changed);
+		test_changed();
 	});
 	//-->
 	</script>

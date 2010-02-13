@@ -9,7 +9,6 @@ class LectorManager(models.Manager):
         from schools.companies.models import Subcount
         from collections import defaultdict
         import schools
-        from schools.lectors.models import Lector
 
         print schools.fix_date_boundaries
         lessons = Lesson.objects.filter(real_end__range=(start, schools.fix_date_boundaries(end)))
