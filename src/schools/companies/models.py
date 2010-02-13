@@ -130,6 +130,10 @@ class Company(models.Model):
         return ('companies_company_students', None, {'object_id':str(self.pk)})
     
     @permalink
+    def get_users_url(self):
+        return ('companies_company_users', None, {'object_id':str(self.pk)})
+    
+    @permalink
     def get_delete_url(self):
         return ('companies_company_delete', None, {'object_id':str(self.pk)})
     

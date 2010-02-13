@@ -2,7 +2,7 @@
 {% load i18n listtable generic_views_tags %}
 {% block content %}
 	<div class="top-bar">
-		{% if perms.companies.add_company %}<a href="{% url companies_company_create %}" class="button">{% trans "Pridať" %}</a>{% endif %}
+		{% if perms.auth.add_user %}<a href="{% url companies_company_user_create company.pk %}" class="button">{% trans "Pridať" %}</a>{% endif %}
 		<h1>{% trans "Zoznam používateľov" %}</h1>
 		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
 	</div><br />

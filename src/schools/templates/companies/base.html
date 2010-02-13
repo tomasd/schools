@@ -8,6 +8,7 @@
 	<h3>{% trans "Firma" %} {{ company }}</h3>
 	<ul class="nav">
 		<li><a href="{{ company.get_absolute_url }}">Úprava firmy</a></li>
+		<li><a href="{{ company.get_users_url }}">Zoznam používateľov</a></li>
 		<li class="last"><a href="{{ company.get_students_url }}">Zoznam študentov</a></li>
 	</ul>
 	{% endif %}
