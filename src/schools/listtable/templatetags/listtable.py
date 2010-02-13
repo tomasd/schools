@@ -90,6 +90,21 @@ def page_query(page, query):
 
 @register.tag
 def table(parser, token):
+    '''
+        Example:
+    {% table object in object_list %}
+        <th class="first">{{ main_column }}</th>
+        <th class="last">{% trans "Akcie" %}</th>
+    {% rows %}
+        <tr class="{{ tr_class }}">
+            <td class="first style1">{% canchange object %}<a href="{{ object.get_absolute_url }}">{{ object }}</a>{% else %}{{ object }}{% endcanchange %}</td>
+            <td class="last">
+                {% canchange object %}<a href="{{ object.get_absolute_url }}"><img src="{{ MEDIA_URL }}img/edit-icon.gif" width="16" height="16" /></a>{% endcanchange %}
+                {% candelete object %}<a href="{{ object.get_delete_url }}"><img src="{{ MEDIA_URL }}img/hr.gif" width="16" height="16" /></a>{% endcandelete %}
+            </td>
+        </tr>
+    {% endtable %}
+    '''
     values = token.split_contents()
     object_name = values[1]
     object_list = values[3]

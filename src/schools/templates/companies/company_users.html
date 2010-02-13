@@ -1,0 +1,28 @@
+{% extends "companies/base.html" %}
+{% load i18n listtable generic_views_tags %}
+{% block content %}
+	<div class="top-bar">
+		{% if perms.companies.add_company %}<a href="{% url companies_company_create %}" class="button">{% trans "Pridať" %}</a>{% endif %}
+		<h1>{% trans "Zoznam používateľov" %}</h1>
+		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
+	</div><br />
+	<div class="select-bar">
+		<form>
+			{% include "form_inline.html" %}
+		   <input type="submit" name="Submit" value="Search" />
+		</form>
+	</div>
+	
+	{% table object in object_list %}
+		<th class="first">{% trans "Používateľ" %}</th>
+		<th class="last">{% trans "Akcie" %}</th>
+	{% rows %}
+		<tr class="{{ tr_class }}">
+			<td class="first style1">{% canchange object %}<a href="{% url companies_company_user_update company.pk object.pk %}">{{ object }}</a>{% else %}{{ object }}{% endcanchange %}</td>
+			<td class="last">
+				{% canchange object %}<a href="{% url companies_company_user_update company.pk object.pk %}"><img src="{{ MEDIA_URL }}img/edit-icon.gif" width="16" height="16" /></a>{% endcanchange %}
+				{#{% candelete object %}<a href="{{ object.get_delete_url }}"><img src="{{ MEDIA_URL }}img/hr.gif" width="16" height="16" /></a>{% endcandelete %}#}
+			</td>
+		</tr>
+	{% endtable %}
+{% endblock %}
