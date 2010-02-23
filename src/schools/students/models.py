@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from django.db.models import permalink
+from django.db.models import permalink, signals
 from collections import defaultdict
 from schools import fix_date_boundaries
 

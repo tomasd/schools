@@ -5,6 +5,7 @@ from schools.search.views import object_list
 from schools.students.models import Student
 from generic_views.views.delete import delete_object
 from schools import permission_required
+from schools.students.forms import StudentForm
 
 @permission_required('students.add_student')
 def student_create(*args, **kwargs):
@@ -12,7 +13,9 @@ def student_create(*args, **kwargs):
 
 @permission_required('students.change_student')
 def student_update(request, object_id):
-    return update_object(request, object_id=object_id, model=Student, extra_context={'student':get_object_or_404(Student, pk=object_id)})
+    return update_object(request, object_id=object_id, model=Student, 
+                         form_class=StudentForm,
+                         extra_context={'student':get_object_or_404(Student, pk=object_id)})
 
 @permission_required('students.delete_student')
 def student_delete(*args, **kwargs):

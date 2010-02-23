@@ -8,9 +8,9 @@ class LectorManager(models.Manager):
         from schools.courses.models import Lesson
         from schools.companies.models import Subcount
         from collections import defaultdict
+        from schools.lectors.models import Lector #@UnresolvedImport
         import schools
 
-        print schools.fix_date_boundaries
         lessons = Lesson.objects.filter(real_end__range=(start, schools.fix_date_boundaries(end)))
         
         lector_lessons = defaultdict(dict)
@@ -22,7 +22,7 @@ class LectorManager(models.Manager):
             subcount.length += lesson.real_minutes_length
             subcount.price += lesson.real_lector_price
             
-        lectors = Lector.objects.all() #@UndefinedVariable
+        lectors = Lector.objects.all() 
         for lector in lectors:
             lector.analysis_courses = lector_lessons[lector].values()
             lector.analysis_length = sum([subcount.length 

@@ -1,0 +1,35 @@
+- fields:
+    date_joined: 2009-10-17 08:26:19
+    email: tomas@drencak.com
+    first_name: ''
+    groups: []
+    is_active: true
+    is_staff: true
+    is_superuser: true
+    last_login: 2010-01-23 10:50:02.930484
+    last_name: ''
+    password: sha1$1fcab$20411b867b80e874b15f886e7a1aa83389e32e76
+    user_permissions: []
+    username: tomas
+  model: auth.user
+  pk: 1
+- fields: {company: 1, created: !!timestamp '2009-10-17 09:18:55.022089', email: '',
+    fax: '', first_name: dasf, last_name: asdf, mobile: '', phone: '', postal: '',
+    street: '', title: '', town: '', www: '',user: 2}
+  model: students.student
+  pk: 1
+- fields:
+    date_joined: 2009-10-17 08:26:19
+    email: tomas@drencak.com
+    first_name: ''
+    groups: []
+    is_active: true
+    is_staff: true
+    is_superuser: true
+    last_login: 2010-01-23 10:50:02.930484
+    last_name: ''
+    password: sha1$1fcab$20411b867b80e874b15f886e7a1aa83389e32e76
+    user_permissions: []
+    username: x
+  model: auth.user
+  pk: 2
