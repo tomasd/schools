@@ -28,3 +28,13 @@ class StudentTest(TestCase):
         self.assertEquals('first', Student.objects.get(pk=1).user.first_name)
         self.assertEquals('last', Student.objects.get(pk=1).user.last_name)
         self.assertEquals('username', Student.objects.get(pk=1).user.username)
+        
+    def test_reset_password(self):
+        self.assertFalse(Student.objects.get(pk=1).user.check_password('xxx'))
+        response = self.client.post(reverse('students_student_set_password', kwargs={'object_id':'1'}))
+        self.assertEquals(200, response.status_code)
+        
+        response = self.client.post(reverse('students_student_set_password', kwargs={'object_id':'1'}), {'new_password1':'xxx', 'new_password2':'xxx'})
+        self.assertRedirects(response, reverse('students_student_update', kwargs={'object_id':'1'}))
+        
+        self.assertTrue(Student.objects.get(pk=1).user.check_password('xxx'))

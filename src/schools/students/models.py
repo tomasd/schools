@@ -67,6 +67,10 @@ class Student(models.Model):
     def get_delete_url(self):    
         return ('students_student_delete', None, {'object_id':str(self.pk)})
     
+    @permalink
+    def get_set_password_url(self):    
+        return ('students_student_set_password', None, {'object_id':str(self.pk)})
+    
     @property
     def address(self):
         return '%s, %s %s' % (self.street, self.postal, self.town)
