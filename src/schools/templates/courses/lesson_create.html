@@ -2,82 +2,126 @@
 {% load i18n %}
 
 {% block head %}
-	{{ block.super }}
 	<link rel="StyleSheet" href="{{ MEDIA_URL }}weekcalendar/jquery.weekcalendar.css" type="text/css" media="screen"/>
 	<script src="{{ MEDIA_URL }}weekcalendar/jquery.weekcalendar.js.min.js"></script>
 	<script src="{{ MEDIA_URL }}jquery/jquery.formset.min.js"></script>
+	<script src="{{ MEDIA_URL }}date.js"></script>
+	<script src="{{ MEDIA_URL }}date_sk-SK.js"></script>
+		{{ block.super }}
+	
 	<script type="text/javascript">
 	    $(function() {
 	        $('#listing_table tbody tr').formset();
 	    });
+	    var add_new_lesson_row = function(classroom, start_date, start_time, end_date, end_time) {
+	    	var row = $('#listing_table .form_row:last');
+	    	if (!(row.find(':input.classroom').val() 
+	    	    	&& row.find(':input.datepicker.start').val() && row.find(':input.timepicker.start').val()
+	    	    	&& row.find(':input.datepicker.end').val() && row.find(':input.timepicker.end').val())) 
+    	    	{
+		    	$('#listing_table .add-row').click();
+				row.find(':input.course').val('{{ course.pk }}');
+				row.find(':input.classroom').val(classroom);
+				row.find(':input.datepicker.start').val(start_date);
+				row.find(':input.timepicker.start').val(start_time);
+				row.find(':input.datepicker.end').val(end_date);
+				row.find(':input.timepicker.end').val(end_time);
+				row = $('#listing_table .form_row:last');
+	    	}			
+	    	return row;
+	    };
 	</script>
 	<script type="text/javascript">
-		var editable = function(calEvent, eventElement){ if (calEvent.id) return false; else return true;};
-		var change_event = function(new_row, calEvent) {
-			$(new_row).find('.course').val('{{ course.pk }}');
-			$(new_row).find('.classroom').val(calEvent.classroom);
-			$(new_row).find('.start.datepicker').val($("#calendar").weekCalendar("formatDate", calEvent.start));
-			$(new_row).find('.start.timepicker').val($("#calendar").weekCalendar("formatTime", calEvent.start));
-			$(new_row).find('.end.datepicker').val($("#calendar").weekCalendar("formatDate", calEvent.end)); 
-			$(new_row).find('.end.timepicker').val($("#calendar").weekCalendar("formatTime", calEvent.end));
+	$(function() {
+		var form = $("#create_lesson_dialog_form");
+		 var repeat_start_date = form.find("#repeat-start-date"),
+	 		repeat_start_time = form.find("#repeat-start-time"),
+	 		repeat_end_date = form.find("#repeat-end-date"),
+	 		repeat_end_time = form.find("#repeat-end-time"),
+	 		repeat_every_day = form.find("#repeat-every-day"),
+	 		repeat_every_week = form.find("#repeat-every-week"),
+	 		repeat_every_month = form.find("#repeat-every-month"),
+	 		repeat_every_year = form.find("#repeat-every-year"),
+	 		repeat_every = form.find("#repeat-every"),
+	 		MO = form.find("#MO"),TU = form.find("#TU"),WE = form.find("#WE"),
+	 		TH = form.find("#TH"),FR = form.find("#FR"),SA = form.find("#SA"),SU = form.find("#SU"),
+	 		end_date = form.find("#end-date"), classroom = $('#id_classroom');
+	 	var is_checked = function(checkbox) {
+		 	return $(checkbox).attr('checked');
+	 	}
+		var no_repeat = function(form) {
+			add_new_lesson_row(classroom.val(), repeat_start_date.val(), repeat_start_time.val(), repeat_end_date.val(), repeat_end_time.val());
 		};
-		var event_changed = function(calEvent, oldCalEvent, element) {
-			change_event(events[oldCalEvent], calEvent);
-		};
-		var events = {};
-		var events_list = Array();
-		var new_event = function(calEvent, element) {
-			calEvent.classroom = $("#id_classroom").val();
-
-			if ($("#listing_table .form_row:last .classroom").val()) {
-				$("#listing_table .add-row").click();
-			}
-			var edit_row = $("#listing_table tr.form_row:last")
-
-			change_event(edit_row, calEvent);
-			events[calEvent] = edit_row;
-			events_list.push(calEvent);
-		};
-		$(function() {
-			$("#calendar").weekCalendar({
-				businessHours:{start: 6, end: 20, limitDisplay: true}, 
-				firstDayOfWeek:1, 
-				use24Hour: true,
-				eventNew: new_event,
-				dateFormat: 'd.m.Y',
-				timeFormat: 'H:i',
-				data: function(start, end, callback) {
-					if ($("#id_classroom").val()) {					
-					  $.getJSON("http://localhost:8000/buildings/classroom/" + $("#id_classroom").val() + "/lessons/", {
-					     start: $("#calendar").weekCalendar("formatDate", start, format='d.m.Y H:i:s'),
-					     end: $("#calendar").weekCalendar("formatDate", end, format='d.m.Y H:i:s')
-					   },  function(result) {
-					     callback(result);
-					   });
-					}
-					},
-				draggable: editable,
-				resizable: editable,
-				eventDrop: event_changed,
-				eventResize: event_changed,
-				newEventText: '{{ course }}',
-				});
-			$("#id_classroom").change(function() {
-				if ($(this).val()) {
-					$("#calendar").show();
-					$("#calendar").weekCalendar('refresh');
-					for (var i in events_list) {
-						if (events_list[i].classroom == $(this).val()) {
-							$("#calendar").weekCalendar('updateEvent', events_list[i]);
-						}
-					}
-				} else {
-					$("#calendar").hide();
+	    var add_iterated = function(day, condition) {
+			var lesson_start = Date.parse(repeat_start_date.val());
+			var lesson_end = Date.parse(repeat_end_date.val());
+			
+			var end = Date.parse(end_date.val());
+			
+			while (lesson_start.compareTo(end) <= 0) {
+				if (condition(lesson_start)) {
+					add_new_lesson_row(classroom.val(), lesson_end.toString('d.M.yyyy'), repeat_start_time.val(), lesson_end.toString('d.M.yyyy'), repeat_end_time.val());
 				}
-			}).change();
+				lesson_start.add(day);
+				lesson_end.add(day);
+			}
+	    };
+		var daily = function(form) {
+			add_iterated({days:parseInt(repeat_every_day.val())}, function() {return true;}); 
+		};
+		var workdays = function(form) {
+			add_iterated({days:1}, function(date) {return date.isWeekday();}); 
+		};
+		var mo_we_fr = function(form) {
+			add_iterated({days:1}, function(date) {return date.is().mon() || date.is().wed() || date.is().fri();}); 
+		};
+		var tu_th = function(form) {
+			add_iterated({days:1}, function(date) {return date.is().tue() || date.is().thu();}); 
+		};
+		var weekly = function(form) {
+			var is_none_checked = !(is_checked(MO) || is_checked(TU) || is_checked(WE) || is_checked(TH) || is_checked(FR) || is_checked(SA) || is_checked(SU));
+			var add_week = parseInt(repeat_every_week.val());
+			if (is_none_checked) {
+				add_iterated({weeks:add_week}, function(date) {return true});
+				return
+			} 
+			
+			var lesson_start = Date.parse(repeat_start_date.val());
+			var lesson_end = Date.parse(repeat_end_date.val());
+			var day_name = lesson_start.getDayName(); 
+			
+			var end = Date.parse(end_date.val());
+			while (lesson_start.compareTo(end) <= 0) {
+				var date = lesson_start;
+				var is_day = (is_checked(MO) && lesson_start.is().mon()) || (is_checked(TU) && lesson_start.is().tue()) || (is_checked(WE) && lesson_start.is().wed()) || (is_checked(TH) && lesson_start.is().thu()) || (is_checked(FR) && lesson_start.is().fri()) || (is_checked(SA) && lesson_start.is().sat()) || (is_checked(SU) && lesson_start.is().sun());
+				if (is_day) {
+					add_new_lesson_row(classroom.val(), lesson_end.toString('d.M.yyyy'), repeat_start_time.val(), lesson_end.toString('d.M.yyyy'), repeat_end_time.val());
+				}
+				if (lesson_start.is().sun() && add_week > 1) {
+					lesson_start.addWeeks(add_week-1);
+					lesson_end.addWeeks(add_week-1);
+				}
+				lesson_start.addDays(1);
+				lesson_end.addDays(1);
+			}
+		};
+		var monthly = function(form) {
+			add_iterated({months:parseInt(repeat_every_month.val())}, function() {return true;}); 
+		};
+		var yearly = function(form) {
+			add_iterated({years:parseInt(repeat_every_year.val())}, function() {return true;}); 
+		};
+		form.submit(function() {
+			try {
+				f = repeat_every.val().replace(/-/g, '_');
+				eval(f + '(form);');
+			} finally {
+				return false;
+			}
 		});
-		// http://localhost:8000/buildings/classroom/1/lessons/
+	});
 	</script>
+	
 {% endblock %}
 
 {% block content %}
@@ -119,5 +163,236 @@
 	</form>
 	<div style="">
 	<div id="calendar"></div>
+	</div>
+	
+	<div id="create_lesson_dialog">
+		<form id="create_lesson_dialog_form">
+			<p class="validateTips"></p>
+			
+			<fieldset>
+				<label for="repeat-start-date">{% trans "Začiatok" %}:</label><input type="text" id="repeat-start-date" class="datepicker required"/><input type="text" id="repeat-start-time" class="timepicker required"/><br/>
+				<label for="repeat-end-date">{% trans "Koniec" %}:</label><input type="text" id="repeat-end-date" class="datepicker required"/><input type="text" id="repeat-end-time" class="timepicker required"/>
+			</fieldset>
+			<script type="text/javascript">
+				$(function() {
+					$('#repeat-start-date').change(function() {
+						$('#repeat-begin').val($(this).val());
+						// set end date when end date is empty
+						if (!$("#repeat-end-date").val()) {
+							$("#repeat-end-date").val($(this).val());
+						}
+					});
+					$('#repeat-start-date').change();
+				});
+			</script>
+			<fieldset>
+				<label for="repeat-every">{% trans "Opakovať" %}:</label>
+					<select id="repeat-every">
+						<option value="no-repeat">{% trans "Neopakovať" %}</option>
+						<option value="daily">{% trans "Denne" %}</option>
+						<option value="workdays">{% trans "Pracovné dni (Po-Pia)" %}</option>
+						<option value="mo-we-fr">{% trans "Každý Po, St, Pia" %}</option>
+						<option value="tu-th">{% trans "Každý Ut a Št" %}</option>
+						<option value="weekly">{% trans "Týždenne" %}</option>
+						<option value="monthly">{% trans "Mesačne" %}</option>
+						<option value="yearly">{% trans "Ročne" %}</option>
+					</select>
+			</fieldset>
+			<script type="text/javascript">
+				/**
+				 * Show appropriate repeat section according to selected item in #repeat-every.
+				 */
+				 $(function() {
+					 var repeat_every_changed = function() {
+						 $("#daily, #weekly, #monthly, #yearly, #begin-end").hide();
+						 var selected = $("#repeat-every").val();
+						 if (['daily', 'weekly', 'monthly', 'yearly'].indexOf(selected) >= 0) {
+							 $("#" + $("#repeat-every").val()).show();
+						 }
+	
+						 if (selected!="no-repeat") {
+							 $("#begin-end").show();
+						 }
+					 }; 
+					 $("#repeat-every").change(repeat_every_changed);
+					 repeat_every_changed();
+				 });
+			</script>
+			<fieldset id="daily">
+					<label for="repeat-every-day">{% trans "Opakovať každý" %}</label>
+					<select id="repeat-every-day">
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+						<option value="13">13</option>
+						<option value="14">14</option>
+						<option value="15">15</option>
+						<option value="16">16</option>
+						<option value="17">17</option>
+						<option value="18">18</option>
+						<option value="19">19</option>
+						<option value="20">20</option>
+						<option value="21">21</option>
+						<option value="22">22</option>
+						<option value="23">23</option>
+						<option value="24">24</option>
+						<option value="25">25</option>
+						<option value="26">26</option>
+						<option value="27">27</option>
+						<option value="28">28</option>
+						<option value="29">29</option>
+						<option value="30">30</option>
+					</select>
+					<label for="repeat-every-day">{% trans "deň" %}</label>
+			</fieldset>
+			<fieldset id="weekly">
+					<label for="repeat-every-week">{% trans "Opakovať každý" %}</label>
+					<select id="repeat-every-week">
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+						<option value="13">13</option>
+						<option value="14">14</option>
+						<option value="15">15</option>
+						<option value="16">16</option>
+						<option value="17">17</option>
+						<option value="18">18</option>
+						<option value="19">19</option>
+						<option value="20">20</option>
+						<option value="21">21</option>
+						<option value="22">22</option>
+						<option value="23">23</option>
+						<option value="24">24</option>
+						<option value="25">25</option>
+						<option value="26">26</option>
+						<option value="27">27</option>
+						<option value="28">28</option>
+						<option value="29">29</option>
+						<option value="30">30</option>
+					</select>
+					<label for="repeat-every-week">{% trans "týždeň" %}</label>
+					<br/>
+					<label>{% trans "Opakovať v dni" %}:</label>
+					<input type="checkbox" id="MO"/><label for="MO">{% trans "Po" %}</label>
+					<input type="checkbox" id="TU"/><label for="TU">{% trans "Ut" %}</label>
+					<input type="checkbox" id="WE"/><label for="WE">{% trans "St" %}</label>
+					<input type="checkbox" id="TH"/><label for="TH">{% trans "Št" %}</label>
+					<input type="checkbox" id="FR"/><label for="FR">{% trans "Pi" %}</label>
+					<input type="checkbox" id="SA"/><label for="SA">{% trans "So" %}</label>
+					<input type="checkbox" id="SU"/><label for="SU">{% trans "Ne" %}</label>
+			</fieldset>
+			<fieldset id="monthly">
+					<label for="repeat-every-month">{% trans "Opakovať každý" %}</label>
+					<select id="repeat-every-month">
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+						<option value="13">13</option>
+						<option value="14">14</option>
+						<option value="15">15</option>
+						<option value="16">16</option>
+						<option value="17">17</option>
+						<option value="18">18</option>
+						<option value="19">19</option>
+						<option value="20">20</option>
+						<option value="21">21</option>
+						<option value="22">22</option>
+						<option value="23">23</option>
+						<option value="24">24</option>
+						<option value="25">25</option>
+						<option value="26">26</option>
+						<option value="27">27</option>
+						<option value="28">28</option>
+						<option value="29">29</option>
+						<option value="30">30</option>
+					</select>
+					<label for="repeat-every-month">{% trans "mesiac" %}</label>
+			</fieldset>
+			<fieldset id="yearly">
+					<label for="repeat-every-year">{% trans "Opakovať každý" %}</label>
+					<select id="repeat-every-year">
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+						<option value="13">13</option>
+						<option value="14">14</option>
+						<option value="15">15</option>
+						<option value="16">16</option>
+						<option value="17">17</option>
+						<option value="18">18</option>
+						<option value="19">19</option>
+						<option value="20">20</option>
+						<option value="21">21</option>
+						<option value="22">22</option>
+						<option value="23">23</option>
+						<option value="24">24</option>
+						<option value="25">25</option>
+						<option value="26">26</option>
+						<option value="27">27</option>
+						<option value="28">28</option>
+						<option value="29">29</option>
+						<option value="30">30</option>
+					</select>
+					<label for="repeat-every-year">{% trans "rok" %}</label>
+			</fieldset>
+			<fieldset id="begin-end">
+				<label for="repeat-begin">{% trans "Začať" %}:</label><input id="repeat-begin" disabled="disabled"/>
+				<br/>
+				<label for="end-date">{% trans "Skončiť" %}:</label><input type="text" id="end-date" class="datepicker"/>
+			</fieldset>
+			<script type="text/javascript">
+				/**
+				 * Show/hide #end-date-date according to selected radio.
+				 */
+				var end_date_visibility = function() {
+						if ($("#end-date:checked").length) {
+							$("#end-date-date").show();
+						} else {
+							$("#end-date-date").hide();
+						}
+				};
+				$(function() {
+					$("#end-date, #end-never").change(end_date_visibility);
+					end_date_visibility();
+				});
+			</script>
+			<input type="submit" value="{% trans "Pridať" %}"/>
+		</form>
 	</div>
 {% endblock %}
