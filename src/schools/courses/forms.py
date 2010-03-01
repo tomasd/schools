@@ -54,6 +54,12 @@ class LessonPlanForm(forms.ModelForm):
     classroom = forms.ModelChoiceField(queryset=Classroom.objects.all(), widget=Select(attrs={'class':'classroom'}))
     start = forms.DateTimeField(widget=SplitDatePickerTimePickerWidget(attrs={'class':'start'}))
     end = forms.DateTimeField(widget=SplitDatePickerTimePickerWidget(attrs={'class':'end'}))
+    
+    def __init__(self, *args, **kwargs):
+        super(LessonPlanForm, self).__init__(*args, **kwargs)
+        self.fields['classroom']._choices = [(unicode(a), [(b.pk, unicode(b)) for b in a.classroom_set.all()]) for a in Building.objects.all()]
+        self.fields['classroom'].queryset = Classroom.objects.all()
+        
     class Meta:
         model = Lesson
         fields = ('course', 'classroom', 'start', 'end',)
@@ -61,6 +67,12 @@ class LessonPlanForm(forms.ModelForm):
 class LessonRealizedForm(forms.ModelForm):
     course = forms.ModelChoiceField(queryset=Course.objects.all(), widget=HiddenInput)
     realized = forms.BooleanField(required=True)
+    
+    def __init__(self, *args, **kwargs):
+        super(LessonRealizedForm, self).__init__(*args, **kwargs)
+        self.fields['real_classroom']._choices = [(unicode(a), [(b.pk, unicode(b)) for b in a.classroom_set.all()]) for a in Building.objects.all()]
+        self.fields['real_classroom'].queryset = Classroom.objects.all()
+        
     class Meta:
         model = Lesson
         fields = ('realized', 'real_classroom', 'real_lector', 'real_start', 'real_end', 'real_content', 'course')
@@ -98,3 +110,8 @@ class LessonSearchForm(forms.Form):
     building = forms.ModelChoiceField(queryset=Building.objects.all(), required=False)
     course = forms.ModelChoiceField(queryset=Course.objects.all(), required=False)
     classroom = forms.ModelChoiceField(queryset=Classroom.objects.all(), required=False)    
+    
+    def __init__(self, *args, **kwargs):
+        super(LessonSearchForm, self).__init__(*args, **kwargs)
+        self.fields['classroom']._choices = [(unicode(a), [(b.pk, unicode(b)) for b in a.classroom_set.all()]) for a in Building.objects.all()]
+        self.fields['classroom'].queryset = Classroom.objects.all()
