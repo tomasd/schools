@@ -74,8 +74,11 @@ class LessonAttendeeForm(forms.ModelForm):
         
 class ChooseClassroomForm(forms.Form):
     classroom = forms.ModelChoiceField(queryset=Classroom.objects.all())
-    
 
+    def __init__(self, *args, **kwargs):
+        super(ChooseClassroomForm, self).__init__(*args, **kwargs)
+        self.fields['classroom']._choices = [(unicode(a), [(b.pk, unicode(b)) for b in a.classroom_set.all()]) for a in Building.objects.all()]
+        self.fields['classroom'].queryset = Classroom.objects.all()
     
 class ReplanLessonForm(forms.ModelForm):
     '''
