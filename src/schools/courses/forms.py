@@ -1,12 +1,14 @@
 from datepicker.widgets import SplitDatePickerTimePickerWidget
 from django import forms
 from django.forms.util import ValidationError
-from django.forms.widgets import HiddenInput, Select, DateTimeInput
+from django.forms.widgets import HiddenInput, Select, DateTimeInput, Widget,\
+    CheckboxSelectMultiple
 from django.utils.translation import ugettext
 from schools.buildings.models import Classroom, Building
 from schools.courses.models import Course, CourseMember, ExpenseGroup, Lesson, \
-    LessonAttendee
+    LessonAttendee, ReasonForNotRealizing, lesson_assign_attendees
 from schools.lectors.models import Lector
+from schools.buildings import classroom_buildings
 
 
 class CourseForm(forms.ModelForm):
@@ -57,8 +59,7 @@ class LessonPlanForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super(LessonPlanForm, self).__init__(*args, **kwargs)
-        self.fields['classroom']._choices = [(unicode(a), [(b.pk, unicode(b)) for b in a.classroom_set.all()]) for a in Building.objects.all()]
-        self.fields['classroom'].queryset = Classroom.objects.all()
+        classroom_buildings(self.fields['classroom'])
         
     class Meta:
         model = Lesson
@@ -70,12 +71,62 @@ class LessonRealizedForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super(LessonRealizedForm, self).__init__(*args, **kwargs)
-        self.fields['real_classroom']._choices = [(unicode(a), [(b.pk, unicode(b)) for b in a.classroom_set.all()]) for a in Building.objects.all()]
-        self.fields['real_classroom'].queryset = Classroom.objects.all()
+        classroom_buildings(self.fields['real_classroom'])
         
     class Meta:
         model = Lesson
         fields = ('realized', 'real_classroom', 'real_lector', 'real_start', 'real_end', 'real_content', 'course', 'reason_of_not_realizing')
+
+class LessonRealizedForm1(forms.Form):
+    lesson = forms.ModelChoiceField(queryset=Lesson.objects.all(), widget=HiddenInput)
+    real_classroom = forms.ModelChoiceField(queryset=Classroom.objects.all())
+    real_lector = forms.ModelChoiceField(queryset=Lector.objects.all())
+    real_start = forms.DateTimeField()
+    real_end = forms.DateTimeField()
+    real_content = forms.CharField(widget=forms.Textarea)
+    reason_of_not_realizing = forms.ModelChoiceField(queryset=ReasonForNotRealizing.objects.all(), required=False)
+    lesson_attendees = forms.ModelMultipleChoiceField(queryset=LessonAttendee.objects.all(), widget=CheckboxSelectMultiple, required=False)
+    
+    def __init__(self, instance=None, *args, **kwargs):
+        if instance is None:
+            instance = Lesson.objects.get(pk=kwargs['initial']['lesson'])
+        lesson = instance
+        self.instance = instance
+        lesson_assign_attendees.send(sender=self, lesson=lesson)
+        
+        initial = kwargs.get('initial', {}); kwargs['initial'] = initial
+        if 'real_classroom' not in initial: 
+            initial['real_classroom'] = instance.real_classroom.pk if instance.realized else instance.classroom.pk
+        if 'real_lector' not in initial: 
+            initial['real_lector'] = instance.real_lector.pk if instance.realized else instance.course.lector.pk
+        if 'real_content' not in initial and instance.realized: 
+            initial['real_content'] = instance.real_content
+        if 'real_start' not in initial: 
+            initial['real_start'] = instance.real_start if instance.realized else instance.start
+        if 'real_end' not in initial: 
+            initial['real_end'] = instance.real_end if instance.realized else instance.end
+        if 'lesson_attendees' not in initial: 
+            initial['lesson_attendees'] = [a.pk for a in instance.lessonattendee_set.all() if a.present]
+        
+        super(LessonRealizedForm1, self).__init__(*args, **kwargs)
+        self.fields['lesson'].initial = lesson.pk
+        classroom_buildings(self.fields['real_classroom'])
+        self.fields['lesson_attendees'].queryset = lesson.lessonattendee_set.all() 
+        
+    def save(self):
+        lesson = self.cleaned_data['lesson']
+        fields = [(key, value) for key, value in self.cleaned_data.items() if key not in ('lesson','lesson_attendees')]
+        for name, value in fields:
+            setattr(lesson, name, value)
+        lesson.realized=True
+        lesson.save()
+        for lesson_attendee in lesson.lessonattendee_set.all():
+            if lesson_attendee in self.cleaned_data['lesson_attendees']:
+                lesson_attendee.present = True; lesson_attendee.save()
+            else:
+                lesson_attendee.present = False; lesson_attendee.save()
+                  
+        return lesson
 
 class LessonAttendeeForm(forms.ModelForm):
     class Meta:
@@ -89,8 +140,7 @@ class ChooseClassroomForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(ChooseClassroomForm, self).__init__(*args, **kwargs)
-        self.fields['classroom']._choices = [(unicode(a), [(b.pk, unicode(b)) for b in a.classroom_set.all()]) for a in Building.objects.all()]
-        self.fields['classroom'].queryset = Classroom.objects.all()
+        classroom_buildings(self.fields['classroom'])
     
 class ReplanLessonForm(forms.ModelForm):
     '''
@@ -112,6 +162,11 @@ class LessonSearchForm(forms.Form):
     classroom = forms.ModelChoiceField(queryset=Classroom.objects.all(), required=False)    
     
     def __init__(self, *args, **kwargs):
+        date_required = kwargs.get('date_required', False)
+        kwargs.pop('date_required')
+        
         super(LessonSearchForm, self).__init__(*args, **kwargs)
-        self.fields['classroom']._choices = [(unicode(a), [(b.pk, unicode(b)) for b in a.classroom_set.all()]) for a in Building.objects.all()]
-        self.fields['classroom'].queryset = Classroom.objects.all()
+        classroom_buildings(self.fields['classroom'])
+
+        self.fields['start'].required = date_required
+        self.fields['end'].required = date_required

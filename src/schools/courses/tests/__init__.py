@@ -2,6 +2,11 @@ from decimal import Decimal
 from django.test.testcases import TestCase
 from schools.courses.models import Lesson, LessonAttendee, CourseMember
 from django.core.urlresolvers import reverse
+from schools.courses.forms import LessonRealizedForm1
+from schools.buildings.models import Classroom
+from schools.lectors.models import Lector
+from django.forms.models import inlineformset_factory, modelformset_factory
+from django.forms.formsets import formset_factory
 
 
 class LectorPriceTest(TestCase):
@@ -61,3 +66,32 @@ class CourseTest(TestCase):
         response = self.client.post(reverse('courses_course_create'), 
                                     {'responsible':'1', 'lector':'1', 'name':'xxx', 'language':'en'})
         self.assertRedirects(response, reverse('courses_course_update', kwargs={'object_id': '3'}))
+        
+class LessonRealizedForm1Test(TestCase):
+    fixtures = ['pricetest']
+    
+    def test_display(self):
+        form = LessonRealizedForm1(instance=Lesson.objects.get(pk=1))
+        self.assertEquals(3, len(form.fields['lesson_attendees'].queryset))
+        unicode(form)
+        
+    def test_save(self):
+        data = {
+                'lesson':1,
+                'real_classroom': Classroom.objects.get(pk=1).pk,
+                'real_lector':Lector.objects.get(pk=1).pk,
+                'real_start_0':'1.12.2009', 'real_start_1':'10:30',
+                'real_end_0':'1.12.2009', 'real_end_1':'12:00',
+                'real_content':'xxx',
+                'lesson_attendees':['1', '2']}
+        form = LessonRealizedForm1(instance=Lesson.objects.get(pk=1), data=data)
+        self.assertTrue(form.is_valid(), form.errors.items())
+        self.assertEquals(2, len(form.cleaned_data['lesson_attendees']))
+        lesson = form.save()
+        self.assertTrue(lesson.realized)
+        self.assertEquals(2, lesson.lessonattendee_set.filter(present=True).count())
+        
+    def test_formset(self):
+        LessonFormSet = formset_factory(LessonRealizedForm1, extra=0, can_delete=False)
+        form = LessonFormSet(initial=[{'lesson':1}])
+        unicode(form)

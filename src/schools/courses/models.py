@@ -85,6 +85,10 @@ class Course(models.Model):
     @permalink
     def get_lessons_url(self):
         return ('courses_lesson_list', None, {'course_id':str(self.pk)})
+    
+    @permalink
+    def get_attendance_url(self):
+        return ('courses_course_lesson_attendance_list', None, {'course_id':str(self.pk)})
 
 
 class CourseMemberManager(models.Manager):
@@ -282,6 +286,9 @@ class LessonAttendee(models.Model):
     class Meta:
         verbose_name=u'Účastník lekcie'
         verbose_name_plural=u'Účastníci lekcie'
+        
+    def __unicode__(self):
+        return unicode(self.course_member)
         
         
 def lesson_attendee_price_update(sender, *args, **kwargs):

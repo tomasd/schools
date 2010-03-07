@@ -1,0 +1,34 @@
+{% extends "courses/base.html" %}
+{% load i18n listtable %}
+
+{% block content %}
+	<div class="top-bar">
+		<h1>{% trans "Rýchle zadávanie prezenčiek" %}</h1>
+		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
+	</div><br />
+	<div class="select-bar">
+		<form action="" method="GET">
+			<table>
+			{{ form }}
+			</table>
+			<input type="submit" value="{% trans "Hľadať" %}"/>
+		</form>
+	</label>
+	</div>
+	
+	{% if attendance_formset.forms %}
+		<div>
+			<form method="post">
+				{{ attendance_formset.management_form }}
+			
+				{% for form in attendance_formset.forms %}
+					<table class="listing form" cellpadding="0" cellspacing="0">
+						<caption>{% trans "Prezenčka" %} {{ form.instance.course }}</caption>
+						{% include "form_table.html" %}
+					</table>
+				{% endfor %}
+				<input type="submit" value="{% trans "Uložiť" %}"/><input type="reset"/>
+			</form>
+		</div>
+	{% endif %}
+{% endblock %}

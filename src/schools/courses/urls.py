@@ -18,9 +18,11 @@ urlpatterns = patterns('schools.courses.views',
     url(r'course/(?P<course_id>\d+)/lesson/(?P<object_id>\d+)/$', 'lesson_update', name='courses_lesson_update'),
     url(r'course/(?P<course_id>\d+)/lesson/(?P<object_id>\d+)/replan/$', 'lesson_replan', name='courses_lesson_replan'),
     url(r'course/(?P<course_id>\d+)/lesson/$', 'lesson_list', name='courses_lesson_list'),
+    url(r'course/(?P<course_id>\d+)/lesson/attendance/$', 'lesson_attendance_list', name='courses_course_lesson_attendance_list'),
     
     url(r'course/lessons/json/$', 'lesson_list_json', name='courses_lesson_list_json'),
     url(r'course/lessons/$', 'courses_lessons', name='courses_lessons'),
+    url(r'course/lessons/attendance/$', 'lesson_attendance_list', name='courses_lesson_attendance_list'),
     
     url(r'course/(?P<object_id>\d+)/testing/create/$', create_test_result, name='courses_course_test_result_create'),
     url(r'course/(?P<course_id>\d+)/testing/(?P<object_id>\d+)/$', update_test_result, name='courses_course_test_result_update'),

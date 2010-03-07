@@ -1,5 +1,7 @@
 # Create your views here.
+from django.contrib.auth.decorators import user_passes_test
 from django.core.urlresolvers import reverse
+from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response, redirect
@@ -13,16 +15,15 @@ from generic_views.views.ajax import JSONResponse
 from generic_views.views.create_update import update_object, create_object
 from generic_views.views.delete import delete_object
 from schools import fix_date_boundaries, permission_required
+from schools.course_member_references.forms import CourseMemberReferenceForm
 from schools.course_member_references.models import CourseMemberReference
 from schools.courses.forms import CourseMemberForm, ExpenseGroupForm, \
     LessonPlanForm, LessonRealizedForm, LessonAttendeeForm, CourseMemberCreateForm, \
-    ChooseClassroomForm, ReplanLessonForm, LessonSearchForm
+    ChooseClassroomForm, ReplanLessonForm, LessonSearchForm, LessonRealizedForm1
 from schools.courses.models import Course, CourseMember, ExpenseGroup, \
     ExpenseGroupPrice, Lesson, LessonAttendee, lesson_assign_attendees
 from schools.genericform.form import PreProcessForm
 from schools.search.views import object_list
-from schools.course_member_references.forms import CourseMemberReferenceForm
-from django.contrib.auth.decorators import user_passes_test
 
 @permission_required('courses.add_course')
 def course_create(*args, **kwargs):
@@ -50,8 +51,8 @@ def coursemember_list(request, course_id):
 def coursemember_create(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
     form_class = CourseMemberCreateForm#PreProcessForm(CourseMemberCreateForm, lambda form:form.limit_to_course(course))
-    return create_object(request, model=CourseMember, form_class=form_class, 
-                         template_name='courses/coursemember_create.html', 
+    return create_object(request, model=CourseMember, form_class=form_class,
+                         template_name='courses/coursemember_create.html',
                          extra_context={'course':course}, initial={'course':course.pk},
                          preprocess_form=lambda form:form.limit_to_course(course))
 
@@ -76,7 +77,7 @@ def expensegroup_create(request, course_id):
 def expensegroup_update(request, course_id, object_id):
     course = get_object_or_404(Course, pk=course_id)
     inlines = [{'model':ExpenseGroupPrice, 'extra':1}]
-    return update_object(request, model=ExpenseGroup, object_id=object_id, extra_context={'course':course,}, inlines=inlines)
+    return update_object(request, model=ExpenseGroup, object_id=object_id, extra_context={'course':course, }, inlines=inlines)
 
 @permission_required('courses.add_expensegroup', 'courses.change_expensegroup', 'courses.delete_expensegroup')
 def expensegroup_list(request, course_id):
@@ -101,14 +102,14 @@ def lesson_create(request, course_id):
     else:
         formset = LessonFormset(queryset=Lesson.objects.none(), initial=[{'course':course.pk}])
     context = {'formset': formset, 'course':course, 'choose_classroom_form':ChooseClassroomForm()}
-    return render_to_response('courses/lesson_create.html', RequestContext(request,context))
+    return render_to_response('courses/lesson_create.html', RequestContext(request, context))
 #    course = get_object_or_404(Course, pk=course_id)
 #    return create_object(request, model=Lesson, form_class=LessonPlanForm, template_name='courses/lesson_create.html', extra_context={'course':course}, initial={'course':course.pk})
     
 @permission_required('courses.change_lesson')
 def lesson_update(request, course_id, object_id):
     course = get_object_or_404(Course, pk=course_id)
-    return update_object(request, model=Lesson, form_class=LessonPlanForm, object_id=object_id, extra_context={'course':course,})
+    return update_object(request, model=Lesson, form_class=LessonPlanForm, object_id=object_id, extra_context={'course':course, })
 
 @permission_required('courses.change_lesson')
 def lesson_attendance(request, course_id, object_id):
@@ -118,10 +119,10 @@ def lesson_attendance(request, course_id, object_id):
     lesson_assign_attendees.send(sender=lesson_attendance, lesson=lesson)
     attendee_form_class = PreProcessForm(LessonAttendeeForm, lambda form:form.limit_to_course(course))
     inlines = [{'model':LessonAttendee, 'form':attendee_form_class, 'extra':1}]
-    return update_object(request, obj=lesson, form_class=LessonRealizedForm, 
-                         template_name='courses/lesson_attendance.html', 
-                         extra_context={'course':course,}, 
-                         inlines=inlines,post_save_redirect=lesson.get_attendance_url())
+    return update_object(request, obj=lesson, form_class=LessonRealizedForm,
+                         template_name='courses/lesson_attendance.html',
+                         extra_context={'course':course},
+                         inlines=inlines, post_save_redirect=lesson.get_attendance_url())
 
 @permission_required('courses.add_lesson', 'courses.change_lesson', 'courses.delete_lesson')
 def lesson_list(request, course_id):
@@ -136,7 +137,41 @@ def lesson_list(request, course_id):
             queryset = _search_lessons(queryset, form)
     else:
         form = _remove_course_field(LessonSearchForm())
-    return django_object_list(request, queryset=queryset, extra_context={'course':course, 'form':form})
+    
+    return django_object_list(request, queryset=queryset,
+                              extra_context={'course':course, 'form':form})
+
+def lesson_attendance_list(request, course_id=None):
+    def _remove_course_field(form):
+        if course_id is not None: del form.fields['course']
+        return form
+    if course_id is not None:
+        course = get_object_or_404(Course, pk=course_id)
+        queryset = course.lesson_set.none()
+    else:
+        course = None
+        queryset = Lesson.objects.none()
+        
+    if request.GET:
+        form = _remove_course_field(LessonSearchForm(request.GET, date_required=True))
+        if form.is_valid():
+            queryset = Lesson.objects.all() if course is None else course.lesson_set.all() 
+            queryset = _search_lessons(queryset, form, date_required=True)
+    else:
+        form = _remove_course_field(LessonSearchForm(date_required=True))
+        
+    LessonFormSet = formset_factory(LessonRealizedForm1, extra=0, can_delete=False)
+    if request.method == 'POST':
+        attendance_formset = LessonFormSet(initial=[{'lesson':lesson.pk} for lesson in queryset.all()], data=request.POST)            
+        if attendance_formset.is_valid():
+            for form in attendance_formset.forms:
+                form.save()
+            return redirect(request.get_full_path())
+    else:
+        attendance_formset = LessonFormSet(initial=[{'lesson':lesson.pk} for lesson in queryset.all()])            
+    return render_to_response('courses/lesson_attendance_list.html', 
+                              {'form':form, 'attendance_formset':attendance_formset, 'course':course}, 
+                              context_instance=RequestContext(request))
 
 @permission_required('courses.change_lesson')
 @require_POST
@@ -149,13 +184,17 @@ def lesson_replan(request, course_id, object_id):
         return JSONResponse({'success':True, })
     return  JSONResponse({'success':False, 'errors':form.errors})
         
-def _search_lessons(queryset, form):
+def _search_lessons(queryset, form, date_required=False):
     if 'course' in form.cleaned_data and form.cleaned_data['course']:
         queryset = queryset.filter(course=form.cleaned_data['course'])
     if form.cleaned_data['start']:
         queryset = queryset.filter(end__gte=form.cleaned_data['start'])
+    elif date_required:
+        queryset = queryset.none()
     if form.cleaned_data['end']:
         queryset = queryset.filter(start__lt=fix_date_boundaries(form.cleaned_data['end']))
+    elif date_required:
+        queryset = queryset.none()
     if form.cleaned_data['realized'] is not None:
             queryset = queryset.filter(realized=form.cleaned_data['realized'])
     if form.cleaned_data['building']:
@@ -187,7 +226,7 @@ def lesson_list_json(request):
         lessons = Lesson.objects.all()
         lessons = _search_lessons(lessons, form)
     lessons = [{'id':a.pk,
-                'start':format(a.start, 'Y-m-d\TH:i:s.000O'), 
+                'start':format(a.start, 'Y-m-d\TH:i:s.000O'),
                 'end':format(a.end, 'Y-m-d\TH:i:s.000O'),
                 'title':u'%s - %s' % (a.classroom, a.course),
                 'replan_url':reverse(lesson_replan, kwargs={'course_id':a.course.pk, 'object_id':str(a.pk)})} 

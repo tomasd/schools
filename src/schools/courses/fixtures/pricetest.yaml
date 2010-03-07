@@ -71,6 +71,9 @@
 - fields: {course_member: 3, lesson: 1, present: true}
   model: courses.lessonattendee
   pk: 3
+- fields: {course_member: 3, lesson: 2, present: true}
+  model: courses.lessonattendee
+  pk: 4
 - fields:
     date_joined: 2009-10-17 08:26:19
     email: tomas@drencak.com

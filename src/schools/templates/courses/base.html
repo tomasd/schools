@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% block body_class %}{{ block.super }} courses{% endblock %}
 
 {% block left_content %}
@@ -10,7 +11,8 @@
 			<li><a href="{{ course.get_coursemembers_url }}">Účastníci kurzu</a></li>
 			<li><a href="{{ course.get_lessons_url }}">Lekcie</a></li>
 			<li><a href="{{ course.get_testing_url }}">Testovanie</a></li>
-			<li class="last"><a href="{{ course.get_expensegroups_url }}">Nákladové skupiny</a></li>
+			<li><a href="{{ course.get_expensegroups_url }}">Nákladové skupiny</a></li>
+			<li class="last"><a href="{{ course.get_attendance_url }}">{% trans "Rýchle zadávanie prezenčiek" %}</a></li>
 		</ul>
 		{% endif %}
 	{% else %}
@@ -18,7 +20,8 @@
 		<ul class="nav">
 			<li><a href="{% url courses_course_list %}">Zoznam kurzov</a></li>
 			<li><a href="{% url courses_time-table %}">Rozvrh hodín</a></li>
-			<li class="last"><a href="{% url courses_lessons %}">Prezenčky</a></li>
+			<li><a href="{% url courses_lessons %}">Prezenčky</a></li>
+			<li class="last"><a href="{% url courses_lesson_attendance_list %}">{% trans "Rýchle zadávanie prezenčiek" %}</a></li>
 		</ul>
 	{% endif %}
 {% endblock %}
