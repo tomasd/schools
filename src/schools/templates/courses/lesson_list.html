@@ -105,6 +105,9 @@
 					{% if not course %}
 					<th>{% trans "Kurz" %}</th>
 					{% endif %}
+					<th>{% trans "Realizovaná" %}</th>
+					<th>{% trans "# Účastníkov" %}</th>
+					<th>{% trans "Lektor" %}</th>
 					<th class="last">{% trans "Akcie" %}</th>
 				</tr>
 				{% for object in object_list %}
@@ -113,6 +116,9 @@
 					{% if not course %}
 					<td>{{ object.course }}</td>
 					{% endif %}
+					<td>{{ object.realized|yesno }}</td>
+					<td>{% if object.realized %}{{ object.lessonattendee_set.count }}{% endif %}</td>
+					<td>{% if object.realized %}{{ object.real_lector }}{% endif %}</td>
 					<td  class="last">
 						<a href="{{ object.get_absolute_url }}" title="{% trans "Upraviť" %}"><img src="{{ MEDIA_URL }}img/edit-icon.gif" width="16" height="16" alt="" /></a>
 						<a href="{{ object.get_attendance_url }}" title="{% trans "Prezenčka" %}"><img src="{{ MEDIA_URL }}img/login-icon.gif" width="16" height="16" alt="login" /></a>
