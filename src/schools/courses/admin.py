@@ -1,5 +1,6 @@
 from django.contrib import admin
-from schools.courses.models import Course, CourseMember, Lesson
+from schools.courses.models import Course, CourseMember, Lesson,\
+    ReasonForNotRealizing
 
 class CourseMemberInlineAdmin(admin.TabularInline):
     model = CourseMember
@@ -11,3 +12,4 @@ class CourseAdmin(admin.ModelAdmin):
     inlines = (CourseMemberInlineAdmin, LessonInlineAdmin)
     
 admin.site.register(Course, CourseAdmin)
+admin.site.register(ReasonForNotRealizing)

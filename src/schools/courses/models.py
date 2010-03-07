@@ -176,6 +176,8 @@ class Lesson(models.Model):
     real_end = models.DateTimeField(null=True)
     real_content = models.TextField(null=True, blank=True)
     
+    reason_of_not_realizing = models.ForeignKey('ReasonForNotRealizing', null=True, blank=True)
+    
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     
@@ -319,3 +321,14 @@ class ExpenseGroupPrice(models.Model):
     class Meta:
         verbose_name=u'Hodinová sadzba nákladovej skupiny'
         verbose_name_plural=u'Hodinové sazdby nákladovej skupiny'
+        
+        
+class ReasonForNotRealizing(models.Model):
+    name = models.CharField(max_length=200)
+    
+    class Meta:
+        verbose_name=u'Dôvod nerealizovania'
+        verbose_name_plural=u'Dôvody nerealizovania'
+        
+    def __unicode__(self):
+        return self.name

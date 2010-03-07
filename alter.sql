@@ -1,1 +1,2 @@
-alter table courses_lesson add "real_minutes_length" integer;
+alter table courses_lesson add  "reason_of_not_realizing_id" integer;
+CREATE INDEX "courses_lesson_reason_of_not_realizing_id" ON "courses_lesson" ("reason_of_not_realizing_id");

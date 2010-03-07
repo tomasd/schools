@@ -75,7 +75,7 @@ class LessonRealizedForm(forms.ModelForm):
         
     class Meta:
         model = Lesson
-        fields = ('realized', 'real_classroom', 'real_lector', 'real_start', 'real_end', 'real_content', 'course')
+        fields = ('realized', 'real_classroom', 'real_lector', 'real_start', 'real_end', 'real_content', 'course', 'reason_of_not_realizing')
 
 class LessonAttendeeForm(forms.ModelForm):
     class Meta:
