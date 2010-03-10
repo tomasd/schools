@@ -127,4 +127,21 @@
 				{% endfor %}
 		</table>
 	</div>
+	
+	
+		<table class="listing" cellpadding="0" cellspacing="0">
+			<caption><h2>{% trans "Lektori učiaci študenta" %}</h2></caption>
+			<thead>
+				<tr>
+					<th class="first">{% trans "Meno lektora" %}</th>
+					<th class="last">{% trans "Akcie" %}</th>
+				</tr>
+			</thead>
+			{% for lector in lectors %}
+			<tr class="{% cycle 'bg' '' %}">
+				<td class="first style1">{{ lector }}</td>
+				<td class="last"><a href="{% url studentbook_lector lector.pk %}">Pozrieť/Hodnotiť</a></td>
+			</tr>
+			{% endfor %}
+		</table>
 {% endblock %}

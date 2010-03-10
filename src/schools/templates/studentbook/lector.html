@@ -1,0 +1,78 @@
+{% extends "studentbook/base.html" %}
+{% load i18n threadedcommentstags %}
+
+{% block head %}
+	{{ block.super }}
+	<script type="text/javascript">
+function show_reply_form(comment_id, url, person_name) {
+    var comment_reply = $('#' + comment_id);
+    var to_add = $( new Array(
+    '<div class="response"><p>{% trans "Odpovedať" %} ' + person_name + ':</p>',
+    '<form method="POST" action="' + url + '">',
+    '<ul>',  '{{ form.as_ul|oneline }}',
+    '<li><input type="submit" value="{% trans "Odoslať" %}" /></li>',
+    '</ul>', '</form>', '</div>').join(''));
+    to_add.css("display", "none");
+    comment_reply.after(to_add);
+    to_add.slideDown(function() {
+        comment_reply.replaceWith(new Array('<a id="',
+        comment_id,'" href="javascript:hide_reply_form(\'',
+        comment_id, '\',\'', url, '\',\'', person_name,
+        '\')">{% trans "Zrušiť odpoveď" %}</a>').join(''));
+    });
+}
+function hide_reply_form(comment_id, url, person_name) {
+    var comment_reply = $('#' + comment_id);
+    comment_reply.next().slideUp(function (){
+        comment_reply.next('.response').remove();
+        comment_reply.replaceWith(new Array('<a id="',
+        comment_id,'" href="javascript:show_reply_form(\'',
+        comment_id, '\',\'', url, '\',\'', person_name,
+        '\')">{% trans "Odpovedať" %}</a>').join(''));
+    });
+}
+</script>
+	<style type="text/css">
+a { color: #CC6633; font-size: 80%; }
+.comment { border-left: 2px solid #FFCC00; padding-left: 2px; 
+    margin-bottom: 4px; background-color: #993333; color: #FF9900; }
+</style>
+	
+{% endblock %}
+
+{% block content %}
+
+	<table class="listing form student_data" cellpadding="0" cellspacing="0">
+		<caption><h2>{% trans "Údaje o lektorovi" %}</h2></caption>
+		<tbody>
+			<tr> <td><label>{% trans "Meno" %}:</label></td> <td> {{ lector }} </td> </tr>
+			<tr class="bg"><td><label>{% trans "Telefón" %}</td><td>{{ lector.phone }}</td></tr>
+			<tr><td><label>{% trans "Mobil" %}:</label></td><td>{{ lector.mobile }}</td></tr>
+			<tr class="bg"><td><label>{% trans "Fax" %}:</label></td><td>{{ lector.fax }}</td></tr>
+			<tr><td><label>{% trans "www" %}:</label></td><td>{{ lector.www|urlize }}</td></tr>
+			<tr class="bg"><td><label>{% trans "Email" %}:</label></td><td>{{ lector.email|urlize }}</tr>
+		</tbody>
+	</table>
+	
+	<h3>{% trans "Komentáre na lektora" %}:</h3>
+    {% get_threaded_comment_tree for lector as tree %}
+    {% for comment in tree %}
+        <div style="margin-left: {{ comment.depth }}em;" class="comment">
+            <b>{{ comment.user.get_full_name }}</b> {% trans "hovorí" %}:<br/>
+            {% auto_transform_markup comment %}
+            <a id="c{{ comment.id }}" href="javascript:show_reply_form('c{{ comment.id }}','{% get_comment_url lector comment %}','{{ comment.user.get_full_name }}')">{% trans "Odpovedať" %}</a>
+        </div>
+    {% endfor %}
+    <p>{% trans "Komentovať lektora" %}:</p>
+    <form method="POST" action="{% get_comment_url lector %}">
+        <ul>
+            {% get_threaded_comment_form as form %}
+            {{ form.as_ul }}
+            <li><input type="submit" value="{% trans "Odoslať" %}" /></li>
+        </ul>
+    </form>
+
+
+	
+	
+{% endblock %}

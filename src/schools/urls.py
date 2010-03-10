@@ -25,6 +25,7 @@ urlpatterns = patterns('',
     url(r'^studentbook/', include('schools.studentbook.urls')),
     url(r'^companybook/', include('schools.companybook.urls')),
     url(r'^$', direct_to_template, {'template':'home.html'}, name='home'),
+    url(r'^threadedcomments/', include('threadedcomments.urls')),
 )
 
 # user management
