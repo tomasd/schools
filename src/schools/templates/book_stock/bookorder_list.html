@@ -1,0 +1,35 @@
+{% extends "book_stock/base.html" %}
+{% load i18n listtable generic_views_tags %}
+{% block content %}
+	<div class="top-bar">
+		{% if perms.book_stock.add_book %}<a href="{% url stock_book_create %}" class="button">{% trans "Pridať" %}</a>{% endif %}
+		<h1>{% trans "Zoznam objednávok kníh" %}</h1>
+		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
+	</div><br />
+	<div class="select-bar">
+		<form>
+			{% include "form_inline.html" %}
+		   <input type="submit" name="Submit" value="Search" /> 
+		</form>
+	</div> <br/>
+	
+	<div class="table">
+		<form action="{% url stock_book_orders_delivery %}" method="get">
+		<input type="submit" value="{% trans "Vydať označené" %}"/>
+		{% table object in object_list %}
+			<th class="first" width="5"></th>
+			<th>{% trans "Osoba" %}</th>
+			<th>{% trans "Kniha" %}</th>
+			<th class="last">{% trans "Akcie" %}</th>
+		{% rows %}
+			<tr class="{{ tr_class }}">
+				<td class="first style1"><input name="id" type="checkbox" value="{{ object.pk }}"/></td>
+				<td>{% canchange object.person %}<a href="{{ object.person.get_absolute_url }}">{{ object.person }}</a>{% else %}{% endcanchange %}</td>
+				<td>{% canchange object.book %}<a href="{{ object.book.get_absolute_url }}">{{ object.book }}</a>{% else %}{{ object.book }}{% endcanchange %}</td>
+				<td class="last">
+				</td>
+			</tr>
+		{% endtable %}
+		</form>
+	</div>
+{% endblock %}

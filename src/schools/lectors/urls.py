@@ -1,3 +1,4 @@
+from book_stock.views import person_orders, person_books
 from django.conf.urls.defaults import patterns, url
 from schools.lectors.models import Lector
 
@@ -12,4 +13,6 @@ urlpatterns = patterns('schools.lectors.views',
     url(r'lector/(?P<object_id>\d+)/delete/$', 'lector_delete', {'model':Lector, 'post_delete_redirect':'lectors_lector_list'}, name='lectors_lector_delete'),
     url(r'lector/$', 'lector_list', {'queryset':Lector.objects.all(), 'search_fields':['last_name__contains', 'first_name__contains']}, name='lectors_lector_list'),
     
+    url(r'lector/(?P<object_id>\d+)/book-order/$', person_orders, {'model':Lector, 'template_name':'book_stock/book_orders.html'}, name='lectors_lector_book_orders'),
+    url(r'lector/(?P<object_id>\d+)/book/$', person_books, {'model':Lector, 'template_name':'book_stock/person_books.html'}, name='lectors_lector_books'),
 )

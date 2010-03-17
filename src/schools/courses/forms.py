@@ -163,7 +163,8 @@ class LessonSearchForm(forms.Form):
     
     def __init__(self, *args, **kwargs):
         date_required = kwargs.get('date_required', False)
-        kwargs.pop('date_required')
+        if 'date_required' in kwargs:
+            kwargs.pop('date_required')
         
         super(LessonSearchForm, self).__init__(*args, **kwargs)
         classroom_buildings(self.fields['classroom'])

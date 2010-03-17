@@ -8,7 +8,9 @@
 	<ul class="nav">
 		<li><a href="{{ student.get_absolute_url }}">{% trans "Úprava študenta" %}</a></li>
 		<li><a href="{{ student.get_set_password_url }}">{% trans "Nastaviť heslo" %}</a></li>
-		<li class="last"><a href="{{ student.get_courses_url }}">{% trans "Navštevované kurzy" %}</a></li>
+		<li><a href="{{ student.get_courses_url }}">{% trans "Navštevované kurzy" %}</a></li>
+		<li><a href="{{ student.get_bookorders_url }}">{% trans "Objednávky kníh" %}</a></li>
+		<li class="last"><a href="{{ student.get_books_url }}">{% trans "Vydané knihy" %}</a></li>
 	</ul>
 	{% endif %}
 {% endblock %}

@@ -71,6 +71,14 @@ class Student(models.Model):
     def get_set_password_url(self):    
         return ('students_student_set_password', None, {'object_id':str(self.pk)})
     
+    @permalink
+    def get_bookorders_url(self):    
+        return ('students_student_book_orders', None, {'object_id':str(self.pk)})
+    
+    @permalink
+    def get_books_url(self):
+        return ('students_student_books', None, {'object_id':str(self.pk)})
+    
     @property
     def address(self):
         return '%s, %s %s' % (self.street, self.postal, self.town)

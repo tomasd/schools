@@ -1,0 +1,33 @@
+{% extends "book_stock/base.html" %}
+{% load i18n listtable  generic_views_tags bookstock%}
+{% block content %}
+	<div class="top-bar">
+		<h1>{% trans "Zoznam kníh pre " %} {{ person }}</h1>
+		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
+	</div><br />
+	
+	{% table object in object_list %}
+		<th class="first">{% trans "Názov" %}</th>
+		<th>{% trans "Autor" %}</th>
+		<th>{% trans "Rok" %}</th>
+		<th>{% trans "Vydaná" %}</th>
+		<th>{% trans "Vrátená" %}</th>
+		<th class="last">{% trans "Akcie" %}</th>
+	{% rows %}
+		<tr class="{{ tr_class }}">
+			<td class="first style1">{{ object.book_name }}</td>
+			<td>{{ object.book_author }}</td>
+			<td>{{ object.book_year }}</td>
+			<td>{{ object.delivered|date:"d.m.Y" }}</td>
+			<td>{{ object.returned|date:"d.m.Y" }}</td>
+			<td class="last">
+				{% if perms.book_stock.can_return_book and not object.returned %}
+					<form method="post" action="{{ object.get_returnbook_url }}">
+						<input type="hidden" value="{{ request.get_full_path }}"/>
+						<input type="submit" value="{% trans "Vrátiť knihu" %}"/>
+					</form>
+				{% endif %}
+			</td>
+		</tr>
+	{% endtable %}
+{% endblock %}

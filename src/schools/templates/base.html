@@ -38,6 +38,9 @@
 			{% hasmoduleperms buildings %}
 			<li class="buildings"><span><span><a href="{% url buildings_building_list %}">Budovy</a></span></span></li>
 			{% endhasmoduleperms %}
+			{% hasmoduleperms book_stock %}
+			<li class="stock"><span><span><a href="{% url stock_book_orders %}">Sklad</a></span></span></li>
+			{% endhasmoduleperms %}
 			{% if perms.companies.can_see_invoice or perms.courses.can_see_lesson_plan or perms.companies.can_see_added_value or perms.courses.can_see_lesson_analysis %}
 			<li class="reports"><span><span><a href="{% url reports %}">Prehľady</a></span></span></li>
 			{% endif %}

@@ -1,0 +1,26 @@
+- fields:
+    date_joined: 2009-10-17 08:26:19
+    email: tomas@drencak.com
+    first_name: ''
+    groups: []
+    is_active: true
+    is_staff: true
+    is_superuser: true
+    last_login: 2010-01-23 10:50:02.930484
+    last_name: ''
+    password: sha1$1fcab$20411b867b80e874b15f886e7a1aa83389e32e76
+    user_permissions: []
+    username: tomas
+  model: auth.user
+  pk: 1
+- fields: {company: 1, email: '', fax: '', first_name: tomas, 
+    last_name: drencak, mobile: '', phone: '', postal: '', street: '', title: '', town: '', www: ''}
+  model: students.student
+  pk: 1
+- fields: {name: Name, author: Author, year: 2008, price: 10}
+  model: book_stock.book
+  pk: 1
+- fields: {book: 1, created: !!timestamp '2010-03-15 22:23:01.326257', person_id: 1,
+    person_type: 19, updated: !!timestamp '2010-03-15 22:23:01.326281'}
+  model: book_stock.bookorder
+  pk: 1

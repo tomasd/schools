@@ -20,6 +20,7 @@ urlpatterns = patterns('schools.courses.views',
     url(r'course/(?P<course_id>\d+)/lesson/$', 'lesson_list', name='courses_lesson_list'),
     url(r'course/(?P<course_id>\d+)/lesson/attendance/$', 'lesson_attendance_list', name='courses_course_lesson_attendance_list'),
     
+    url(r'course/lessons/lekcie.ics$', 'lesson_list_ical', name='courses_lesson_list_ical'),
     url(r'course/lessons/json/$', 'lesson_list_json', name='courses_lesson_list_json'),
     url(r'course/lessons/$', 'courses_lessons', name='courses_lessons'),
     url(r'course/lessons/attendance/$', 'lesson_attendance_list', name='courses_lesson_attendance_list'),

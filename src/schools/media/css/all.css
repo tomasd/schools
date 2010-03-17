@@ -92,6 +92,7 @@ a.logo {
 .students #top-navigation li.students,
 .studentbook #top-navigation li.studentbook,
 .buildings #top-navigation li.buildings,
+.stock #top-navigation li.stock,
 .reports #top-navigation li.reports,
 .password-change #top-navigation li.password-change
  {
@@ -108,6 +109,7 @@ a.logo {
 .students #top-navigation li.students span,
 .studentbook #top-navigation li.studentbook span,
 .buildings #top-navigation li.buildings span,
+.stock #top-navigation li.stock span,
 .reports #top-navigation li.reports span,
 .password-change #top-navigation li.password-change span
  {
@@ -122,6 +124,7 @@ a.logo {
 .students #top-navigation li.students span span,
 .studentbook #top-navigation li.studentbook span span,
 .buildings #top-navigation li.buildings span span,
+.stock #top-navigation li.stock span span,
 .reports #top-navigation li.reports span span {
 	background:url(../img/tab-active-right.gif) no-repeat right top;
 	height:23px;

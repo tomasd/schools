@@ -104,6 +104,7 @@ INSTALLED_APPS = (
     'generic_views',
     'schools.listtable',
     'datepicker',
+    'book_stock',
 )
 
 LOGIN_URL='/login/'

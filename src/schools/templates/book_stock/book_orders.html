@@ -1,0 +1,32 @@
+{% extends "book_stock/base.html" %}
+{% load i18n listtable  generic_views_tags bookstock%}
+{% block content %}
+	<div class="top-bar">
+		<h1>{% trans "Zoznam objednávok" %} {{ person }}</h1>
+		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
+	</div><br />
+	
+	<div class="select-bar">
+		<form method="post">
+			{% include "form_inline.html" %}
+		    <input type="submit" name="Submit" value="Pridať objednávku" />
+		</form>
+	</div>
+	
+	
+	{% table object in object_list %}
+		<th class="first">{% trans "Názov" %}</th>
+		<th>{% trans "Autor" %}</th>
+		<th>{% trans "Rok" %}</th>
+		<th class="last">{% trans "Akcie" %}</th>
+	{% rows %}
+		<tr class="{{ tr_class }}">
+			<td class="first style1">{{ object.book.name }}</td>
+			<td>{{ object.book.author }}</td>
+			<td>{{ object.book.year }}</td>
+			<td class="last">
+				{% candelete object %}<a href="{{ object.get_delete_url }}"><img src="{{ MEDIA_URL }}img/hr.gif" width="16" height="16" /></a>{% endcandelete %}
+			</td>
+		</tr>
+	{% endtable %}
+{% endblock %}

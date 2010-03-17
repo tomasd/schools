@@ -24,6 +24,8 @@ from schools.courses.models import Course, CourseMember, ExpenseGroup, \
     ExpenseGroupPrice, Lesson, LessonAttendee, lesson_assign_attendees
 from schools.genericform.form import PreProcessForm
 from schools.search.views import object_list
+from fullauthentication.basic_authentication import logged_in_or_basicauth
+import vobject
 
 @permission_required('courses.add_course')
 def course_create(*args, **kwargs):
@@ -233,6 +235,40 @@ def lesson_list_json(request):
                 for a in lessons]
     text = simplejson.dumps(lessons)
     return HttpResponse(text, mimetype='application/json')
+
+EVENT_ITEMS = (
+    ('uid', 'uid'),
+    ('dtstart', 'start'),
+    ('dtend', 'end'),
+    ('summary', 'summary'),
+    ('location', 'location'),
+    ('last_modified', 'last_modified'),
+    ('created', 'created'),
+)
+
+
+@logged_in_or_basicauth('Realm Name')
+def lesson_list_ical(request):
+    form = LessonSearchForm(request.GET)
+    lessons = Lesson.objects.none()
+    if form.is_valid():
+        lessons = Lesson.objects.all()
+        lessons = _search_lessons(lessons, form)
+    cal = vobject.iCalendar()
+    cal.add('method').value = 'PUBLISH'  # IE/Outlook needs this
+    for lesson in lessons:
+        vevent = cal.add('vevent')
+        vevent.add('dtstart').value = lesson.start
+        vevent.add('dtend').value = lesson.end
+        vevent.add('location').value = unicode(lesson.classroom)
+        vevent.add('summary').value = unicode(lesson.course)
+        vevent.add('created').value = lesson.created
+        vevent.add('last-modified').value = lesson.updated
+    icalstream = cal.serialize()
+    response = HttpResponse(icalstream, mimetype='text/calendar')
+    response['Filename'] = 'lekcie.ics'  # IE needs this
+    response['Content-Disposition'] = 'attachment; filename=filename.ics'
+    return response
 
 def timetable(request):
     form = LessonSearchForm(request.GET)
