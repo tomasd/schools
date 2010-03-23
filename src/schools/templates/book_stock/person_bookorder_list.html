@@ -1,4 +1,3 @@
-{% extends "book_stock/base.html" %}
 {% load i18n listtable  generic_views_tags bookstock%}
 {% block content %}
 	<div class="top-bar">
@@ -18,12 +17,14 @@
 		<th class="first">{% trans "Názov" %}</th>
 		<th>{% trans "Autor" %}</th>
 		<th>{% trans "Rok" %}</th>
+		<th>{% trans "Vybavená" %}</th>
 		<th class="last">{% trans "Akcie" %}</th>
 	{% rows %}
 		<tr class="{{ tr_class }}">
 			<td class="first style1">{{ object.book.name }}</td>
 			<td>{{ object.book.author }}</td>
 			<td>{{ object.book.year }}</td>
+			<td>{{ object.bookdelivery_set.count|yesno }}</td>
 			<td class="last">
 				{% candelete object %}<a href="{{ object.get_delete_url }}"><img src="{{ MEDIA_URL }}img/hr.gif" width="16" height="16" /></a>{% endcandelete %}
 			</td>

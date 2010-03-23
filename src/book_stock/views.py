@@ -12,7 +12,7 @@ from django.core.urlresolvers import reverse
 from django.forms.formsets import formset_factory
 import datetime
 
-def person_orders(request, object_id, model, *args, **kwargs):
+def person_orders(request, object_id, model, person_object_name='person',*args, **kwargs):
     '''
         Orders for the person.
     '''
@@ -30,10 +30,11 @@ def person_orders(request, object_id, model, *args, **kwargs):
     queryset = BookOrder.objects.filter(person_type__pk=person_type.pk, person_id=person.pk)
     extra_context = kwargs.pop('extra_context') if 'extra_context' in kwargs else {}
     extra_context['person'] = person
+    extra_context[person_object_name] = person
     extra_context['form'] = form
     return object_list(request, queryset=queryset, extra_context=extra_context, *args, **kwargs)
 
-def person_books(request, object_id, model, *args, **kwargs):
+def person_books(request, object_id, model, person_object_name='person', *args, **kwargs):
     '''
         Books delivered to the person.
     '''
@@ -42,6 +43,7 @@ def person_books(request, object_id, model, *args, **kwargs):
     queryset = BookDelivery.objects.filter(person_type__pk=person_type.pk, person_id=person.pk)
     extra_context = kwargs.pop('extra_context') if 'extra_context' in kwargs else {}
     extra_context['person'] = person
+    extra_context[person_object_name] = person
     return object_list(request, queryset=queryset, extra_context=extra_context, *args, **kwargs)
 
 @permission_required('book_stock.delete_book')

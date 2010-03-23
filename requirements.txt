@@ -1,5 +1,8 @@
 django
 pyYAML
 vobject
+textile
+Markdown
+Docutils
 -e git+git://github.com/tomasd/pyJasper.git#egg=pyJasper
--e git://github.com/ericflo/django-threadedcomments.git@0.5.X#egg=threadedcomments
+-e git+git://github.com/tomasd/django-threadedcomments.git@0.5.2#egg=threadedcomments

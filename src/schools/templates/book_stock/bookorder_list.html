@@ -6,12 +6,6 @@
 		<h1>{% trans "Zoznam objednávok kníh" %}</h1>
 		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
 	</div><br />
-	<div class="select-bar">
-		<form>
-			{% include "form_inline.html" %}
-		   <input type="submit" name="Submit" value="Search" /> 
-		</form>
-	</div> <br/>
 	
 	<div class="table">
 		<form action="{% url stock_book_orders_delivery %}" method="get">

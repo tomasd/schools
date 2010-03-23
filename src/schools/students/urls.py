@@ -11,6 +11,6 @@ urlpatterns = patterns('schools.students.views',
     url(r'student/(?P<object_id>\d+)/set-password/$', 'student_user_set_password', name='students_student_set_password'),
     url(r'student/$', 'student_list', {'queryset':Student.objects.all(), 'search_fields':['last_name__contains', 'first_name__contains']}, name='students_student_list'),
     
-    url(r'student/(?P<object_id>\d+)/book-order/$', person_orders, {'model':Student, 'template_name':'book_stock/book_orders.html'}, name='students_student_book_orders'),
-    url(r'student/(?P<object_id>\d+)/book/$', person_books, {'model':Student, 'template_name':'book_stock/person_books.html'}, name='students_student_books'),
+    url(r'student/(?P<object_id>\d+)/book-order/$', person_orders, {'model':Student, 'template_name':'students/student_book_orders.html', 'person_object_name':'student'}, name='students_student_book_orders'),
+    url(r'student/(?P<object_id>\d+)/book/$', person_books, {'model':Student, 'template_name':'students/student_books.html', 'person_object_name':'student'}, name='students_student_books'),
 )
