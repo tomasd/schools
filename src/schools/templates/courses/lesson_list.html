@@ -27,6 +27,9 @@
 			 	}
 			 }, 'json');
 	};
+	var event_click = function(calEvent, element) {
+		document.location = calEvent.detail_url;
+	};
 	$(function() {
 		$("#calendar").weekCalendar({
 			businessHours:{start: 6, end: 20, limitDisplay: true}, 
@@ -61,7 +64,8 @@
 				   });
 				},
 			eventDrop: event_changed,
-			eventResize: event_changed
+			eventResize: event_changed,
+			eventClick: event_click
 			});
 	});
 	$(function() {

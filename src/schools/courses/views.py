@@ -235,7 +235,8 @@ def lesson_list_json(request):
                 'start':format(a.start, 'Y-m-d\TH:i:s.000O'),
                 'end':format(a.end, 'Y-m-d\TH:i:s.000O'),
                 'title':u'%s - %s' % (a.classroom, a.course),
-                'replan_url':reverse(lesson_replan, kwargs={'course_id':a.course.pk, 'object_id':str(a.pk)})} 
+                'replan_url':reverse(lesson_replan, kwargs={'course_id':a.course.pk, 'object_id':str(a.pk)}),
+                'detail_url':a.get_absolute_url()} 
                 for a in lessons]
     text = simplejson.dumps(lessons)
     return HttpResponse(text, mimetype='application/json')
