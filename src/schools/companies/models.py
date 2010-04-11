@@ -5,6 +5,9 @@ from django.db import models
 from django.db.models import permalink, signals
 
 class CompanyManager(models.Manager):
+    def only_firmy(self):
+        return self.get_query_set().filter(self_payer=False)
+    
     def book_invoice(self, start, end, companies=None):
         from book_stock.models import BookDelivery
         from schools.students.models import Student
@@ -119,7 +122,9 @@ class Company(models.Model):
     www = models.URLField(null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
     
-    users = models.ManyToManyField(User)
+    users = models.ManyToManyField(User, blank=True)
+    
+    self_payer = models.BooleanField(blank=True)
     
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
