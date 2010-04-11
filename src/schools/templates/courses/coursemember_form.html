@@ -1,6 +1,30 @@
 {% extends "courses/base.html" %}
 {% load i18n %}
 
+{% block head %}
+<script type="text/javascript">
+	var show_hodnotenia = function() {
+		$(".hodnotenie").show();
+		$(".show_hodnotenia").hide();
+		$(".hide_hodnotenia").show();
+	};
+	var hide_hodnotenia = function() {
+		$(".hodnotenie").each(function(index, element) {
+			if (index > 2) {
+				$(element).hide();
+			}
+		});
+		$(".show_hodnotenia").show();
+		$(".hide_hodnotenia").hide();
+	};
+	$(function() {
+			$(".hodnotenie:last").after("<tr class='show_hodnotenia'><td colspan='2'><a href='javascript:show_hodnotenia();'>{% trans "Zobraziť všetky" %}</a></td></tr>");
+			$(".hodnotenie:last").after("<tr class='hide_hodnotenia'><td colspan='2'><a href='javascript:hide_hodnotenia();'>{% trans "Skryť" %}</a></td></tr>");
+			hide_hodnotenia();
+	});
+</script>
+{% endblock %}
+
 {% block content %}
 	<div class="top-bar">
 		<h1>{% if object.pk %}{% trans "Upraviť účastníka" %}  {{ object }}{% else %}{% trans "Vytvoriť účastníka kurzu" %}{% endif %}</h1>
@@ -25,7 +49,7 @@
 				  	<th>{% trans "Delete" %}</th>
 				  </tr></thead>
 				  {% endif %}
-				  <tr class="{% cycle '' 'bg' %}">
+				  <tr class="{% cycle '' 'bg' %} hodnotenie">
 				  <td style="text-align: left;">
 				  	{# Include the hidden fields in the form #}
 				      {% for hidden in form.hidden_fields %}
