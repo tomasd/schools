@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 
 # Create your models here.
 class Book(models.Model):
-    name= models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
     author = models.CharField(max_length=200, blank=True, null=True)
     year = models.CharField(max_length=20, blank=True, null=True)
     
@@ -16,7 +16,7 @@ class Book(models.Model):
     
     @permalink
     def get_absolute_url(self):
-        return ('stock_book_update', None,{'object_id':str(self.pk)})
+        return ('stock_book_update', None, {'object_id':str(self.pk)})
     
     def __unicode__(self):
         if self.author and self.name and self.year:
@@ -63,6 +63,15 @@ class BookDelivery(models.Model):
         return u'%s - %s' % (self.person, self.stock_object)
     
     @property
+    def book_full(self):
+        book = self.stock_object.book
+        if book.author and book.name and book.year:
+            return '%s: %s, %s' % (book.author, book.name, book.year)
+        if book.author and book.name:
+            return '%s: %s' % (book.author, book.name)
+        return book.name
+    
+    @property
     def book_author(self):
         return self.stock_object.book.author
     
@@ -77,6 +86,10 @@ class BookDelivery(models.Model):
     def get_returnbook_url(self):
         from book_stock.views import return_book
         return reverse(return_book, kwargs={'object_id':str(self.pk)})
+    
+    @permalink
+    def get_absolute_url(self):
+        return ('stock_book_delivery', None, {'object_id':str(self.pk)})
     
     
 class BookOrder(models.Model):

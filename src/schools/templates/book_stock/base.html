@@ -6,6 +6,7 @@
 {% block left_content %}
 	<h3>{% trans "Sklad" %}</h3>
 	<ul class="nav">
+		<li><a href="{% url stock_book_delivery_list %}">{% trans "Vydané knihy" %}</a></li>
 		<li><a href="{% url stock_book_orders %}">{% trans "Objednávky kníh" %}</a></li>
 		<li class="last"><a href="{% url stock_books %}">{% trans "Knihy" %}</a></li>
 	</ul>

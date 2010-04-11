@@ -1,0 +1,11 @@
+{% extends "book_stock/base.html" %}
+{% load i18n listtable %}
+{% block content %}
+	<div class="top-bar">
+		{% if perms.book_stock.add_book %}<a href="{% url stock_book_create %}" class="button">{% trans "Pridať" %}</a>{% endif %}
+		<h1>{% trans "Zoznam vydaných kníh" %}</h1>
+		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
+	</div><br />
+	
+	{% listtable object_list _("Kniha") %}
+{% endblock %}
