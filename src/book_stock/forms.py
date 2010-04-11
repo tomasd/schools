@@ -1,6 +1,6 @@
 from book_stock.models import Book, BookOrder, StockObject, BookDelivery
 from django import forms
-from django.forms.widgets import HiddenInput
+from django.forms.widgets import HiddenInput, CheckboxSelectMultiple
 import datetime
 
 class CreateBookOrderForm(forms.Form):
@@ -15,6 +15,19 @@ class CreateBookOrderForm(forms.Form):
         order.save()
         return order
     
+class CreateBookOrderForPersonsForm(forms.Form):
+    book = forms.ModelChoiceField(queryset=Book.objects.all())
+    persons = forms.ModelMultipleChoiceField(queryset=None)
+    
+    def __init__(self, persons, *args, **kwargs):
+        super(CreateBookOrderForPersonsForm, self).__init__(*args, **kwargs)
+        self.fields['persons'].queryset = persons
+        
+    def save(self):
+        orders = [BookOrder(book=self.cleaned_data['book'], person=person) for person in self.cleaned_data['persons']]
+        for order in orders:
+            order.save()
+        return orders
 class DeliverBookOrderForm(forms.Form):
     book_order = forms.ModelChoiceField(queryset=BookOrder.objects.all(), widget=HiddenInput)
     stock_number = forms.CharField()
@@ -36,7 +49,7 @@ class DeliverBookOrderForm(forms.Form):
         stock_object = StockObject(book=book_order.book, price=price,
                                     stock_number=self.cleaned_data['stock_number'])
         stock_object.save()
-        delivery = BookDelivery(stock_object=stock_object, price=price, 
+        delivery = BookDelivery(stock_object=stock_object, price=price,
                                 book_order=book_order, delivered=self.cleaned_data['delivered'],
                                 person=book_order.person)
         delivery.save()

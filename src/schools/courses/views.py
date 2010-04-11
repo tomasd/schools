@@ -1,4 +1,5 @@
 # Create your views here.
+from book_stock.models import BookDelivery
 from django.contrib.auth.decorators import user_passes_test
 from django.core.urlresolvers import reverse
 from django.forms.formsets import formset_factory
@@ -11,6 +12,7 @@ from django.utils.dateformat import format
 from django.utils.translation import ugettext
 from django.views.decorators.http import require_POST
 from django.views.generic.list_detail import object_list as django_object_list
+from fullauthentication.basic_authentication import logged_in_or_basicauth
 from generic_views.views.ajax import JSONResponse
 from generic_views.views.create_update import update_object, create_object
 from generic_views.views.delete import delete_object
@@ -24,8 +26,10 @@ from schools.courses.models import Course, CourseMember, ExpenseGroup, \
     ExpenseGroupPrice, Lesson, LessonAttendee, lesson_assign_attendees
 from schools.genericform.form import PreProcessForm
 from schools.search.views import object_list
-from fullauthentication.basic_authentication import logged_in_or_basicauth
+from schools.students.models import Student
 import vobject
+from django.contrib.contenttypes.models import ContentType
+from book_stock.views import persons_orders
 
 @permission_required('courses.add_course')
 def course_create(*args, **kwargs):
@@ -171,8 +175,8 @@ def lesson_attendance_list(request, course_id=None):
             return redirect(request.get_full_path())
     else:
         attendance_formset = LessonFormSet(initial=[{'lesson':lesson.pk} for lesson in queryset.all()])            
-    return render_to_response('courses/lesson_attendance_list.html', 
-                              {'form':form, 'attendance_formset':attendance_formset, 'course':course}, 
+    return render_to_response('courses/lesson_attendance_list.html',
+                              {'form':form, 'attendance_formset':attendance_formset, 'course':course},
                               context_instance=RequestContext(request))
 
 @permission_required('courses.change_lesson')
@@ -273,3 +277,17 @@ def lesson_list_ical(request):
 def timetable(request):
     form = LessonSearchForm(request.GET)
     return render_to_response('courses/timetable.html', {'form':form}, context_instance=RequestContext(request))
+
+def course_books(request, course_id):
+    course = get_object_or_404(Course, pk=course_id)
+    students = Student.objects.filter(coursemember__course=course)
+    student_type = ContentType.objects.get_for_model(Student)
+    queryset = BookDelivery.objects.filter(person_id__in=(students), person_type=student_type)
+    return object_list(request, queryset=queryset, extra_context={'base':'courses/base.html', 'course':course})
+
+def course_book_orders(request, course_id, template_name='courses/course_book_orders.html', extra_context=None):
+    course = get_object_or_404(Course, pk=course_id)
+    persons = Student.objects.filter(coursemember__course=course).distinct()
+    extra_context = extra_context if extra_context is not None else {}
+    extra_context['course'] = course
+    return persons_orders(request, persons, template_name=template_name, extra_context=extra_context)

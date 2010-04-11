@@ -1,5 +1,6 @@
 # Create your views here.
-from book_stock.forms import CreateBookOrderForm, DeliverBookOrderForm
+from book_stock.forms import CreateBookOrderForm, DeliverBookOrderForm, \
+    CreateBookOrderForPersonsForm
 from book_stock.models import BookOrder, BookDelivery
 from django.contrib.auth.decorators import permission_required
 from django.contrib.contenttypes.models import ContentType
@@ -12,14 +13,13 @@ from django.core.urlresolvers import reverse
 from django.forms.formsets import formset_factory
 import datetime
 
-def person_orders(request, object_id, model, person_object_name='person',*args, **kwargs):
+def person_orders(request, object_id, model, person_object_name='person', *args, **kwargs):
     '''
         Orders for the person.
     '''
     person = get_object_or_404(model, pk=object_id)
     if request.method == 'POST':
         form = CreateBookOrderForm(person, data=request.POST)
-        print form.is_valid()
         if form.is_valid():
             form.save()
             return redirect(request.get_full_path())
@@ -31,6 +31,24 @@ def person_orders(request, object_id, model, person_object_name='person',*args, 
     extra_context = kwargs.pop('extra_context') if 'extra_context' in kwargs else {}
     extra_context['person'] = person
     extra_context[person_object_name] = person
+    extra_context['form'] = form
+    return object_list(request, queryset=queryset, extra_context=extra_context, *args, **kwargs)
+
+def persons_orders(request, persons, *args, **kwargs):
+    '''
+        Orders for multiple persons.
+    '''
+    if request.method == 'POST':
+        form = CreateBookOrderForPersonsForm(persons, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect(request.get_full_path())
+    else:
+        form = CreateBookOrderForPersonsForm(persons)
+        
+    person_type = ContentType.objects.get_for_model(persons.model)
+    queryset = BookOrder.objects.filter(person_id__in=(a.pk for a in persons), person_type=person_type)
+    extra_context = kwargs.pop('extra_context', {})
     extra_context['form'] = form
     return object_list(request, queryset=queryset, extra_context=extra_context, *args, **kwargs)
 
@@ -63,8 +81,8 @@ def return_book(request, object_id):
 def _deliver_orders_GET(request, orders):
     FormSet = formset_factory(DeliverBookOrderForm, extra=0)
     formset = FormSet(initial=[{'book_order':str(a.pk)} for a in orders])
-    return render_to_response('book_stock/deliver_orders.html', 
-                      {'orders':orders, 'formset':formset}, 
+    return render_to_response('book_stock/deliver_orders.html',
+                      {'orders':orders, 'formset':formset},
                       context_instance=RequestContext(request))
     
 @require_POST
@@ -75,8 +93,8 @@ def _deliver_orders_POST(request, orders):
         for form in formset.forms:
             form.save()
         return redirect(reverse('stock_book_orders'))
-    return render_to_response('book_stock/deliver_orders.html', 
-                      {'orders':orders, 'formset':formset}, 
+    return render_to_response('book_stock/deliver_orders.html',
+                      {'orders':orders, 'formset':formset},
                       context_instance=RequestContext(request))
 
 def deliver_orders(request):

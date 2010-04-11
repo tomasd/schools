@@ -1,7 +1,7 @@
 from datepicker.widgets import SplitDatePickerTimePickerWidget
 from django import forms
 from django.forms.util import ValidationError
-from django.forms.widgets import HiddenInput, Select, DateTimeInput, Widget,\
+from django.forms.widgets import HiddenInput, Select, DateTimeInput, Widget, \
     CheckboxSelectMultiple
 from django.utils.translation import ugettext
 from schools.buildings.models import Classroom, Building
@@ -115,10 +115,10 @@ class LessonRealizedForm1(forms.Form):
         
     def save(self):
         lesson = self.cleaned_data['lesson']
-        fields = [(key, value) for key, value in self.cleaned_data.items() if key not in ('lesson','lesson_attendees')]
+        fields = [(key, value) for key, value in self.cleaned_data.items() if key not in ('lesson', 'lesson_attendees')]
         for name, value in fields:
             setattr(lesson, name, value)
-        lesson.realized=True
+        lesson.realized = True
         lesson.save()
         for lesson_attendee in lesson.lessonattendee_set.all():
             if lesson_attendee in self.cleaned_data['lesson_attendees']:
@@ -131,7 +131,7 @@ class LessonRealizedForm1(forms.Form):
 class LessonAttendeeForm(forms.ModelForm):
     class Meta:
         model = LessonAttendee
-        exclude = ('course_member_price', )
+        exclude = ('course_member_price',)
     def limit_to_course(self, course):
         self.fields['course_member'].queryset = self.fields['course_member'].queryset.filter(course=course)
         

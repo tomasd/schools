@@ -11,7 +11,7 @@ urlpatterns = patterns('book_stock.views',
     url(r'book/(?P<object_id>\d+)/delete/$', 'delete_book', kwargs={'model':Book}, name='stock_book_delete'),
     url(r'book-delivery/(?P<object_id>\d+)/$', object_detail, {'queryset':BookDelivery.objects.all()}, 'stock_book_delivery'),
     url(r'book-delivery/(?P<object_id>\d+)/return/$', return_book),
-    url(r'book-delivery/$', object_list, {'queryset':BookDelivery.objects.all()}, 'stock_book_delivery_list'),
+    url(r'book-delivery/$', object_list, {'queryset':BookDelivery.objects.all(), 'extra_context':{'base':'book_stock/base.html'}}, 'stock_book_delivery_list'),
     url(r'book-order/$', object_list, {'queryset':BookOrder.objects.filter(bookdelivery__pk__isnull=True)}, name='stock_book_orders'),
     url(r'book-order/delivery/$', 'deliver_orders', name='stock_book_orders_delivery'),
 )
