@@ -1,6 +1,7 @@
-from django import forms
 from book_stock.models import Book, BookOrder, StockObject, BookDelivery
+from django import forms
 from django.forms.widgets import HiddenInput
+import datetime
 
 class CreateBookOrderForm(forms.Form):
     book = forms.ModelChoiceField(queryset=Book.objects.all())
@@ -19,6 +20,15 @@ class DeliverBookOrderForm(forms.Form):
     stock_number = forms.CharField()
     price = forms.DecimalField()
     delivered = forms.DateField()
+    
+    def __init__(self, *args, **kwargs):
+        super(DeliverBookOrderForm, self).__init__(*args, **kwargs)
+        if 'book_order' in kwargs.get('initial', {}):
+            self.book_order_object = BookOrder.objects.get(pk=kwargs['initial']['book_order'])
+            if 'price' not in kwargs.get('initial', {}):
+                self.fields['price'].initial = self.book_order_object.book.price 
+        if 'delivered' not in kwargs.get('initial', {}):
+            self.fields['delivered'].initial = datetime.date.today() 
     
     def save(self):
         book_order = self.cleaned_data['book_order']
