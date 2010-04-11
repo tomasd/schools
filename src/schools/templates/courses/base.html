@@ -5,7 +5,7 @@
 {% block left_content %}
 	{% if course %}
 		{% if course.pk %}
-		<h3>Kurz {{ course }}</h3>
+		<h3 title="Kurz {{ course }}">Kurz {{ course }}</h3>
 		<ul class="nav">
 			<li><a href="{{ course.get_absolute_url }}">Úprava kurzu</a></li>
 			<li><a href="{{ course.get_coursemembers_url }}">Účastníci kurzu</a></li>
