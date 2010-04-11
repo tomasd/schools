@@ -7,6 +7,7 @@ from django.forms.widgets import HiddenInput
 from django.utils.translation import ugettext_lazy as _, ugettext
 from schools.companies.models import Company
 from schools.students.models import Student
+from django.core import mail
 
 class CreateStudentForm(ModelForm):
     username = forms.RegexField(label=_("Username"), max_length=30, regex=r'^\w+$',
@@ -33,10 +34,18 @@ class CreateStudentForm(ModelForm):
             company.save()
             student.company = company
         user = User(username=self.cleaned_data['username'], first_name=student.first_name, last_name=student.last_name, email=student.email)
-        user.set_password(student.first_name)
+        password = User.objects.make_random_password(6)
+        user.set_password(password)
         user.save()
         student.user = user
         student.save()
+        if user.email:
+            message = u'''
+                Váš účet bol vytvorený. 
+                Prihlasovacie meno: %s
+                Heslo: %s
+            ''' % (user.username, password)
+            mail.send_mail(ugettext(u'Účet vytvorený'), message, None, [user.email], fail_silently=False)
         return student
 
 class StudentForm(ModelForm):
