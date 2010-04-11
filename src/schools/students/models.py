@@ -1,10 +1,29 @@
 # -*- coding: utf-8 -*-
+from book_stock.models import BookDelivery
+from collections import defaultdict
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import permalink, signals
-from collections import defaultdict
 from schools import fix_date_boundaries
 
 class StudentManager(models.Manager):
+    def book_invoice(self, start, end, companies=None):
+        student_content_type = ContentType.objects.get_for_model(Student)
+        deliveries = BookDelivery.objects.filter(person_type=student_content_type, 
+                                                 delivered__range=(start,end))
+        deliveries = [a for a in deliveries if companies is None or a.person.company in companies]
+        students = set([a.person for a in deliveries])
+        students = dict([(a,a) for a in students])
+        for student in students:
+            student.book_deliveries = []
+        for delivery in deliveries:
+            students[delivery.person].book_deliveries.append(delivery)
+            
+        for student in students:
+            student.book_deliveries_sum = sum(a.price for a in student.book_deliveries)
+        return students
+                 
+        
     def invoice(self, start, end, companies=None):
         from schools.courses.models import CourseMember
         

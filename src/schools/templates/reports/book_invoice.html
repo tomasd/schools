@@ -1,0 +1,65 @@
+{% extends "reports/base.html" %}
+{% load i18n generic_views_tags %}
+
+{% block content %}
+<div class="top-bar">
+	<h1>{% trans "Fakturácia kníh" %}</h1>
+	<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
+</div><br />
+<div class="select-bar">
+	<form>
+		<table>
+		{% include "form_table.html" %}
+		</table>
+	   <input type="submit" name="Submit" value="Search" />
+	</form>
+</div>
+{% if not nolist %}
+<div class="table">
+	<div align="right"><a href="{% url invoice_pdf %}?{{ request.GET.urlencode }}">Uložiť ako pdf</a></div>
+	<img src="img/bg-th-left.gif" width="8" height="7" alt="" class="left" />
+	<img src="img/bg-th-right.gif" width="7" height="7" alt="" class="right" />
+	<table class="listing" cellpadding="0" cellspacing="0">
+		<tr>
+			<th class="first">{% trans "Meno/Názov" %}</th>
+			<th>{% trans "Kniha" %}</th>
+			<th class="last">{% trans "Cena" %}</th>
+		</tr>
+		{% for company in object_list %}
+			<tr class="{% cycle 'bg' '' %}">
+				<td class="first last style1">{% canchange company %}<a href="{{ company.get_absolute_url }}">{{ company }}</a>{% else %}{{ company }}{% endcanchange %}</td>
+				<td class="style1"></td>
+				<td  class="last style1">{{ company.book_invoice_students_sum|floatformat:"2" }}&nbsp;€</td>
+			</tr>
+			{% if show_students %}
+			{% for student in company.book_invoice_students %}
+				<tr class="{% cycle 'bg' '' as background %} style2">
+					<td class="first last style2">{% canchange student %}<a href="{{ student.get_absolute_url }}">{{ student }}</a>{% else %}{{ student }}{% endcanchange %}</td>
+					<td class="style2"></td>
+					<td  class="last style2">{{ student.book_deliveries_sum|floatformat:"2" }}&nbsp;€</td>
+				</tr>
+				{% for delivery in student.book_deliveries %}
+				<tr class="{% cycle background %} style3">
+					<td class="first style3"></td>
+					<td class="style3">{% canchange delivery %}<a href="{{ delivery.get_absolute_url }}">{{ delivery.book }}</a>{% else %}{{ delivery.book }}{% endcanchange %}</td>
+					<td  class="last style3">{{ delivery.price|floatformat:"2" }}&nbsp;€</td>
+				</tr>
+				{% endfor %}
+			{% endfor %}
+			{% endif %}
+		{% endfor %}
+		<tr class="style1">
+			<td class="first style1">{% trans "Spolu" %}</td>
+			<td></td>
+			<td class="last">{{ total_book_invoice_sum|floatformat:"2" }}&nbsp;€</td>
+		</tr>
+	</table>
+	<div class="select">
+		<strong>Other Pages: </strong>
+		<select>
+			<option>1</option>
+		</select>
+  	</div>
+</div>
+{% endif %}
+{% endblock %}

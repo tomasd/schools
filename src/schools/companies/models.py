@@ -5,6 +5,22 @@ from django.db import models
 from django.db.models import permalink, signals
 
 class CompanyManager(models.Manager):
+    def book_invoice(self, start, end, companies=None):
+        from book_stock.models import BookDelivery
+        from schools.students.models import Student
+        students = Student.objects.book_invoice(start, end, companies)
+        if companies is None:
+            companies = Company.objects.all()
+        
+        company_students = defaultdict(list)
+        for student in students:
+            company_students[student.company].append(student)
+            
+        for company in companies:
+            company.book_invoice_students = company_students[company]
+            company.book_invoice_students_sum= sum(a.book_deliveries_sum for a in company.book_invoice_students)
+        return companies
+        
     def invoice(self, start, end, companies=None):
         from schools.students.models import Student
         

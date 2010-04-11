@@ -72,6 +72,10 @@ class BookDelivery(models.Model):
         return book.name
     
     @property
+    def book(self):
+        return self.stock_object.book
+    
+    @property
     def book_author(self):
         return self.stock_object.book.author
     

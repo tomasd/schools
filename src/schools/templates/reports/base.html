@@ -7,6 +7,7 @@
 	<ul class="nav">
 		{% if perms.companies.can_see_invoice %}
 		<li><a href="{% url invoice %}">{% trans "Fakturácia" %}</a></li>
+		<li><a href="{% url book-invoice %}">{% trans "Fakturácia kníh" %}</a></li>
 		{% endif %}
 		{% if perms.courses.can_see_lesson_plan %}
 		<li><a href="{% url course-plan %}">{% trans "Plán kurzov" %}</a></li>
