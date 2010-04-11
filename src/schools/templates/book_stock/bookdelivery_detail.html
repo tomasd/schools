@@ -10,11 +10,11 @@
 			<table class="listing form" cellpadding="0" cellspacing="0">
 			<tr class="">
 				<td class="first"><b>{% trans "Kniha" %}</b>:</td> 
-				<td class="last">{{ object.book_full }}</td>
+				<td class="last">{% entitylink object.book %}</td>
 			</tr>
 			<tr class="bg">
 				<td class="first"><b>{% trans "Osoba" %}</b>:</td> 
-				<td class="last">{{ object.person }}</td>
+				<td class="last">{% entitylink object.person %}</td>
 			</tr>
 			<tr class="">
 				<td class="first"><b>{% trans "Vydané" %}</b>:</td> 

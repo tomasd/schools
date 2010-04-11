@@ -32,6 +32,27 @@ class CanDeleteNode(template.Node):
         return ''
 
 @register.tag
+def entitylink(parser, token):
+    try:
+        tag_name, object_name = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError('%r tag requires 1 argument' % token.contents.split()[0:])
+    return EntityLinkNode(object_name)
+    
+class EntityLinkNode(template.Node):
+    def __init__(self, object_name):
+        self.object_name = Variable(object_name)
+        
+    def render(self, context):
+        object = self.object_name.resolve(context)
+        if object is not None:
+            if user_has_permission(context['user'], 'change', object):
+                return u'<a href="%s">%s</a>' % (object.get_absolute_url(), object)
+            return unicode(object)
+        
+    
+
+@register.tag
 def canchange(parser, token):
     try:
         tag_name, object_name = token.split_contents() #@UnusedVariable

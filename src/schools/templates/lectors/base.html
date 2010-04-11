@@ -10,6 +10,8 @@
 		{% if perms.lectors.add_contract or perms.lectors.change_contract %}
 		<li><a href="{{ lector.get_contracts_url }}">{% trans "Zmluvy" %}</a></li>
 		{% endif %}
+		<li><a href="{{ lector.get_bookorders_url }}">{% trans "Objednávky kníh" %}</a></li>
+		<li><a href="{{ lector.get_books_url }}">{% trans "Vydané knihy" %}</a></li>
 		<li class="last"><a href="{{ lector.get_courses_url }}">{% trans "Vyučované kurzy" %}</a></li>
 	</ul>
 	{% endif %}

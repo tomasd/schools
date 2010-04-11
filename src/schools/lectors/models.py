@@ -77,6 +77,14 @@ class Lector(models.Model):
     @permalink
     def get_contracts_url(self):
         return ('lectors_contract_list', None, {'lector_id':str(self.pk)})
+    
+    @permalink
+    def get_bookorders_url(self):    
+        return ('lectors_lector_book_orders', None, {'object_id':str(self.pk)})
+    
+    @permalink
+    def get_books_url(self):
+        return ('lectors_lector_books', None, {'object_id':str(self.pk)})
 
     
 class Contract(models.Model):
