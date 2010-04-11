@@ -1,14 +1,16 @@
+# -*- coding: utf-8 -*-
 from datepicker.widgets import SplitDatePickerTimePickerWidget
 from django import forms
 from django.forms.util import ValidationError
 from django.forms.widgets import HiddenInput, Select, DateTimeInput, Widget, \
     CheckboxSelectMultiple
 from django.utils.translation import ugettext
+from schools.buildings import classroom_buildings
 from schools.buildings.models import Classroom, Building
 from schools.courses.models import Course, CourseMember, ExpenseGroup, Lesson, \
     LessonAttendee, ReasonForNotRealizing, lesson_assign_attendees
 from schools.lectors.models import Lector
-from schools.buildings import classroom_buildings
+from datetime import timedelta
 
 
 class CourseForm(forms.ModelForm):
@@ -171,3 +173,11 @@ class LessonSearchForm(forms.Form):
 
         self.fields['start'].required = date_required
         self.fields['end'].required = date_required
+        
+    def clean(self):
+        data = self.cleaned_data
+        
+        if not data.get('start') or not data.get('end') or data.get('end') > data.get('start') + timedelta(days=31) :
+            print 'xxx'
+            raise ValidationError(ugettext(u'Môžete zadať maximálne mesačné obdobie'))
+        return data
