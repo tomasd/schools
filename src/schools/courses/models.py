@@ -152,6 +152,12 @@ class CourseMember(models.Model):
             return '%s - ' % format(self.start, start_format)
         return '%s - %s' % (format(self.start, start_format), format(self.end, start_format))
     
+    def attendance(self):
+        lessons = LessonAttendee.objects.filter(course_member=self)
+        attended = len([filter(lambda a:a.present, lessons)])
+        if not lessons:
+            return 0
+        return float(attended)/len(lessons)
     
 lesson_assign_attendees = django.dispatch.Signal(providing_args=["lesson"])
 def create_lesson_attendees(sender, *args, **kwargs):

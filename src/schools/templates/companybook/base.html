@@ -5,6 +5,7 @@
 {% block left_content %}
 	<h3>{% trans "Sekcia platiteľa" %}</h3>
 	<ul class="nav">
-		<li class="last"></li>
+		<li><a href="{% url companybook %}">{% trans "Firma" %}</a></li>
+		<li class="last"><a href="{% url companybook_students %}">{% trans "Študenti" %}</a></li>
 	</ul>
 {% endblock %}

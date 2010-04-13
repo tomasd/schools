@@ -101,3 +101,11 @@ class Student(models.Model):
     @property
     def address(self):
         return '%s, %s %s' % (self.street, self.postal, self.town)
+    
+    def attendance(self):
+        from schools.courses.models import LessonAttendee
+        lessons = LessonAttendee.objects.filter(course_member__student=self)
+        attended = len([filter(lambda a:a.present, lessons)])
+        if not lessons:
+            return 0
+        return float(attended)/len(lessons)

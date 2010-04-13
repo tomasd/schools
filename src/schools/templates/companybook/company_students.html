@@ -1,0 +1,38 @@
+{% extends "companybook/base.html" %}
+{% load i18n listtable  generic_views_tags%}
+{% block content %}
+	<div class="top-bar">
+		<h1>{% trans "Zoznam študentov" %}</h1>
+		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
+	</div><br />
+	<div class="select-bar">
+		<form>
+			{% include "form_inline.html" %}
+		    <input type="submit" name="Submit" value="Search" />
+		</form>
+	</div>
+	
+	{% table object in object_list %}
+		<th class="first">{% trans "Meno" %}</th>
+		<th>{% trans "Firma/Kurz" %}</th>
+		<th class="last">{% trans "Dochádzka" %}</th>
+	{% rows %}
+		<tr class="{{ tr_class }}">
+			<td class="first style1">{{ object }}</td>
+			<td class="style2">{{ object.company }}</td>
+			<td class="last"></td>
+		</tr>
+		{% for coursemember in object.coursemember_set.all %}
+		<tr class="{{ tr_class }}">
+			<td class="first"></td>
+			<td>{{ coursemember.course }}</td>
+			<td>{{ coursemember.attendance|floatformat:"2" }}&nbsp;%</td>
+		</tr>
+		{% endfor %}
+		<tr class="{{ tr_class }}">
+			<td class="first">Spolu</td>
+			<td></td>
+			<td class="style2">{{ object.attendance|floatformat:"2" }}&nbsp;%</td>
+		</tr>
+	{% endtable %}
+{% endblock %}
