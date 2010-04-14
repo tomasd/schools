@@ -27,6 +27,10 @@ class TestingTerm(models.Model):
     def get_absolute_url(self):
         return ('courses_course_test_result_update', None, {'course_id':str(self.course.pk), 'object_id':str(self.pk)})
     
+    @permalink
+    def get_delete_url(self):    
+        return ('testing_term_delete', None, {'object_id':str(self.pk)})
+    
     
 class TestResult(models.Model):
     from schools.courses.models import CourseMember

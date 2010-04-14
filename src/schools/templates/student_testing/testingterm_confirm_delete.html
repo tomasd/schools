@@ -1,0 +1,11 @@
+{% extends "courses/base.html" %}
+{% load i18n generic_views_tags %}
+
+{% block content %}
+	<div class="top-bar">
+		<h1>{% trans "Odstrániť testovanie" %}</h1>
+		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
+	</div><br />
+	
+	{% include "delete_confirmation.html" %}
+{% endblock %}

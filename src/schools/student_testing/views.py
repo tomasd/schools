@@ -9,6 +9,8 @@ from schools.student_testing.forms import CreateTestResultForm, \
     CreateTestingTermForm, TestResultForm, EditTestResultForm, TestingTermForm
 from schools.student_testing.models import TestingTerm, TestResult
 import operator
+from django.views.generic.create_update import delete_object
+from django.core.urlresolvers import reverse
 
 @permission_required('student_testing.add_testingterm')
 def create_test_result(request, object_id):
@@ -57,3 +59,9 @@ def update_test_result(request, course_id, object_id):
 def list_test_result(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
     return object_list(request, queryset=course.testingterm_set.all(), template_name='student_testing/testing_term_list.html', extra_context={'course':course})
+
+@permission_required('student_testing.delete_testingterm')
+def delete_testing_term(request, *args, **kwargs):
+    term = get_object_or_404(TestingTerm, pk=kwargs['object_id'])
+    redirect = term.course.get_testing_url()
+    return delete_object(request, post_delete_redirect=redirect, *args, **kwargs)
