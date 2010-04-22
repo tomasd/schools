@@ -33,6 +33,7 @@ class CourseManager(models.Manager):
             course.course_plan = CoursePlan(lessonhours, price)
             
         return lesson_dict.keys()
+    
             
 class Course(models.Model):
     objects = CourseManager()
@@ -168,9 +169,18 @@ def create_lesson_attendees(sender, *args, **kwargs):
     lesson.lessonattendee_set = [LessonAttendee(course_member=a) for a in course_members] 
     
 lesson_assign_attendees.connect(create_lesson_attendees)      
+
+class LessonManager(models.Manager):
+    def matching_lessons(self, classroom, start, end):
+        query =  self.get_query_set()
+        query = query.filter(classroom=classroom)
+        query = query.filter(start__lte=end, end__gte=start)
+        return query
+    
 class Lesson(models.Model):
     from schools.buildings.models import Classroom
     from schools.lectors.models import Lector
+    objects = LessonManager()
     course = models.ForeignKey('Course')
     classroom = models.ForeignKey(Classroom, related_name='plannedlessons_set')
     
@@ -196,15 +206,10 @@ class Lesson(models.Model):
         verbose_name_plural=u'lekcie'
         
     def __unicode__(self):
-        start_format = 'd.m.Y H:i'
-        end_format = 'H:i' if self.end.date() == self.start.date() else start_format
-        
         start, end = self.start, self.end
         if self.realized:
             start, end = self.real_start, self.real_end
-        return '%s: %s - %s' % (self.classroom,
-                                format(start, start_format),
-                                format(end, end_format))
+        return '%s: %s' % (self.classroom, format_time_range(start, end))
     
     @permalink
     def get_absolute_url(self):
@@ -225,6 +230,11 @@ class Lesson(models.Model):
     @property
     def minutes_length(self):
         return delta_to_minutes(self.end - self.start)
+
+def format_time_range(start, end):
+    start_format = 'd.m.Y H:i'
+    end_format = 'H:i' if end.date() == start.date() else start_format
+    return '%s - %s' % ( format(start, start_format), format(end, end_format))
 
 def calculate_price(hour_rate, delta):    
     return hour_rate * delta_to_minutes(delta) / 60

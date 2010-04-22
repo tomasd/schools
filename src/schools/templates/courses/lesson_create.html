@@ -12,6 +12,9 @@
 	<script type="text/javascript">
 	    $(function() {
 	        $('#listing_table tbody tr').formset();
+	        $('.add-row').click(function() {
+		        validate();
+	        });
 	    });
 	    var add_new_lesson_row = function(classroom, start_date, start_time, end_date, end_time) {
 	    	var row = $('#listing_table .form_row:last');
@@ -115,11 +118,27 @@
 			try {
 				f = repeat_every.val().replace(/-/g, '_');
 				eval(f + '(form);');
+				validate();
 			} finally {
 				return false;
 			}
 		});
 	});
+	var validate = function() {
+		$.getJSON('{% url courses_lesson_create course.pk %}', $("#lesson_create_form").serialize(), function(data) {
+			$.each(data, function(index, value) {
+				var row = $($('.form_row')[index]);
+				row.find('.errorlist').remove();
+				for (var key in value) {
+					if (key == '__all__') {
+						$(row).find('td:first').prepend('<span class="errorlist">' + value['__all__'] + '</span>');
+					} else {
+						$(row).find('.' + key).after('<span class="errorlist">' + value[key] + '</span>');
+					}
+				}
+			});
+		});
+	};
 	</script>
 	
 {% endblock %}
@@ -130,7 +149,7 @@
 		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
 	</div><br />
 	<div class="table">
-		<form method="post">
+		<form method="post" id="lesson_create_form">
 			{{ formset.management_form }}
 			<table class="listing form" cellpadding="0" cellspacing="0" id="listing_table">
 				<thead>
@@ -145,7 +164,10 @@
 				<tr class="{% cycle 'bg' '' %} form_row">
 					{% for field in form.visible_fields %}
 						<td>
-							{{ field }}{{ field.errors|join:", " }}
+						{% if form.non_field_errors and forloop.first %}
+							{{ form.non_field_errors }}
+						{% endif %}
+							{{ field }}{% if field.errors %}<span class="errorlist">{{ field.errors|join:", " }}</span>{% endif %}
 							{% if forloop.last %}
 							{{ form.hidden_fields|join:" " }}
 							{% endif %}

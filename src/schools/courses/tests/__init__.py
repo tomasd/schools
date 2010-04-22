@@ -1,12 +1,12 @@
-from decimal import Decimal
-from django.test.testcases import TestCase
-from schools.courses.models import Lesson, LessonAttendee, CourseMember
+from decimal import Decimal #@UnresolvedImport
 from django.core.urlresolvers import reverse
-from schools.courses.forms import LessonRealizedForm1
-from schools.buildings.models import Classroom
-from schools.lectors.models import Lector
-from django.forms.models import inlineformset_factory, modelformset_factory
 from django.forms.formsets import formset_factory
+from django.forms.models import inlineformset_factory, modelformset_factory
+from django.test.testcases import TestCase
+from schools.buildings.models import Classroom
+from schools.courses.forms import LessonRealizedForm1, LessonPlanForm
+from schools.courses.models import Lesson, LessonAttendee, CourseMember, Course
+from schools.lectors.models import Lector
 
 
 class LectorPriceTest(TestCase):
@@ -49,11 +49,11 @@ class CourseMemberTest(TestCase):
         response = self.client.get(reverse('courses_coursemember_create', kwargs={'course_id':'1'}))
         self.assertEquals(200, response.status_code)
         course_members_count = CourseMember.objects.count()
-        response = self.client.post(reverse('courses_coursemember_create', kwargs={'course_id':'1'}), 
-                         {'student':'1','start':'01.01.2009', 'expense_group':'1', 'course':'1'})
+        response = self.client.post(reverse('courses_coursemember_create', kwargs={'course_id':'1'}),
+                         {'student':'1', 'start':'01.01.2009', 'expense_group':'1', 'course':'1'})
         
         self.assertRedirects(response, reverse('courses_coursemember_update', kwargs={'course_id':'1', 'object_id':'4'}))
-        self.assertEquals(course_members_count+1, CourseMember.objects.count())
+        self.assertEquals(course_members_count + 1, CourseMember.objects.count())
         
 class CourseTest(TestCase):
     fixtures = ['pricetest']
@@ -63,7 +63,7 @@ class CourseTest(TestCase):
         response = self.client.get(reverse('courses_course_create'))
         self.assertEquals(200, response.status_code)
         
-        response = self.client.post(reverse('courses_course_create'), 
+        response = self.client.post(reverse('courses_course_create'),
                                     {'responsible':'1', 'lector':'1', 'name':'xxx', 'language':'en'})
         self.assertRedirects(response, reverse('courses_course_update', kwargs={'object_id': '3'}))
         
@@ -95,3 +95,26 @@ class LessonRealizedForm1Test(TestCase):
         LessonFormSet = formset_factory(LessonRealizedForm1, extra=0, can_delete=False)
         form = LessonFormSet(initial=[{'lesson':1}])
         unicode(form)
+        
+class LessonPlanFormTest(TestCase):
+    fixtures = ['pricetest']
+    
+    def testValidationInvalid(self):
+        data = {
+                'course':'1',
+                'classroom':'1',
+                'start_0':'1.1.2009', 'start_1':' 10:30',
+                'end_0':'1.1.2009', 'end_1':' 11:30',
+        }
+        form = LessonPlanForm(data)
+        self.assertFalse(form.is_valid())
+        
+    def testValidationValid(self):
+        data = {
+                'course':'1',
+                'classroom':'1',
+                'start_0':'1.1.2009', 'start_1':'9:30',
+                'end_0':'1.1.2009', 'end_1':'9:59',
+        }
+        form = LessonPlanForm(data)
+        self.assertTrue(form.is_valid(), form.errors)

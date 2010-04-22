@@ -8,7 +8,8 @@ from django.utils.translation import ugettext
 from schools.buildings import classroom_buildings
 from schools.buildings.models import Classroom, Building
 from schools.courses.models import Course, CourseMember, ExpenseGroup, Lesson, \
-    LessonAttendee, ReasonForNotRealizing, lesson_assign_attendees
+    LessonAttendee, ReasonForNotRealizing, lesson_assign_attendees,\
+    format_time_range
 from schools.lectors.models import Lector
 from datetime import timedelta
 
@@ -53,19 +54,32 @@ class ExpenseGroupForm(forms.ModelForm):
     class Meta:
         model = ExpenseGroup        
 
+def validate_overlapping_lessons(start, end, classroom, matching_lessons):
+    if matching_lessons:
+        times = [format_time_range(a.start,a.end) for a in matching_lessons]
+        p = (classroom, format_time_range(start, end), ', '.join(times))
+        raise ValidationError(ugettext(u'Učebňa %s je v čase %s už obsadená pre časy: %s') % p)
 class LessonPlanForm(forms.ModelForm):
     course = forms.ModelChoiceField(queryset=Course.objects.all(), widget=HiddenInput(attrs={'class':'course'}))
     classroom = forms.ModelChoiceField(queryset=Classroom.objects.all(), widget=Select(attrs={'class':'classroom'}))
     start = forms.DateTimeField(widget=SplitDatePickerTimePickerWidget(attrs={'class':'start'}))
     end = forms.DateTimeField(widget=SplitDatePickerTimePickerWidget(attrs={'class':'end'}))
-    
-    def __init__(self, *args, **kwargs):
-        super(LessonPlanForm, self).__init__(*args, **kwargs)
-        classroom_buildings(self.fields['classroom'])
-        
     class Meta:
         model = Lesson
         fields = ('course', 'classroom', 'start', 'end',)
+        
+    def __init__(self, *args, **kwargs):
+        super(LessonPlanForm, self).__init__(*args, **kwargs)
+        classroom_buildings(self.fields['classroom'])
+        self.fields['classroom'].required=True
+        
+    def clean(self):
+        data = self.cleaned_data
+        if 'classroom' in data and 'start' in data and 'end' in data:
+            matching_lessons = Lesson.objects.matching_lessons(classroom=data['classroom'], 
+                                            start=data['start'], end=data['end'])
+            validate_overlapping_lessons(data['start'], data['end'], data['classroom'], matching_lessons)
+        return data
         
 class LessonRealizedForm(forms.ModelForm):
     course = forms.ModelChoiceField(queryset=Course.objects.all(), widget=HiddenInput)
@@ -178,6 +192,5 @@ class LessonSearchForm(forms.Form):
         data = self.cleaned_data
         
         if not data.get('start') or not data.get('end') or data.get('end') > data.get('start') + timedelta(days=31) :
-            print 'xxx'
             raise ValidationError(ugettext(u'Môžete zadať maximálne mesačné obdobie'))
         return data

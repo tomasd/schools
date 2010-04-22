@@ -94,6 +94,7 @@ def expensegroup_list(request, course_id):
 def lesson_create(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
     LessonFormset = modelformset_factory(Lesson, LessonPlanForm)
+    print request
     if request.method == 'POST':
         formset = LessonFormset(request.POST, queryset=Lesson.objects.none())
         if formset.is_valid():
@@ -106,6 +107,12 @@ def lesson_create(request, course_id):
             else:
                 return redirect(reverse(lesson_list, kwargs={'course_id':course_id}))
     else:
+        if request.META.get('HTTP_X_REQUESTED_WITH', '') == 'XMLHttpRequest':
+            # JSON request, only validate
+            formset = LessonFormset(request.GET, queryset=Lesson.objects.none())
+            errors = [form.errors for form in formset.forms]
+            errors = [dict([(a, b.as_text()) for a, b in error.items()]) for error in errors]
+            return HttpResponse(simplejson.dumps(errors,ensure_ascii=False), mimetype='application/json')
         formset = LessonFormset(queryset=Lesson.objects.none(), initial=[{'course':course.pk}])
     context = {'formset': formset, 'course':course, 'choose_classroom_form':ChooseClassroomForm()}
     return render_to_response('courses/lesson_create.html', RequestContext(request, context))
