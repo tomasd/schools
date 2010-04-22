@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from collections import defaultdict
-from decimal import Decimal
+from collections import defaultdict #@UnresolvedImport
+from decimal import Decimal #@UnresolvedImport
 from django.db import models
 from django.db.models import permalink, signals
 

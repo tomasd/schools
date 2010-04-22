@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from book_stock.models import BookDelivery
-from collections import defaultdict
+from collections import defaultdict #@UnresolvedImport
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import permalink, signals

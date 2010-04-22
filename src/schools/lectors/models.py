@@ -7,7 +7,7 @@ class LectorManager(models.Manager):
     def lesson_analysis(self, start, end):
         from schools.courses.models import Lesson
         from schools.companies.models import Subcount
-        from collections import defaultdict
+        from collections import defaultdict #@UnresolvedImport
         from schools.lectors.models import Lector #@UnresolvedImport
         import schools
 

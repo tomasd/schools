@@ -8,7 +8,7 @@ from schools.courses.models import Course, LessonAttendee
 from schools.lectors.models import Lector
 from schools.reports.forms import InvoiceForm, LessonAnalysisForm, \
     LessonPlanForm, CompanyAddedValueForm
-from xml.etree import ElementTree as ET
+from xml.etree import ElementTree as ET #@UnresolvedImport
 from django.template.defaultfilters import yesno
 from django.utils.translation import ugettext
 from django.http import HttpResponse

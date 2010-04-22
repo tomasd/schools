@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from collections import defaultdict
+from collections import defaultdict #@UnresolvedImport
 from django.conf import settings
 from django.db import models
 from django.db.models import permalink, signals
