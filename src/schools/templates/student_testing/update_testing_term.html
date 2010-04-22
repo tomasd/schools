@@ -21,6 +21,7 @@
 				</tr>
 			</thead>
 			{% for form_result in testresult_formset.forms %}
+			{% if form_result.non_field_errors %}<div class="error">{{ form_result.non_field_errors }}</div>{% endif %}
 			<tr valign="top" class="{% cycle 'bg' '' as rowcolor %}">
 				<td>
 					<b>{{ form_result.course_member.field.student }}</b>

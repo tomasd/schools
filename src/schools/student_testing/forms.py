@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from django import forms
 from django.forms.widgets import HiddenInput, Textarea
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext as _, ugettext
 from schools.courses.models import CourseMember, Course
 from schools.student_testing.models import TestingTerm, TestResult, StudentTest
+from django.forms.util import ValidationError
 
 class CreateTestingTermForm(forms.Form):
     student_test = forms.ModelChoiceField(queryset=StudentTest.objects.all(), required=False)
@@ -64,3 +65,14 @@ class EditTestResultForm(TestResultForm):
             self.fields['course_member'] = forms.ModelChoiceField(queryset=CourseMember.objects.all(), widget=HiddenInput)
             self.fields['course_member'].student = kwargs['instance'].course_member.student 
         
+    def clean(self):
+        terms_for_student = TestResult.objects.filter(
+                  course_member=self.cleaned_data['course_member'], 
+                  testing_term=self.cleaned_data['testing_term'])
+        
+        if self.cleaned_data['id']:
+            terms_for_student = terms_for_student.exclude(pk=self.cleaned_data['id'].pk)
+            
+        if terms_for_student:
+            raise ValidationError(ugettext(u'Študent môže písať naraz len jeden test, presvedčte sa že každý študent je vybraný práve raz.'))
+        return self.cleaned_data
