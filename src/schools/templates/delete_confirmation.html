@@ -5,6 +5,6 @@
 {% endblocktrans %}
 	{% trans "Odstránené budú aj nasledujúce objekty:" %}
 	{% related_objects_list object %}
-<form action="" method="POST">
+<form action="" method="post">{% csrf_token %}{% csrf_token %}
 	<input type="submit" value="{% trans "Áno, som si istý" %}"/>
 </form>

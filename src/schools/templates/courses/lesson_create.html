@@ -149,7 +149,7 @@
 		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
 	</div><br />
 	<div class="table">
-		<form method="post" id="lesson_create_form">
+		<form method="post" id="lesson_create_form">{% csrf_token %}
 			{{ formset.management_form }}
 			<table class="listing form" cellpadding="0" cellspacing="0" id="listing_table">
 				<thead>
@@ -180,7 +180,7 @@
 			<input type="submit" value="{% trans "Uložiť naplánované lekcie" %}"/>
 		</form>
 	</div>
-	<form>
+	<form>{% csrf_token %}
 	{{ choose_classroom_form }}
 	</form>
 	<div style="">
@@ -188,7 +188,7 @@
 	</div>
 	
 	<div id="create_lesson_dialog">
-		<form id="create_lesson_dialog_form">
+		<form id="create_lesson_dialog_form">{% csrf_token %}
 			<p class="validateTips"></p>
 			
 			<fieldset>

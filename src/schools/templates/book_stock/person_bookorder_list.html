@@ -6,7 +6,7 @@
 	</div><br />
 	
 	<div class="select-bar">
-		<form method="post">
+		<form method="post">{% csrf_token %}
 			{% include "form_inline.html" %}
 		    <input type="submit" name="Submit" value="Pridať objednávku" />
 		</form>

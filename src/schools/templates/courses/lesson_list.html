@@ -94,7 +94,7 @@
 		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
 	</div><br />
 	<div class="select-bar">
-		<form action="" method="GET">
+		<form action="" method="GET">{% csrf_token %}
 			<table>
 			{{ form }}
 			</table>
@@ -154,7 +154,7 @@
 		</div>		
 		
 		<div id="attendance">
-		<form action="#attendance" method="post">
+		<form action="#attendance" method="post">{% csrf_token %}
 			{{ attendance_formset.management_form }}
 				{% for form in attendance_formset.forms %}
 			<table class="listing form" cellpadding="0" cellspacing="0">

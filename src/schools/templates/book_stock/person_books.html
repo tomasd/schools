@@ -21,7 +21,7 @@
 			<td>{{ object.returned|date:"d.m.Y" }}</td>
 			<td class="last">
 				{% if perms.book_stock.can_return_book and not object.returned %}
-					<form method="post" action="{{ object.get_returnbook_url }}">
+					<form method="post" action="{{ object.get_returnbook_url }}">{% csrf_token %}
 						<input type="hidden" value="{{ request.get_full_path }}"/>
 						<input type="submit" value="{% trans "Vrátiť knihu" %}"/>
 					</form>

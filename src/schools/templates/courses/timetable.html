@@ -63,7 +63,7 @@
 		<div class="breadcrumbs"><a href="#">Homepage</a> / <a href="#">Contents</a></div>
 	</div><br />
 	<div class="select-bar">
-		<form action="" method="GET">
+		<form action="" method="GET">{% csrf_token %}
 			<table>
 				<tr>
 					<td>{{ form.building.label_tag }}:</td><td>{{ form.building }}{{ form.building.errors.as_ul }}</td>

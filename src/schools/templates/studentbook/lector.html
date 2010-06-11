@@ -8,7 +8,7 @@ function show_reply_form(comment_id, url, person_name) {
     var comment_reply = $('#' + comment_id);
     var to_add = $( new Array(
     '<div class="response"><p>{% trans "Odpovedať" %} ' + person_name + ':</p>',
-    '<form method="POST" action="' + url + '">',
+    '<form method="POST" action="' + url + '">{% csrf_token %}',
     '<ul>',  '{{ form.as_ul|oneline }}',
     '<li><input type="submit" value="{% trans "Odoslať" %}" /></li>',
     '</ul>', '</form>', '</div>').join(''));
@@ -64,7 +64,7 @@ a { color: #CC6633; font-size: 80%; }
         </div>
     {% endfor %}
     <p>{% trans "Komentovať lektora" %}:</p>
-    <form method="POST" action="{% get_comment_url lector %}">
+    <form method="POST" action="{% get_comment_url lector %}">{% csrf_token %}
         <ul>
             {% get_threaded_comment_form as form %}
             {{ form.as_ul }}
