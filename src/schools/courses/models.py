@@ -160,6 +160,10 @@ class CourseMember(models.Model):
             return 0
         return float(attended)/len(lessons)
     
+def planned_lesson_attendees(lesson):
+    course_members = lesson.course.coursemember_set.filter(Q(end__isnull=True) | Q(end__gte=lesson.start), start__lt=fix_date_boundaries(lesson.end))
+    return course_members
+
 lesson_assign_attendees = django.dispatch.Signal(providing_args=["lesson"])
 def create_lesson_attendees(sender, *args, **kwargs):
     lesson = kwargs['lesson']
@@ -230,10 +234,13 @@ class Lesson(models.Model):
     @property
     def minutes_length(self):
         return delta_to_minutes(self.end - self.start)
-
-def format_time_range(start, end):
-    start_format = 'd.m.Y H:i'
-    end_format = 'H:i' if end.date() == start.date() else start_format
+    
+    def planned_attendees(self):
+        return planned_lesson_attendees(self)
+    
+def format_time_range(start, end, date_format='d.m.Y', time_format='H:i'):
+    start_format = '%s %s' % (date_format, time_format)
+    end_format = time_format if end.date() == start.date() else start_format
     return '%s - %s' % ( format(start, start_format), format(end, end_format))
 
 def calculate_price(hour_rate, delta):    

@@ -1,0 +1,10 @@
+{% load i18n %}
+<div>
+	{{ object.course }}<br/>
+	{{ object.course.lector }}<br/>
+	<ul>
+	{% for attendee in object.planned_attendees %}
+		<li>{{ attendee }}</li>
+	{% endfor %}
+	</ul>
+</div>

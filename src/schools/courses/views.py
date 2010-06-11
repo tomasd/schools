@@ -30,6 +30,7 @@ from schools.students.models import Student
 import vobject
 from django.contrib.contenttypes.models import ContentType
 from book_stock.views import persons_orders
+from django.template.loader import render_to_string
 
 @permission_required('courses.add_course')
 def course_create(*args, **kwargs):
@@ -241,7 +242,7 @@ def lesson_list_json(request):
     lessons = [{'id':a.pk,
                 'start':format(a.start, 'Y-m-d\TH:i:s.000O'),
                 'end':format(a.end, 'Y-m-d\TH:i:s.000O'),
-                'title':u'%s - %s' % (a.classroom, a.course),
+                'title':render_to_string('courses/lesson_calendar_detail.html', {'object':a}),#u'%s - %s' % (a.classroom, a.course),
                 'replan_url':reverse(lesson_replan, kwargs={'course_id':a.course.pk, 'object_id':str(a.pk)}),
                 'detail_url':a.get_absolute_url()} 
                 for a in lessons]

@@ -30,6 +30,7 @@
 				     	course: $("#id_course").val(),
 				     {% endif %}
 				   },  function(result) {
+					   console.log(result, callback);
 				     callback(result);
 				   });
 				},
@@ -44,6 +45,16 @@
 		});
 	});
 </script>	
+<style>
+<!--
+.wc-title ul {
+	padding-left: 0;
+}
+.wc-title li {
+	list-style: none;
+}
+-->
+</style>
 {% endblock %}
 
 {% block content %}
