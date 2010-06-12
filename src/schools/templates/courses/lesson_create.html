@@ -14,6 +14,8 @@
 	        $('#listing_table tbody tr').formset();
 	        $('.add-row').click(function() {
 		        validate();
+		        $(".datepicker").removeClass("hasDatepicker").datepicker();
+		        $(".timepicker").unbind().timepickr();
 	        });
 	    });
 	    var add_new_lesson_row = function(classroom, start_date, start_time, end_date, end_time) {

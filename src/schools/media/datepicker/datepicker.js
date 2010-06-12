@@ -4,6 +4,7 @@ $(function() {
 });
 
 var enable_datepicker = function(){
+	$(".datepicker").removeClass("hasDatepicker").datepicker();
 	$('.datepicker').datepicker();
 	$('.timepicker').timepickr({'trigger':'focus',prefix:['ráno','poobede'],suffix:['ráno','poobede']});
 };
